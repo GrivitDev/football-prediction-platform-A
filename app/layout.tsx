@@ -9,6 +9,7 @@ import {
 } from '@/providers/auth-provider';
 
 import { SEO } from '@/config/seo';
+import { ThemeProvider } from '@/providers/theme-provider';
 
 export const metadata: Metadata = {
   metadataBase: new URL(
@@ -94,7 +95,9 @@ export default function RootLayout({
       <body className="bg-slate-950">
         <QueryProvider>
           <AuthProvider>
+            <ThemeProvider>
             {children}
+            </ThemeProvider>
           </AuthProvider>
         </QueryProvider>
       </body>
