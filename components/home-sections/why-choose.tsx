@@ -93,7 +93,7 @@ export default function WhyChooseFinalCTA() {
             </h3>
 
             <p className="mt-6 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Join PredictPro today and unlock AI-powered football predictions, VIP early access, and Telegram delivery.
+              Join PredictPro today and unlock Intelligent football predictions, VIP early access, and Telegram delivery.
             </p>
 
             <div className="mt-10 flex flex-col md:flex-row gap-4 justify-center">

@@ -22,7 +22,7 @@ export default function ArticlesPreview() {
 
         {/* main text */}
         <h2 className="mt-6 text-4xl md:text-6xl font-black">
-          AI-Powered Football Insights
+          Professional Football Insights
         </h2>
 
         <p className="mt-6 text-slate-600 dark:text-slate-400 max-w-2xl">

@@ -26,7 +26,7 @@ export default function FeaturesSection() {
           </h2>
 
           <p className="mt-6 text-slate-600 dark:text-slate-400">
-            AI-powered betting insights delivered earlier, faster, and more accurately — built for serious bettors.
+            Premium betting insights delivered earlier, faster, and more accurately — built for serious bettors.
           </p>
         </div>
 
@@ -89,7 +89,7 @@ export default function FeaturesSection() {
             <div className="absolute inset-0 bg-gradient-to-r from-purple-200/40 to-pink-200/40 dark:from-purple-500/20 dark:to-pink-500/20 blur-xl rounded-2xl opacity-60 group-hover:opacity-100 transition" />
 
             <div className="relative border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 hover:scale-[1.02] transition">
-              <h3 className="text-xl font-bold">AI Probability Engine (VIP)</h3>
+              <h3 className="text-xl font-bold">Smart Probability Engine (VIP)</h3>
 
               <p className="mt-3 text-slate-600 dark:text-slate-400">
                 VIP members see detailed analytics:
@@ -113,14 +113,14 @@ export default function FeaturesSection() {
             <div className="absolute inset-0 bg-gradient-to-r from-green-200/40 to-cyan-200/40 dark:from-green-500/20 dark:to-cyan-500/20 blur-xl rounded-2xl opacity-60 group-hover:opacity-100 transition" />
 
             <div className="relative border border-slate-200 dark:border-white/10 bg-white/60 dark:bg-white/5 backdrop-blur-xl rounded-2xl p-6 hover:scale-[1.03] transition">
-              <h3 className="text-xl font-bold">AI-Powered Analysis</h3>
+              <h3 className="text-xl font-bold">Professional Analysis</h3>
 
               <p className="mt-3 text-slate-600 dark:text-slate-400">
                 Every prediction is backed by data models, form analysis, and statistical trends.
               </p>
 
               <div className="mt-4 text-xs text-green-600 dark:text-green-400">
-                MACHINE LEARNING INSIGHTS
+                STANDARD INSIGHTS
               </div>
             </div>
           </div>

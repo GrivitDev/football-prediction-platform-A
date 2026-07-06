@@ -135,7 +135,7 @@ export default function MobileMenu() {
             </p>
 
             <div className="rounded-xl border border-border/60 bg-muted/30 px-2 py-2">
-              <ThemeSwitcher mobile />
+              <ThemeSwitcher />
             </div>
           </div>
 

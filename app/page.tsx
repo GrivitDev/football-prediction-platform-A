@@ -8,20 +8,9 @@ import ArticlesPreview from '@/components/home-sections/articles-preview';
 import WhyChoose from '@/components/home-sections/why-choose';
 import Footer from '@/components/footer';
 
-import { useTheme } from 'next-themes';
-
 export default function HomePage() {
-  const { resolvedTheme } = useTheme();
-
-  const isDark = resolvedTheme === 'dark';
-
   return (
-    <main
-      className={`
-        min-h-screen overflow-x-hidden transition-colors duration-300
-        ${isDark ? 'bg-slate-950 text-white' : 'bg-white text-slate-900'}
-      `}
-    >
+    <main className="min-h-screen overflow-x-hidden transition-colors duration-300 bg-background text-foreground">
       <Navbar />
 
       <HeroSection />

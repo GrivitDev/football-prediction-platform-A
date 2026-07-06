@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Moon, Sun, Monitor } from 'lucide-react';
 import { useTheme } from 'next-themes';
 
@@ -14,11 +15,14 @@ import { Button } from '@/components/ui/button';
 
 export default function ThemeSwitcher() {
   const { setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return null;
 
   return (
     <DropdownMenu>
-
-      {/* TRIGGER */}
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -38,7 +42,6 @@ export default function ThemeSwitcher() {
         </Button>
       </DropdownMenuTrigger>
 
-      {/* CONTENT */}
       <DropdownMenuContent
         align="end"
         className="
@@ -48,46 +51,22 @@ export default function ThemeSwitcher() {
           text-foreground shadow-sm
         "
       >
-
-        {/* subtle gradient top accent */}
         <div className="h-[1px] w-full bg-gradient-to-r from-indigo-500/20 via-sky-500/20 to-emerald-500/20" />
 
-        <DropdownMenuItem
-          onClick={() => setTheme('light')}
-          className="
-            cursor-pointer flex items-center gap-2
-            rounded-md px-2 py-2
-            focus:bg-muted/50
-          "
-        >
-          <Sun className="h-4 w-4 opacity-70" />
+        <DropdownMenuItem onClick={() => setTheme('light')}>
+          <Sun className="h-4 w-4 opacity-70 mr-2" />
           Light
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={() => setTheme('dark')}
-          className="
-            cursor-pointer flex items-center gap-2
-            rounded-md px-2 py-2
-            focus:bg-muted/50
-          "
-        >
-          <Moon className="h-4 w-4 opacity-70" />
+        <DropdownMenuItem onClick={() => setTheme('dark')}>
+          <Moon className="h-4 w-4 opacity-70 mr-2" />
           Dark
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={() => setTheme('system')}
-          className="
-            cursor-pointer flex items-center gap-2
-            rounded-md px-2 py-2
-            focus:bg-muted/50
-          "
-        >
-          <Monitor className="h-4 w-4 opacity-70" />
+        <DropdownMenuItem onClick={() => setTheme('system')}>
+          <Monitor className="h-4 w-4 opacity-70 mr-2" />
           System
         </DropdownMenuItem>
-
       </DropdownMenuContent>
     </DropdownMenu>
   );

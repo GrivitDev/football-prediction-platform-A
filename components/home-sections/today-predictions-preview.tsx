@@ -51,7 +51,7 @@ export default function TodayPredictionsPreview({
           </h2>
 
           <p className="mt-6 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            AI-analyzed matches for today. VIP users unlock deeper insights, probabilities, and betting markets.
+            Intelligent analyzed matches for today. VIP users unlock deeper insights, probabilities, and betting markets.
           </p>
         </div>
 
