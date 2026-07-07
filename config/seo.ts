@@ -2,7 +2,7 @@ export const SEO = {
   title: 'Sure Predict Pro',
 
   description:
-    'Professional football prediction platform offering AI-powered football predictions, VIP predictions, live scores, fixtures, standings, football statistics, and expert betting analysis.',
+    'Professional football prediction platform offering Intelligent football predictions, VIP predictions, live scores, fixtures, standings, football statistics, and expert betting analysis.',
 
   url: 'https://yourdomain.com',
 
