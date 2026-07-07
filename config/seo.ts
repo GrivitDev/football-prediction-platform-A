@@ -4,9 +4,9 @@ export const SEO = {
   description:
     'Professional football prediction platform offering Intelligent football predictions, VIP predictions, live scores, fixtures, standings, football statistics, and expert betting analysis.',
 
-  url: 'https://yourdomain.com',
+  url: 'https://football-prediction-platform-nu.vercel.app/',
 
-  image: 'https://yourdomain.com/og-image.png',
+  image: 'https://football-prediction-platform-nu.vercel.app/og-image.png',
 
   keywords: [
     'football prediction',
