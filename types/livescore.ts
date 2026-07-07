@@ -1,10 +1,13 @@
 export interface League {
   code: string;
   name: string;
-  country: string;
+  country?: string;
   emblem?: string;
-}
 
+  isActive?: boolean;
+  isTracked?: boolean;
+  priority?: number;
+}
 
 export interface Fixture {
 
@@ -71,6 +74,7 @@ export interface LeaguePage {
   leagueCode: string;
 
   todayMatches: Fixture[];
+    liveMatches: Fixture[];
 
   table: Standing[];
 
