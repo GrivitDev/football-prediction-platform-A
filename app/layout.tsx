@@ -1,56 +1,95 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
 
 import QueryProvider from '@/providers/query-provider';
-
-import {
-  AuthProvider,
-} from '@/providers/auth-provider';
-
-import { SEO } from '@/config/seo';
+import { AuthProvider } from '@/providers/auth-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
+import { SEO } from '@/config/seo';
+import Navbar from '@/components/navbar/navbar';
+import Footer from '@/components/footer';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    SEO.url,
-  ),
+  metadataBase: new URL(SEO.url),
 
   title: {
     default: SEO.title,
-
-    template:
-      `%s | ${SEO.title}`,
+    template: `%s | ${SEO.title}`,
   },
 
-  description:
-    SEO.description,
+  description: SEO.description,
 
   keywords: SEO.keywords,
+
+  alternates: {
+    canonical: SEO.url,
+  },
+
+  applicationName: 'Sure Predict Pro',
+
+  authors: [
+    {
+      name: 'Sure Predict Pro',
+      url: SEO.url,
+    },
+  ],
+
+  creator: 'Sure Predict Pro',
+
+  publisher: 'Sure Predict Pro',
+
+  category: 'Sports',
+
+  manifest: '/logo/site.webmanifest',
+
+  icons: {
+    icon: [
+      {
+        url: '/logo/favicon-16x16.png',
+        sizes: '16x16',
+        type: 'image/png',
+      },
+      {
+        url: '/logo/favicon-32x32.png',
+        sizes: '32x32',
+        type: 'image/png',
+      },
+      {
+        url: '/logo/favicon.ico',
+      },
+    ],
+
+    shortcut: '/logo/favicon.ico',
+
+    apple: [
+      {
+        url: '/logo/apple-touch-icon.png',
+        sizes: '180x180',
+      },
+    ],
+  },
 
   openGraph: {
     title: SEO.title,
 
-    description:
-      SEO.description,
+    description: SEO.description,
 
     url: SEO.url,
 
     siteName: SEO.title,
 
-    images: [
-      {
-        url: SEO.image,
-
-        width: 1200,
-
-        height: 630,
-      },
-    ],
-
     locale: 'en_US',
 
     type: 'website',
+
+    images: [
+      {
+        url: SEO.image,
+        width: 1200,
+        height: 630,
+        alt: 'Sure Predict Pro',
+      },
+    ],
   },
 
   twitter: {
@@ -58,45 +97,78 @@ export const metadata: Metadata = {
 
     title: SEO.title,
 
-    description:
-      SEO.description,
+    description: SEO.description,
 
     images: [SEO.image],
   },
 
-  applicationName:
-  'Sure Predict Pro',
+  robots: {
+    index: true,
 
-appleWebApp: {
-  capable: true,
+    follow: true,
 
-  statusBarStyle:
-    'black-translucent',
+    nocache: false,
 
-  title:
-    'Sure Predict Pro',
-},
+    googleBot: {
+      index: true,
 
-formatDetection: {
-  telephone: false,
-},
+      follow: true,
+
+      'max-image-preview': 'large',
+
+      'max-snippet': -1,
+
+      'max-video-preview': -1,
+    },
+  },
+
+  appleWebApp: {
+    capable: true,
+
+    title: 'Sure Predict Pro',
+
+    statusBarStyle: 'black-translucent',
+  },
+
+  formatDetection: {
+    telephone: false,
+
+    email: false,
+
+    address: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    {
+      media: '(prefers-color-scheme: light)',
+      color: '#ffffff',
+    },
+    {
+      media: '(prefers-color-scheme: dark)',
+      color: '#020617',
+    },
+  ],
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html
-  lang="en"
-  suppressHydrationWarning
->
-      <body className="bg-slate-950">
+      lang="en"
+      suppressHydrationWarning
+    >
+      <body className="min-h-screen overflow-x-hidden transition-colors duration-300 bg-background text-foreground">
         <QueryProvider>
           <AuthProvider>
             <ThemeProvider>
-            {children}
+              <Navbar />
+              {children}
+              <Footer />
             </ThemeProvider>
           </AuthProvider>
         </QueryProvider>

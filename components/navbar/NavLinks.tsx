@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 
 const links = [
   { name: 'Home', href: '/' },
-  { name: 'Live Scores', href: '/live-scores' },
+  { name: 'Live Scores', href: '/livescore' },
   { name: 'Articles', href: '/articles' },
   { name: 'About', href: '/about' },
 ];
@@ -17,9 +17,13 @@ export default function NavLinks() {
     <nav className="relative flex items-center gap-2">
 
       {links.map((link) => {
-        const active = pathname === link.href;
+
+        const active =
+          pathname === link.href ||
+          pathname.startsWith('/livescore');
 
         return (
+
           <Link
             key={link.href}
             href={link.href}
@@ -32,8 +36,9 @@ export default function NavLinks() {
               }
             `}
           >
-            {/* ACTIVE BACKGROUND PILL */}
+
             {active && (
+
               <span
                 className="
                   absolute inset-0 rounded-full
@@ -42,15 +47,21 @@ export default function NavLinks() {
                   backdrop-blur-md
                 "
               />
+
             )}
 
-            {/* TEXT (kept above pill) */}
+
             <span className="relative z-10">
               {link.name}
             </span>
+
+
           </Link>
+
         );
+
       })}
+
     </nav>
   );
 }

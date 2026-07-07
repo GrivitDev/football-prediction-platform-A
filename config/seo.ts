@@ -1,31 +1,26 @@
 export const SEO = {
-  title:
-    'Sure Predict Pro',
+  title: 'Sure Predict Pro',
 
   description:
-    'Professional football prediction platform with VIP predictions, live scores, football statistics, and betting analysis.',
+    'Professional football prediction platform offering AI-powered football predictions, VIP predictions, live scores, fixtures, standings, football statistics, and expert betting analysis.',
 
-  url:
-    'https://yourdomain.com',
+  url: 'https://yourdomain.com',
 
-  image:
-    'https://yourdomain.com/og-image.jpg',
+  image: 'https://yourdomain.com/og-image.png',
 
   keywords: [
     'football prediction',
-
-    'sure odds',
-
-    'VIP prediction',
-
+    'football predictions',
+    'sure predict pro',
+    'VIP predictions',
     'football betting tips',
-
-    'sports prediction',
-
+    'daily football tips',
+    'football analysis',
     'live scores',
-
-    'football tips',
-
-    'betting analysis',
+    'football statistics',
+    'fixtures',
+    'standings',
+    'sports prediction',
+    'bet prediction',
   ],
 };

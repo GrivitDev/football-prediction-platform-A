@@ -42,7 +42,7 @@ export default function MobileMenu() {
 
   const publicLinks = [
     { name: 'Home', href: '/', icon: Home },
-    { name: 'Live Scores', href: '/live-scores', icon: Trophy },
+    { name: 'Live Scores', href: '/livescore', icon: Trophy },
     { name: 'Articles', href: '/articles', icon: Newspaper },
     { name: 'About', href: '/about', icon: Info },
   ];
