@@ -41,3 +41,4 @@ export interface PredictionAccess {
       | null;
   } | null;
 }
+

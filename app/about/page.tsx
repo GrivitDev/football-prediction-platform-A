@@ -21,6 +21,7 @@ import {
   FaWhatsapp,
 } from 'react-icons/fa6';
 
+import LegalPreview from '@/components/LegalPreview';
 
 
 const features = [
@@ -327,7 +328,7 @@ export default function AboutPage() {
           </Link>
 
         </div>
-
+<LegalPreview/>
 
       </section>
 

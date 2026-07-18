@@ -12,28 +12,49 @@ export interface League {
 }
 
 export interface Match {
+
   id: string;
+
 
   leagueCode: string;
 
-  homeTeam: string;
-  awayTeam: string;
 
-  homeTeamBadge?: string;
-  awayTeamBadge?: string;
+  league:{
+    code:string;
+    name:string;
+    country:string;
+    emblem?:string;
+  };
 
-  date: string;
-  time?: string;
 
-  status?: string;
+  homeTeam:string;
 
-  matchday?: number;
+  awayTeam:string;
 
-  homeScore?: number | null;
-  awayScore?: number | null;
 
-  // ✅ NEW (SYNCED WITH BACKEND)
-  kickoffTimestamp?: number;
+  homeTeamBadge?:string;
+
+  awayTeamBadge?:string;
+
+
+  date:string;
+
+  time?:string;
+
+
+  status?:string;
+
+
+  matchday?:number;
+
+
+  homeScore?:number|null;
+
+  awayScore?:number|null;
+
+
+  kickoffTimestamp?:number;
+
 }
 
 // =========================

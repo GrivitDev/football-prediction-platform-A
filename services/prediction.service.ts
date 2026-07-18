@@ -4,19 +4,41 @@ import api from '@/lib/axios';
 // TYPES (UI SAFE MODEL)
 // =========================
 export interface PredictionDetails {
+
   id: string;
 
+
   homeTeam: string;
+
   awayTeam: string;
+
+
+  homeTeamBadge?: string;
+
+  awayTeamBadge?: string;
+
+
   leagueCode: string;
 
+
+  league?: {
+    code: string;
+    name: string;
+    country: string;
+    emblem?: string;
+  };
+
+
   matchDate: string;
+
   status: string;
+
 
   preview: {
     prediction: string;
     confidence: number;
   };
+
 
   access: {
     allowed: boolean;
@@ -26,35 +48,77 @@ export interface PredictionDetails {
     purchased?: boolean;
   };
 
+
   data?: {
+
     probabilities?: {
       home: number;
       draw: number;
       away: number;
     };
 
+
     markets?: {
       market: string;
       selection?: string;
     }[];
+
   };
+
 }
 
 export interface CreatePredictionPayload {
+
   matchId: string;
+
   leagueCode: string;
+
+
+  league?: {
+    code: string;
+    name: string;
+    country: string;
+    emblem?: string;
+  };
+
+
   homeTeam: string;
+
   awayTeam: string;
+
+
+  homeTeamBadge?: string;
+
+  awayTeamBadge?: string;
+
+
   confidence: number;
+
+
   probabilities: {
     home: number;
     draw: number;
     away: number;
   };
-  markets: { market: string; selection?: string }[];
-  accessType: 'free' | 'paid';
+
+
+  markets: {
+    market: string;
+    selection?: string;
+  }[];
+
+
+  accessType:
+    | 'free'
+    | 'regular'
+    | 'vip';
+
+
   price: number;
+
+
   matchDate: string;
+
 }
 
 export const createPrediction = async (payload: CreatePredictionPayload) => {
@@ -89,7 +153,7 @@ export const getPredictionAccess = async (
 };
 
 export const updatePrediction = async (id: string, payload: any) => {
-  const res = await api.put(`/predictions/${id}`, payload);
+  const res = await api.patch(`/predictions/${id}`, payload);
   return res.data;
 };
 
@@ -102,8 +166,9 @@ export const settlePrediction = async (
   id: string,
   actualResult: 'HOME' | 'AWAY' | 'DRAW' | 'VOID',
 ) => {
-  const res = await api.patch(`/predictions/${id}/settle`, {
-    actualResult,
+
+  const res = await api.post(`/settlement/${id}`, {
+    result: actualResult,
   });
 
   return res.data;

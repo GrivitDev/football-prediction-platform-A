@@ -1,7 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+import {
+  useState,
+} from 'react';
+
+
+import {
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+
+
+import toast from 'react-hot-toast';
+
+
 
 import {
   getPredictions,
@@ -10,292 +23,850 @@ import {
   settlePrediction,
 } from '@/services/prediction.service';
 
+
+
 import PredictionDetailsModal from '@/components/admin/predictions/PredictionDetailsModal';
-import { getLeagueName } from '@/constants/leagues';
 
-export default function AdminPredictionsPage() {
-  const queryClient = useQueryClient();
+import PredictionsFilters from '@/components/admin/predictions/PredictionsFilters';
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['predictions'],
-    queryFn: getPredictions,
+import PredictionsTable from '@/components/admin/predictions/PredictionsTable';
+
+
+
+import {
+  getMatchStatus,
+} from '@/utils/prediction.utils';
+
+
+
+import type {
+  AdminPrediction,
+} from '@/types/prediction.types';
+
+
+
+
+
+export default function AdminPredictionsPage(){
+
+
+
+  const queryClient =
+    useQueryClient();
+
+
+
+
+  const {
+    data = [],
+    isLoading,
+  } = useQuery({
+
+    queryKey:[
+      'predictions',
+    ],
+
+    queryFn:
+      getPredictions,
+
   });
 
-  const [selectedPrediction, setSelectedPrediction] = useState<any | null>(
-    null,
-  );
 
-  const [settlementResult, setSettlementResult] = useState<
-    'HOME' | 'DRAW' | 'AWAY' | 'VOID' | ''
-  >('');
 
-  // =========================
-  // HELPERS
-  // =========================
 
-  const getPredictionLabel = (p: any) => {
-    if (!p?.prediction) return '-';
+  const predictions =
+    data as AdminPrediction[];
 
-    if (p.prediction === 'DRAW') return 'Draw';
 
-    if (p.prediction === 'HOME') {
-      return `${p.homeTeam} to win`;
-    }
 
-    if (p.prediction === 'AWAY') {
-      return `${p.awayTeam} to win`;
-    }
 
-    return p.prediction;
-  };
 
-  const openPrediction = (prediction: any) => {
-    setSelectedPrediction({ ...prediction });
-    setSettlementResult('');
-  };
+  const [
+    selectedPrediction,
+    setSelectedPrediction,
+  ] =
+    useState<AdminPrediction | null>(
+      null,
+    );
 
-  // =========================
-  // EDIT FUNCTIONS
-  // =========================
 
-  const updateProbability = (
-    field: 'home' | 'draw' | 'away',
-    value: number,
-  ) => {
-    setSelectedPrediction((prev: any) => ({
-      ...prev,
-      probabilities: {
-        ...prev.probabilities,
-        [field]: value,
+
+
+  const [
+    settlementResult,
+    setSettlementResult,
+  ] =
+    useState<
+      'HOME'
+      |
+      'DRAW'
+      |
+      'AWAY'
+      |
+      'VOID'
+      |
+      ''
+    >('');
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | FILTER STATES
+  |--------------------------------------------------------------------------
+  */
+
+
+  const [
+    search,
+    setSearch,
+  ] =
+    useState('');
+
+
+
+  const [
+    status,
+    setStatus,
+  ] =
+    useState('all');
+
+
+
+  const [
+    access,
+    setAccess,
+  ] =
+    useState('all');
+
+
+
+  const [
+    league,
+    setLeague,
+  ] =
+    useState('all');
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | LEAGUE OPTIONS
+  |--------------------------------------------------------------------------
+  */
+
+
+  const leagueOptions =
+    Array.from(
+
+      new Map(
+
+        predictions.map(
+          (prediction)=>[
+
+            prediction.leagueCode,
+
+            {
+
+              code:
+                prediction.leagueCode,
+
+
+              name:
+                prediction.league?.name
+                ||
+                prediction.leagueCode,
+
+            },
+
+          ],
+        ),
+
+      ).values(),
+
+    );
+
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | FILTERED PREDICTIONS
+  |--------------------------------------------------------------------------
+  */
+
+
+  const filteredPredictions =
+    predictions.filter(
+      (prediction)=>{
+
+
+        const searchMatch =
+          `${prediction.homeTeam}
+          ${prediction.awayTeam}
+          ${prediction.league?.name}`
+          .toLowerCase()
+          .includes(
+            search.toLowerCase(),
+          );
+
+
+
+        const statusMatch =
+          status === 'all'
+          ||
+          getMatchStatus(
+            prediction,
+          ) === status;
+
+
+
+
+        const accessMatch =
+          access === 'all'
+          ||
+          prediction.accessType === access;
+
+
+
+
+        const leagueMatch =
+          league === 'all'
+          ||
+          prediction.leagueCode === league;
+
+
+
+
+        return (
+
+          searchMatch
+
+          &&
+
+          statusMatch
+
+          &&
+
+          accessMatch
+
+          &&
+
+          leagueMatch
+
+        );
+
+
       },
-    }));
-  };
+    );
 
-  const updateMarketSelection = (
-    index: number,
-    value: string,
-  ) => {
-    setSelectedPrediction((prev: any) => {
-      const updatedMarkets = [...prev.markets];
 
-      updatedMarkets[index] = {
-        ...updatedMarkets[index],
-        selection: value,
-      };
 
-      return {
-        ...prev,
-        markets: updatedMarkets,
-      };
-    });
-  };
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | OPEN MODAL
+  |--------------------------------------------------------------------------
+  */
+
+
+  const openPrediction =
+    (
+      prediction:AdminPrediction,
+    )=>{
+
+
+      setSelectedPrediction(
+        prediction,
+      );
+
+
+      setSettlementResult('');
+
+    };
+
+
+
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | UPDATE PROBABILITIES
+  |--------------------------------------------------------------------------
+  */
+
+
+  const updateProbability =
+    (
+      field:
+        | 'home'
+        | 'draw'
+        | 'away',
+
+      value:number,
+
+    )=>{
+
+
+      setSelectedPrediction(
+        (previous)=>{
+
+
+          if(!previous)
+            return previous;
+
+
+
+          return {
+
+            ...previous,
+
+
+            probabilities:{
+
+              ...previous.probabilities,
+
+
+              [field]:
+                value,
+
+            },
+
+          };
+
+
+        },
+      );
+
+
+    };
+
+
+
+
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | UPDATE MARKET
+  |--------------------------------------------------------------------------
+  */
+
+
+  const updateMarketSelection =
+    (
+      index:number,
+
+      value:string,
+
+    )=>{
+
+
+      setSelectedPrediction(
+        (previous)=>{
+
+
+          if(!previous)
+            return previous;
+
+
+
+          const markets =
+            [
+              ...previous.markets,
+            ];
+
+
+
+          markets[index] = {
+
+            ...markets[index],
+
+            selection:
+              value,
+
+          };
+
+
+
+          return {
+
+            ...previous,
+
+            markets,
+
+          };
+
+
+        },
+      );
+
+
+    };
+
+
+
+
+
+
+
+
 
   const probabilityTotal =
-    Number(selectedPrediction?.probabilities?.home || 0) +
-    Number(selectedPrediction?.probabilities?.draw || 0) +
-    Number(selectedPrediction?.probabilities?.away || 0);
 
-  // =========================
-  // SAVE
-  // =========================
+    Number(
+      selectedPrediction?.probabilities.home || 0,
+    )
 
-  const saveEdit = async () => {
-    if (!selectedPrediction) return;
+    +
 
-    if (!settlementResult && probabilityTotal !== 100) {
-      alert('Probabilities must total exactly 100%');
-      return;
-    }
+    Number(
+      selectedPrediction?.probabilities.draw || 0,
+    )
 
-    try {
-      if (settlementResult) {
-        await settlePrediction(
-          selectedPrediction._id,
-          settlementResult,
+    +
+
+    Number(
+      selectedPrediction?.probabilities.away || 0,
+    );
+
+
+
+
+
+
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | SAVE EDIT / SETTLE
+  |--------------------------------------------------------------------------
+  */
+
+
+  const saveEdit =
+    async()=>{
+
+
+      if(!selectedPrediction)
+        return;
+
+
+
+
+      if(
+        !settlementResult
+        &&
+        probabilityTotal !== 100
+      ){
+
+        toast.error(
+          'Probabilities must equal 100%',
         );
-      } else {
-        const cleanedMarkets =
-          selectedPrediction.markets?.map((market: any) => ({
-            market: market.market,
-            selection: market.selection,
-          })) || [];
 
-        await updatePrediction(selectedPrediction._id, {
-          probabilities:
-            selectedPrediction.probabilities,
-          markets: cleanedMarkets,
-        });
+
+        return;
+
       }
 
-      setSelectedPrediction(null);
 
-      queryClient.invalidateQueries({
-        queryKey: ['predictions'],
-      });
-    } catch (error) {
-      console.error(error);
-      alert('Failed to update prediction');
-    }
-  };
 
-  // =========================
-  // DELETE
-  // =========================
 
-  const deleteItem = async () => {
-    if (!selectedPrediction) return;
 
-    const confirmed = window.confirm(
-      'Are you sure you want to delete this prediction?',
-    );
+      try{
 
-    if (!confirmed) return;
 
-    try {
-      await deletePrediction(selectedPrediction._id);
+        if(settlementResult){
 
-      setSelectedPrediction(null);
 
-      queryClient.invalidateQueries({
-        queryKey: ['predictions'],
-      });
-    } catch (error) {
-      console.error(error);
-      alert('Failed to delete prediction');
-    }
-  };
+          await settlePrediction(
 
-  // =========================
-  // LOADING
-  // =========================
+            selectedPrediction._id,
 
-  if (isLoading) {
+            settlementResult,
+
+          );
+
+
+          toast.success(
+            'Prediction settled successfully',
+          );
+
+
+
+        }else{
+
+
+          await updatePrediction(
+
+            selectedPrediction._id,
+
+            {
+
+              probabilities:
+                selectedPrediction.probabilities,
+
+
+              markets:
+                selectedPrediction.markets,
+
+            },
+
+          );
+
+
+
+          toast.success(
+            'Prediction updated successfully',
+          );
+
+
+        }
+
+
+
+
+
+        setSelectedPrediction(null);
+
+
+
+        queryClient.invalidateQueries({
+
+          queryKey:[
+            'predictions',
+          ],
+
+        });
+
+
+
+      }catch(error){
+
+
+        console.error(error);
+
+
+        toast.error(
+          'Failed to update prediction',
+        );
+
+
+      }
+
+
+    };
+
+
+
+
+
+
+
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | DELETE
+  |--------------------------------------------------------------------------
+  */
+
+
+  const deleteItem =
+    async()=>{
+
+
+      if(!selectedPrediction)
+        return;
+
+
+
+      const confirmed =
+        window.confirm(
+          'Delete this prediction?',
+        );
+
+
+
+      if(!confirmed)
+        return;
+
+
+
+
+
+      try{
+
+
+        await deletePrediction(
+
+          selectedPrediction._id,
+
+        );
+
+
+
+        toast.success(
+          'Prediction deleted',
+        );
+
+
+
+        setSelectedPrediction(null);
+
+
+
+        queryClient.invalidateQueries({
+
+          queryKey:[
+            'predictions',
+          ],
+
+        });
+
+
+
+      }catch(error){
+
+
+        console.error(error);
+
+
+        toast.error(
+          'Failed to delete prediction',
+        );
+
+
+      }
+
+
+    };
+
+
+
+
+
+
+
+
+  if(isLoading){
+
+
     return (
-      <div className="text-white">
-        Loading predictions...
+
+      <div
+        className="
+          space-y-6
+          animate-pulse
+        "
+      >
+
+        <div
+          className="
+            h-10
+            w-48
+            rounded-lg
+            bg-muted
+          "
+        />
+
+
+        <div
+          className="
+            h-96
+            rounded-2xl
+            bg-muted
+          "
+        />
+
+
       </div>
+
     );
+
+
   }
 
-  // =========================
-  // EMPTY STATE
-  // =========================
 
-  if (!data?.length) {
-    return (
-      <div>
-        <h1 className="text-4xl font-bold mb-6">
-          Predictions
-        </h1>
-
-        <div className="bg-slate-900 rounded-xl p-8 text-center text-slate-400">
-          No predictions found.
-        </div>
-      </div>
-    );
-  }
-
-  // =========================
-  // UI
-  // =========================
 
   return (
-    <>
-      <div>
-        <h1 className="text-4xl font-bold mb-6">
+
+    <div
+      className="
+        space-y-6
+        animate-in
+        fade-in
+        slide-in-from-bottom-4
+        duration-500
+      "
+    >
+
+
+      <div
+        className="
+          space-y-2
+        "
+      >
+
+        <h1
+          className="
+            text-4xl
+            font-bold
+            tracking-tight
+          "
+        >
           Predictions
         </h1>
 
-        <div className="bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b border-slate-800">
-                <th className="p-4">League</th>
-                <th>Home Team</th>
-                <th>Away Team</th>
-                <th>Prediction</th>
-                <th>Access</th>
-                <th>Match Date</th>
-                <th>Status</th>
-              </tr>
-            </thead>
 
-            <tbody>
-              {data
-                ?.filter((p: any) => !p.deleted)
-                .map((p: any) => (
-                  <tr
-                    key={p._id}
-                    onClick={() => openPrediction(p)}
-                    className="cursor-pointer border-b border-slate-800 hover:bg-slate-800/50 transition-colors"
-                  >
-                    <td className="p-4">
-                      {getLeagueName(p.leagueCode)}
-                    </td>
+        <p
+          className="
+            text-muted-foreground
+          "
+        >
+          Manage, edit and settle football predictions.
+        </p>
 
-                    <td className="font-medium">
-                      {p.homeTeam}
-                    </td>
 
-                    <td className="font-medium">
-                      {p.awayTeam}
-                    </td>
-
-                    <td className="text-green-400 font-semibold">
-                      {getPredictionLabel(p)}
-                    </td>
-
-                    <td>
-                      <span
-                        className={`px-2 py-1 rounded text-xs capitalize ${
-                          p.accessType === 'vip'
-                            ? 'bg-yellow-600'
-                            : p.accessType === 'regular'
-                            ? 'bg-blue-600'
-                            : 'bg-green-600'
-                        }`}
-                      >
-                        {p.accessType}
-                      </span>
-                    </td>
-
-                    <td>
-                      {new Date(
-                        p.matchDate,
-                      ).toLocaleDateString()}
-                    </td>
-
-                    <td className="capitalize">
-                      {p.status}
-                    </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
       </div>
 
-      {selectedPrediction && (
-        <PredictionDetailsModal
-          prediction={selectedPrediction}
-          onClose={() =>
-            setSelectedPrediction(null)
-          }
-          settlementResult={settlementResult}
-          setSettlementResult={
-            setSettlementResult
-          }
-          probabilityTotal={probabilityTotal}
-          updateProbability={
-            updateProbability
-          }
-          updateMarketSelection={
-            updateMarketSelection
-          }
-          saveEdit={saveEdit}
-          deleteItem={deleteItem}
-        />
-      )}
-    </>
+
+
+
+
+
+      <PredictionsFilters
+
+        search={search}
+
+        setSearch={setSearch}
+
+
+        status={status}
+
+        setStatus={setStatus}
+
+
+        access={access}
+
+        setAccess={setAccess}
+
+
+        league={league}
+
+        setLeague={setLeague}
+
+
+        leagues={
+          leagueOptions
+        }
+
+      />
+
+
+
+
+
+
+
+      <PredictionsTable
+
+        predictions={
+          filteredPredictions
+        }
+
+        onSelect={
+          openPrediction
+        }
+
+      />
+
+
+
+
+
+
+
+      {
+        selectedPrediction && (
+
+          <PredictionDetailsModal
+
+
+            prediction={
+              selectedPrediction
+            }
+
+
+            onClose={
+              ()=>setSelectedPrediction(null)
+            }
+
+
+            settlementResult={
+              settlementResult
+            }
+
+
+            setSettlementResult={
+              setSettlementResult
+            }
+
+
+            probabilityTotal={
+              probabilityTotal
+            }
+
+
+            updateProbability={
+              updateProbability
+            }
+
+
+            updateMarketSelection={
+              updateMarketSelection
+            }
+
+
+            saveEdit={
+              saveEdit
+            }
+
+
+            deleteItem={
+              deleteItem
+            }
+
+
+          />
+
+        )
+      }
+
+
+
+
+    </div>
+
   );
+
+
 }

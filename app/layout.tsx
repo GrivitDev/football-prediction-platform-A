@@ -8,6 +8,8 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import { SEO } from '@/config/seo';
 import Navbar from '@/components/navbar/navbar';
 import Footer from '@/components/footer';
+import CookieConsent from '@/components/CookieConsent';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SEO.url),
@@ -168,6 +170,15 @@ export default function RootLayout({
             <ThemeProvider>
               <Navbar />
               {children}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    className:
+                      'border border-border bg-card text-foreground',
+                  }}
+                />
+              <CookieConsent />
               <Footer />
             </ThemeProvider>
           </AuthProvider>

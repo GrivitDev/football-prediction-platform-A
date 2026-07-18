@@ -1,73 +1,194 @@
-// =========================
-// MARKETS
-// =========================
+// ==================================================
+// PREDICTION MARKETS ENUM
+// ==================================================
+
 export const PredictionMarkets = {
-  OVER_UNDER: 'OVER_UNDER',
-  HALF_TIME: 'HALF_TIME',
-  HALF_TIME_FULL_TIME: 'HALF_TIME_FULL_TIME',
-  BOTH_TEAMS_TO_SCORE: 'BOTH_TEAMS_TO_SCORE',
-  DOUBLE_CHANCE: 'DOUBLE_CHANCE',
-  ASIAN_HANDICAP: 'ASIAN_HANDICAP',
-  GOALSCORERS: 'GOALSCORERS',
-  CORNERS: 'CORNERS',
-  CARDS: 'CARDS',
+
+
+  // ==================================================
+  // MATCH RESULT
+  // ==================================================
+
+  DOUBLE_CHANCE:
+  'DOUBLE_CHANCE',
+
+  DRAW_NO_BET:
+  'DRAW_NO_BET',
+
+
+
+  // ==================================================
+  // GOALS
+  // ==================================================
+
+  OVER_UNDER:
+  'OVER_UNDER',
+
+  BOTH_TEAMS_TO_SCORE:
+  'BOTH_TEAMS_TO_SCORE',
+
+  BTTS_GOALS:
+  'BTTS_GOALS',
+
+  GOAL_RANGE:
+  'GOAL_RANGE',
+
+  TEAM_TOTAL_GOALS:
+  'TEAM_TOTAL_GOALS',
+
+  EXACT_GOALS:
+  'EXACT_GOALS',
+
+  CLEAN_SHEET:
+  'CLEAN_SHEET',
+
+
+
+  // ==================================================
+  // HALF MARKETS
+  // ==================================================
+
+  HALF_TIME_RESULT:
+  'HALF_TIME_RESULT',
+
+  SECOND_HALF_RESULT:
+  'SECOND_HALF_RESULT',
+
+  HALF_TIME_FULL_TIME:
+  'HALF_TIME_FULL_TIME',
+
+
+
+  // ==================================================
+  // HANDICAP
+  // ==================================================
+
+  ASIAN_HANDICAP:
+  'ASIAN_HANDICAP',
+
+  EUROPEAN_HANDICAP:
+  'EUROPEAN_HANDICAP',
+
+
+
+  // ==================================================
+  // CORNERS
+  // ==================================================
+
+  CORNERS_TOTAL:
+  'CORNERS_TOTAL',
+
+  TEAM_CORNERS:
+  'TEAM_CORNERS',
+
+  CORNER_HANDICAP:
+  'CORNER_HANDICAP',
+
+
+
+  // ==================================================
+  // CARDS
+  // ==================================================
+
+  CARDS_TOTAL:
+  'CARDS_TOTAL',
+
+  TEAM_CARDS:
+  'TEAM_CARDS',
+
+  CARD_HANDICAP:
+  'CARD_HANDICAP',
+
+
+
+  // ==================================================
+  // PLAYER MARKETS
+  // ==================================================
+
+  ANYTIME_GOALSCORER:
+  'ANYTIME_GOALSCORER',
+
+  FIRST_GOALSCORER:
+  'FIRST_GOALSCORER',
+
+  PLAYER_SHOTS:
+  'PLAYER_SHOTS',
+
+  PLAYER_SHOTS_ON_TARGET:
+  'PLAYER_SHOTS_ON_TARGET',
+
+  PLAYER_ASSISTS:
+  'PLAYER_ASSISTS',
+
+
+
+  // ==================================================
+  // MATCH EVENTS
+  // ==================================================
+
+  FIRST_GOAL:
+  'FIRST_GOAL',
+
+  LAST_GOAL:
+  'LAST_GOAL',
+
+  WIN_TO_NIL:
+  'WIN_TO_NIL',
+
+  CORRECT_SCORE:
+  'CORRECT_SCORE',
+
+
+
+  // ==================================================
+  // STATISTICS
+  // ==================================================
+
+  POSSESSION_WINNER:
+  'POSSESSION_WINNER',
+
+  MOST_SHOTS:
+  'MOST_SHOTS',
+
+  MOST_SHOTS_ON_TARGET:
+  'MOST_SHOTS_ON_TARGET',
+
+  GOAL_TIMING:
+  'GOAL_TIMING',
+
+  OFFSIDES_TOTAL:
+  'OFFSIDES_TOTAL',
+
+  TEAM_OFFSIDES:
+  'TEAM_OFFSIDES',
+
+  FOULS_TOTAL:
+  'FOULS_TOTAL',
+
+  TEAM_FOULS:
+  'TEAM_FOULS',
+
+  FIRST_HALF_GOALS:
+'FIRST_HALF_GOALS',
+
+SECOND_HALF_GOALS:
+'SECOND_HALF_GOALS',
+
+FIRST_HALF_CORNERS:
+'FIRST_HALF_CORNERS',
+
+FIRST_HALF_CARDS:
+'FIRST_HALF_CARDS',
+
+
+
 } as const;
+
+
 
 export type PredictionMarket =
   (typeof PredictionMarkets)[keyof typeof PredictionMarkets];
 
-// =========================
-// SELECTIONS
-// =========================
-export const PredictionSelections = {
-  // =====================
-  // OVER / UNDER
-  // =====================
-  OVER_1_5: 'OVER_1_5',
-  OVER_2_5: 'OVER_2_5',
-  OVER_3_5: 'OVER_3_5',
-  OVER_4_5: 'OVER_4_5',
 
-  UNDER_1_5: 'UNDER_1_5',
-  UNDER_2_5: 'UNDER_2_5',
-  UNDER_3_5: 'UNDER_3_5',
-  UNDER_4_5: 'UNDER_4_5',
 
-  // =====================
-  // BOTH TEAMS TO SCORE
-  // =====================
-  YES: 'YES',
-  NO: 'NO',
 
-  // =====================
-  // DOUBLE CHANCE
-  // =====================
-  ONE_X: '1X',
-  X_TWO: 'X2',
-  ONE_TWO: '12',
-
-  // =====================
-  // 1X2 / HALF TIME
-  // =====================
-  HOME: 'HOME',
-  DRAW: 'DRAW',
-  AWAY: 'AWAY',
-
-  // =====================
-  // HALF TIME / FULL TIME
-  // =====================
-  HOME_HOME: 'HOME_HOME',
-  HOME_DRAW: 'HOME_DRAW',
-  HOME_AWAY: 'HOME_AWAY',
-
-  DRAW_HOME: 'DRAW_HOME',
-  DRAW_DRAW: 'DRAW_DRAW',
-  DRAW_AWAY: 'DRAW_AWAY',
-
-  AWAY_HOME: 'AWAY_HOME',
-  AWAY_DRAW: 'AWAY_DRAW',
-  AWAY_AWAY: 'AWAY_AWAY',
-} as const;
-
-export type PredictionSelection =
-  (typeof PredictionSelections)[keyof typeof PredictionSelections];

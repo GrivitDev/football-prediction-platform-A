@@ -11,6 +11,8 @@ interface RegisterData {
   phoneNumber: string;
   email: string;
   password: string;
+  referralCode?: string;
+  promoCode?: string;
 }
 
 interface VerifyOtpData {
