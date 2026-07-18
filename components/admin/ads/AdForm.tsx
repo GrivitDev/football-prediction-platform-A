@@ -8,6 +8,21 @@ import {
   useRouter,
 } from 'next/navigation';
 
+import {
+  AdImageUploader,
+} from './AdImageUploader';
+
+import {
+  AdInstructionsBuilder,
+} from './AdInstructionsBuilder';
+
+import {
+  AdActionBuilder,
+} from './AdActionBuilder';
+
+import {
+  AdDisplayBuilder,
+} from './AdDisplayBuilder';
 
 import {
   zodResolver,
@@ -24,43 +39,25 @@ import {
 } from 'zod';
 
 
-
 import {
   Input,
 } from '@/components/ui/input';
-
 
 import {
   Textarea,
 } from '@/components/ui/textarea';
 
-
 import {
   Button,
 } from '@/components/ui/button';
-
 
 import {
   Label,
 } from '@/components/ui/label';
 
-
 import {
   Switch,
 } from '@/components/ui/switch';
-
-
-
-import {
-  AdDisplayBuilder,
-} from './AdDisplayBuilder';
-
-
-import {
-  AdImageUploader,
-} from './AdImageUploader';
-
-
 
 import {
   useCreateAd,
@@ -73,8 +70,6 @@ import {
   AdImage,
   AdminAd,
 } from '@/types/ad';
-import { AdInstructionsBuilder } from './AdInstructionsBuilder';
-import { AdActionBuilder } from './AdActionBuilder';
 
 
 
@@ -108,9 +103,10 @@ const adSchema = z.object({
 
 
 type FormValues =
-z.infer<typeof adSchema>;
+z.input<typeof adSchema>;
 
-
+type FormOutput =
+z.output<typeof adSchema>;
 
 
 
@@ -194,35 +190,17 @@ const [endDate,setEndDate] =
   );
 
 
-  const form =
-    useForm<FormValues>({
+const form =
+  useForm<FormValues, any, FormOutput>({
+    resolver: zodResolver(adSchema),
 
-      resolver:zodResolver(adSchema),
-
-
-      defaultValues:{
-
-
-        title:
-          defaultValues?.title ?? '',
-
-
-        subTitle:
-          defaultValues?.subTitle ?? '',
-
-
-        description:
-          defaultValues?.description ?? '',
-
-
-        priority:
-          defaultValues?.priority ?? 5,
-
-
-      },
-
-
-    });
+    defaultValues:{
+      title: defaultValues?.title ?? '',
+      subTitle: defaultValues?.subTitle ?? '',
+      description: defaultValues?.description ?? '',
+      priority: defaultValues?.priority ?? 5,
+    },
+  });
 
 
 
@@ -259,7 +237,7 @@ if(
 
 
 function submit(
-  values:FormValues,
+  values: FormOutput,
 ){
 
 
@@ -273,28 +251,37 @@ function submit(
 
   }
 
+  if(!image){
 
-const payload = {
+    alert(
+      'Please add an image for the advertisement'
+    );
 
-  ...values,
+    return;
 
-  image,
+  }
 
-  actions,
+  const payload = {
 
-  displays,
+    ...values,
 
-  instructions,
+    image,
 
-  isActive,
+    actions,
 
-  startDate:
-    startDate || undefined,
+    displays,
 
-  endDate:
-    endDate || undefined,
+    instructions,
 
-};
+    isActive,
+
+    startDate:
+      startDate || undefined,
+
+    endDate:
+      endDate || undefined,
+
+  };
 
 
 

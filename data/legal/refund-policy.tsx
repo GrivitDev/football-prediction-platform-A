@@ -56,7 +56,6 @@ export const refundPolicyContent = (
 
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
 
@@ -87,7 +86,6 @@ export const refundPolicyContent = (
 
     <LegalSection
       id="digital-services"
-      number={2}
       title="Digital Services and Payments"
     >
 
@@ -125,7 +123,6 @@ export const refundPolicyContent = (
 
     <LegalSection
       id="eligible-refunds"
-      number={3}
       title="Eligible Refund Situations"
     >
 
@@ -169,7 +166,6 @@ export const refundPolicyContent = (
 
     <LegalSection
       id="failed-payment"
-      number={4}
       title="Failed or Incomplete Payments"
     >
 
@@ -197,8 +193,7 @@ export const refundPolicyContent = (
 
 
     <LegalSection
-      id="duplicate-payment"
-      number={5}
+      id="duplicate-payment"      
       title="Duplicate Transactions"
     >
 
@@ -219,7 +214,6 @@ export const refundPolicyContent = (
 
 <LegalSection
   id="non-refundable"
-  number={6}
   title="Non-Refundable Situations"
 >
 
@@ -272,7 +266,6 @@ export const refundPolicyContent = (
 
 <LegalSection
   id="subscription-access"
-  number={7}
   title="Subscription Access"
 >
 
@@ -302,7 +295,6 @@ export const refundPolicyContent = (
 
 <LegalSection
   id="refund-request"
-  number={8}
   title="Refund Request Process"
 >
 
@@ -353,7 +345,6 @@ export const refundPolicyContent = (
 
 <LegalSection
   id="processing"
-  number={9}
   title="Refund Processing"
 >
 
@@ -382,7 +373,6 @@ export const refundPolicyContent = (
 
 <LegalSection
   id="changes"
-  number={10}
   title="Changes to This Policy"
 >
 
@@ -404,7 +394,6 @@ export const refundPolicyContent = (
 
 <LegalSection
   id="contact"
-  number={11}
   title="Contact Us"
 >
 

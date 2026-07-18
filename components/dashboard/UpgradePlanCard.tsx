@@ -7,21 +7,21 @@ import { useState } from 'react';
 export default function UpgradePlanCard({ plan }: any) {
   const [loading, setLoading] = useState(false);
 
-  const createPayment = async (target: string, amount: number) => {
-    try {
-      setLoading(true);
+const createPayment = async (target: string) => {
+  try {
+    setLoading(true);
 
-      await paymentService.createPayment({
-        type: 'subscription',
-        target,
-        amount,
-      });
+    await paymentService.createPayment({
+      type: 'subscription',
+      target,
+    });
 
-      alert('Payment request submitted');
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert('Payment request submitted');
+
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="grid md:grid-cols-2 gap-6">
@@ -45,7 +45,7 @@ export default function UpgradePlanCard({ plan }: any) {
         <button
           disabled={plan !== 'free' || loading}
           onClick={() =>
-            createPayment('regular', PLANS.regular.price)
+            createPayment('regular')
           }
           className="mt-4 w-full bg-blue-600 disabled:opacity-50 py-2 rounded"
         >
@@ -72,7 +72,7 @@ export default function UpgradePlanCard({ plan }: any) {
         <button
           disabled={loading || plan === 'vip'}
           onClick={() =>
-            createPayment('vip', PLANS.vip.price)
+            createPayment('vip')
           }
           className="mt-4 w-full bg-yellow-500 text-black py-2 rounded"
         >

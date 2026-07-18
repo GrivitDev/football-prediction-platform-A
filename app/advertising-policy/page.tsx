@@ -10,7 +10,6 @@ import {
 
 import {
   advertisingPolicyContent,
-  advertisingPolicyToc,
 } from '@/data/legal/advertising-policy';
 
 
@@ -40,7 +39,9 @@ export default function AdvertisingPolicyPage() {
         />
 
 
-        <LegalContentLayout title="Advertising Policy">
+        <LegalContentLayout
+          title="Advertising Policy"
+        >
 
           {advertisingPolicyContent}
 

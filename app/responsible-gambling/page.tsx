@@ -42,7 +42,6 @@ export default function ResponsibleGamblingPage() {
 
         <LegalContentLayout
           title="Responsible Gambling"
-          items={responsibleGamblingToc}
         >
 
           {responsibleGamblingContent}

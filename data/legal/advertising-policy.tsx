@@ -56,7 +56,6 @@ export const advertisingPolicyContent = (
 
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
 
@@ -86,7 +85,6 @@ export const advertisingPolicyContent = (
 
     <LegalSection
       id="advertising-purpose"
-      number={2}
       title="Purpose of Advertising"
     >
 
@@ -127,7 +125,6 @@ export const advertisingPolicyContent = (
 
     <LegalSection
       id="advertising-partners"
-      number={3}
       title="Advertising Partners"
     >
 
@@ -156,7 +153,6 @@ export const advertisingPolicyContent = (
 
     <LegalSection
       id="cookies"
-      number={4}
       title="Advertising Cookies and Technologies"
     >
 
@@ -200,7 +196,6 @@ export const advertisingPolicyContent = (
 
     <LegalSection
       id="personalised"
-      number={5}
       title="Personalised Advertising"
     >
 
@@ -222,7 +217,6 @@ export const advertisingPolicyContent = (
 
 <LegalSection
   id="sponsored-content"
-  number={6}
   title="Sponsored Content"
 >
 
@@ -252,7 +246,6 @@ export const advertisingPolicyContent = (
 
 <LegalSection
   id="prediction-independence"
-  number={7}
   title="Advertising Does Not Influence Predictions"
 >
 
@@ -282,7 +275,6 @@ export const advertisingPolicyContent = (
 
 <LegalSection
   id="third-party"
-  number={8}
   title="Third-Party Advertisements"
 >
 
@@ -330,7 +322,6 @@ export const advertisingPolicyContent = (
 
 <LegalSection
   id="user-choices"
-  number={9}
   title="User Advertising Choices"
 >
 
@@ -376,7 +367,6 @@ export const advertisingPolicyContent = (
 
 <LegalSection
   id="changes"
-  number={10}
   title="Changes to This Advertising Policy"
 >
 
@@ -398,7 +388,6 @@ export const advertisingPolicyContent = (
 
 <LegalSection
   id="contact"
-  number={11}
   title="Contact Us"
 >
 

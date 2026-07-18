@@ -66,7 +66,6 @@ export const privacyContent = (
   <>
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
       <p>
@@ -90,7 +89,6 @@ export const privacyContent = (
 
     <LegalSection
       id="information-collected"
-      number={2}
       title="Information We Collect"
     >
       <p>
@@ -118,7 +116,6 @@ export const privacyContent = (
 
     <LegalSection
       id="collection-methods"
-      number={3}
       title="How We Collect Information"
     >
       <p>
@@ -138,7 +135,6 @@ export const privacyContent = (
 
     <LegalSection
       id="usage"
-      number={4}
       title="How We Use Your Information"
     >
       <p>
@@ -159,7 +155,6 @@ export const privacyContent = (
 
     <LegalSection
       id="security"
-      number={5}
       title="Account Security"
     >
       <p>
@@ -178,7 +173,6 @@ export const privacyContent = (
     </LegalSection>
     <LegalSection
   id="cookies"
-  number={6}
   title="Cookies and Similar Technologies"
 >
   <p>
@@ -208,7 +202,6 @@ export const privacyContent = (
 
 <LegalSection
   id="payments"
-  number={7}
   title="Subscriptions and Payment Information"
 >
   <p>
@@ -232,7 +225,6 @@ export const privacyContent = (
 
 <LegalSection
   id="third-party"
-  number={8}
   title="Third-Party Services"
 >
   <p>
@@ -262,7 +254,6 @@ export const privacyContent = (
 
 <LegalSection
   id="advertising"
-  number={9}
   title="Advertising and Analytics"
 >
   <p>
@@ -284,7 +275,6 @@ export const privacyContent = (
 
 <LegalSection
   id="retention"
-  number={10}
   title="Data Retention"
 >
   <p>
@@ -302,7 +292,6 @@ export const privacyContent = (
 
 <LegalSection
   id="rights"
-  number={11}
   title="Your Rights"
 >
   <p>
@@ -326,7 +315,6 @@ export const privacyContent = (
 
 <LegalSection
   id="children"
-  number={12}
   title="Children's Privacy"
 >
   <p>
@@ -343,7 +331,6 @@ export const privacyContent = (
 
 <LegalSection
   id="changes"
-  number={13}
   title="Changes to This Privacy Policy"
 >
   <p>
@@ -359,7 +346,6 @@ export const privacyContent = (
 
 <LegalSection
   id="contact"
-  number={14}
   title="Contact Us"
 >
   <p>

@@ -56,7 +56,6 @@ export const disclaimerContent = (
 
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
 
@@ -86,7 +85,6 @@ export const disclaimerContent = (
 
     <LegalSection
       id="prediction-information"
-      number={2}
       title="Prediction Information"
     >
 
@@ -115,7 +113,6 @@ export const disclaimerContent = (
 
     <LegalSection
       id="no-guarantees"
-      number={3}
       title="No Guarantees of Results"
     >
 
@@ -162,7 +159,6 @@ export const disclaimerContent = (
 
     <LegalSection
       id="football-uncertainty"
-      number={4}
       title="Football Uncertainty"
     >
 
@@ -211,7 +207,6 @@ export const disclaimerContent = (
 
     <LegalSection
       id="financial-decisions"
-      number={5}
       title="Financial Decisions"
     >
 
@@ -239,7 +234,6 @@ export const disclaimerContent = (
 
 <LegalSection
   id="responsibility"
-  number={6}
   title="User Responsibility"
 >
 
@@ -290,7 +284,6 @@ export const disclaimerContent = (
 
 <LegalSection
   id="service-availability"
-  number={7}
   title="Service Availability"
 >
 
@@ -338,7 +331,6 @@ export const disclaimerContent = (
 
 <LegalSection
   id="third-party"
-  number={8}
   title="Third-Party Services"
 >
 
@@ -386,7 +378,6 @@ export const disclaimerContent = (
 
 <LegalSection
   id="limitation"
-  number={9}
   title="Limitation of Liability"
 >
 
@@ -435,7 +426,6 @@ export const disclaimerContent = (
 
 <LegalSection
   id="changes"
-  number={10}
   title="Changes to This Disclaimer"
 >
 
@@ -457,7 +447,6 @@ export const disclaimerContent = (
 
 <LegalSection
   id="contact"
-  number={11}
   title="Contact Us"
 >
 

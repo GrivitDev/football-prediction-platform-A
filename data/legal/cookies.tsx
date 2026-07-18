@@ -60,7 +60,6 @@ export const cookiesContent = (
 
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
 
@@ -92,7 +91,6 @@ export const cookiesContent = (
 
     <LegalSection
       id="what-are-cookies"
-      number={2}
       title="What Are Cookies?"
     >
 
@@ -120,7 +118,6 @@ export const cookiesContent = (
 
     <LegalSection
       id="how-we-use-cookies"
-      number={3}
       title="How We Use Cookies"
     >
 
@@ -159,7 +156,6 @@ export const cookiesContent = (
 
     <LegalSection
       id="essential-cookies"
-      number={4}
       title="Essential Cookies"
     >
 
@@ -200,7 +196,6 @@ export const cookiesContent = (
 
     <LegalSection
       id="authentication-cookies"
-      number={5}
       title="Authentication Cookies"
     >
 
@@ -221,7 +216,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="analytics-cookies"
-  number={6}
   title="Analytics Cookies"
 >
 
@@ -269,7 +263,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="advertising-cookies"
-  number={7}
   title="Advertising Cookies"
 >
 
@@ -313,7 +306,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="third-party-cookies"
-  number={8}
   title="Third-Party Cookies"
 >
 
@@ -360,7 +352,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="managing-cookies"
-  number={9}
   title="Managing Cookies"
 >
 
@@ -407,7 +398,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="consent"
-  number={10}
   title="Cookie Consent"
 >
 
@@ -436,7 +426,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="changes"
-  number={11}
   title="Changes to This Cookie Policy"
 >
 
@@ -458,7 +447,6 @@ export const cookiesContent = (
 
 <LegalSection
   id="contact"
-  number={12}
   title="Contact Us"
 >
 

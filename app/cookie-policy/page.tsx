@@ -10,7 +10,6 @@ import {
 
 import {
   cookiesContent,
-  cookiesToc,
 } from '@/data/legal/cookies';
 
 
@@ -42,7 +41,6 @@ export default function CookiePolicyPage() {
 
         <LegalContentLayout
           title="Cookie Policy"
-          items={cookiesToc}
         >
 
           {cookiesContent}

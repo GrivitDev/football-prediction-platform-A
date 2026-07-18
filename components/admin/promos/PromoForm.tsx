@@ -153,9 +153,9 @@ const schema = z.object({
 
 
 
-type FormValues =
-z.infer<typeof schema>;
+type FormValues = z.input<typeof schema>;
 
+type FormOutput = z.output<typeof schema>;
 
 
 
@@ -181,60 +181,47 @@ export default function PromoForm({
 
 
 
-  const form = useForm<FormValues>({
+const form = useForm<FormValues, any, FormOutput>({
 
-    resolver:zodResolver(schema),
+  resolver:zodResolver(schema),
 
+  defaultValues:{
+    name:promo?.name ?? '',
 
-    defaultValues:{
+    description:promo?.description ?? '',
 
-      name:promo?.name ?? '',
+    campaignType:
+      promo?.campaignType ?? 'referral',
 
-      description:promo?.description ?? '',
+    startDate:
+      promo?.startDate?.slice(0,10) ?? '',
 
+    endDate:
+      promo?.endDate?.slice(0,10) ?? '',
 
-      campaignType:
-        promo?.campaignType ?? 'referral',
+    requirement:
+      promo?.requirement ?? 'register',
 
+    targetCount:
+      promo?.targetCount ?? 1,
 
-      startDate:
-        promo?.startDate?.slice(0,10) ?? '',
+    maxClaims:
+      promo?.maxClaims ?? 1,
 
+    rewardType:
+      promo?.rewardType ?? 'subscription',
 
-      endDate:
-        promo?.endDate?.slice(0,10) ?? '',
+    rewardPlan:
+      promo?.rewardPlan,
 
+    rewardDurationDays:
+      promo?.rewardDurationDays,
 
-      requirement:
-        promo?.requirement ?? 'register',
+    rewardAmount:
+      promo?.rewardAmount,
+  },
 
-
-      targetCount:
-        promo?.targetCount ?? 1,
-
-
-      maxClaims:
-        promo?.maxClaims ?? 1,
-
-
-      rewardType:
-        promo?.rewardType ?? 'subscription',
-
-
-      rewardPlan:
-        promo?.rewardPlan,
-
-
-      rewardDurationDays:
-        promo?.rewardDurationDays,
-
-
-      rewardAmount:
-        promo?.rewardAmount,
-
-    },
-
-  });
+});
 
 
 
@@ -310,16 +297,13 @@ export default function PromoForm({
 
 
 
-  function submit(
-    values:FormValues,
-  ){
+ function submit(
+  values:FormOutput,
+){
 
+  mutation.mutate(values);
 
-    mutation.mutate(
-      values,
-    );
-
-  }
+}
 
 
 

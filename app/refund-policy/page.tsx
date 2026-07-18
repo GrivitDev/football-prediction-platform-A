@@ -42,7 +42,6 @@ export default function RefundPolicyPage() {
 
         <LegalContentLayout
           title="Refund Policy"
-          items={refundPolicyToc}
         >
 
           {refundPolicyContent}

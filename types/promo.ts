@@ -217,3 +217,59 @@ export type UpdatePromoPayload =
   createdAt:string;
 
 }
+
+// ==============================
+// USER PROMO PROGRESS
+// ==============================
+
+export interface PromoProgress {
+
+  promoId:string;
+
+
+  name:string;
+
+  description?:string;
+
+
+
+  campaignType:PromoCampaignType;
+
+
+  requirement:PromoRequirement;
+
+
+
+  targetCount:number;
+
+
+
+  currentProgress:number;
+
+
+  qualifiedReferrals:number;
+
+
+  remainingToNextReward:number;
+
+
+
+  rewardType:RewardType;
+
+
+  rewardPlan?:RewardPlan;
+
+
+  rewardDurationDays?:number;
+
+
+  rewardAmount?:number;
+
+
+
+  completedClaims:number;
+
+
+  completed:boolean;
+
+}

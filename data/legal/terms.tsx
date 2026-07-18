@@ -69,7 +69,6 @@ export const termsContent = (
 
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
       <p>
@@ -96,7 +95,6 @@ export const termsContent = (
 
     <LegalSection
       id="eligibility"
-      number={2}
       title="User Eligibility"
     >
       <p>
@@ -121,7 +119,6 @@ export const termsContent = (
 
     <LegalSection
       id="account"
-      number={3}
       title="User Accounts"
     >
       <p>
@@ -166,7 +163,6 @@ export const termsContent = (
 
     <LegalSection
       id="services"
-      number={4}
       title="Our Services"
     >
 
@@ -218,7 +214,6 @@ export const termsContent = (
 
     <LegalSection
       id="predictions"
-      number={5}
       title="Football Predictions"
     >
 
@@ -251,7 +246,6 @@ export const termsContent = (
 
 <LegalSection
   id="subscriptions"
-  number={6}
   title="Subscriptions and VIP Access"
 >
 
@@ -288,7 +282,6 @@ export const termsContent = (
 
 <LegalSection
   id="payments"
-  number={7}
   title="Payments and Transactions"
 >
 
@@ -323,7 +316,6 @@ export const termsContent = (
 
 <LegalSection
   id="refunds"
-  number={8}
   title="Refund Policy"
 >
 
@@ -376,7 +368,6 @@ export const termsContent = (
 
 <LegalSection
   id="acceptable-use"
-  number={9}
   title="Acceptable Use"
 >
 
@@ -422,7 +413,6 @@ export const termsContent = (
 
 <LegalSection
   id="intellectual-property"
-  number={10}
   title="Intellectual Property"
 >
 
@@ -444,7 +434,6 @@ export const termsContent = (
 
 <LegalSection
   id="disclaimer"
-  number={11}
   title="Disclaimer of Guarantees"
 >
 
@@ -482,7 +471,6 @@ export const termsContent = (
 
 <LegalSection
   id="termination"
-  number={12}
   title="Account Suspension and Termination"
 >
 
@@ -535,7 +523,6 @@ export const termsContent = (
 
 <LegalSection
   id="changes"
-  number={13}
   title="Changes to These Terms"
 >
 
@@ -563,7 +550,6 @@ export const termsContent = (
 
 <LegalSection
   id="contact"
-  number={14}
   title="Contact Us"
 >
 

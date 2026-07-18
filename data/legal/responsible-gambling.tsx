@@ -56,7 +56,6 @@ export const responsibleGamblingContent = (
 
     <LegalSection
       id="introduction"
-      number={1}
       title="Introduction"
     >
 
@@ -86,7 +85,6 @@ export const responsibleGamblingContent = (
 
     <LegalSection
       id="responsible-use"
-      number={2}
       title="Responsible Use of Our Platform"
     >
 
@@ -115,7 +113,6 @@ export const responsibleGamblingContent = (
 
     <LegalSection
       id="no-guaranteed-income"
-      number={3}
       title="No Guaranteed Income"
     >
 
@@ -143,7 +140,6 @@ export const responsibleGamblingContent = (
 
     <LegalSection
       id="understanding-risk"
-      number={4}
       title="Understanding Risk"
     >
 
@@ -195,7 +191,6 @@ export const responsibleGamblingContent = (
 
     <LegalSection
       id="personal-limits"
-      number={5}
       title="Setting Personal Limits"
     >
 
@@ -234,7 +229,6 @@ export const responsibleGamblingContent = (
     </LegalSection>
 <LegalSection
   id="age-requirement"
-  number={6}
   title="Age Requirement"
 >
 
@@ -262,7 +256,6 @@ export const responsibleGamblingContent = (
 
 <LegalSection
   id="avoid-pressure"
-  number={7}
   title="Avoiding Pressure and Chasing Losses"
 >
 
@@ -289,7 +282,6 @@ export const responsibleGamblingContent = (
 
 <LegalSection
   id="account-controls"
-  number={8}
   title="Account Controls"
 >
 
@@ -331,7 +323,6 @@ export const responsibleGamblingContent = (
 
 <LegalSection
   id="seeking-help"
-  number={9}
   title="Seeking Help"
 >
 
@@ -361,7 +352,6 @@ export const responsibleGamblingContent = (
 
 <LegalSection
   id="changes"
-  number={10}
   title="Changes to This Policy"
 >
 
@@ -383,7 +373,6 @@ export const responsibleGamblingContent = (
 
 <LegalSection
   id="contact"
-  number={11}
   title="Contact Us"
 >
 

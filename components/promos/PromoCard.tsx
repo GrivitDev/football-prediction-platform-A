@@ -34,6 +34,7 @@ import {
 
 
 import {
+  PromoProgress,
   RewardType,
   PromoRequirement,
 } from '@/types/promo';
@@ -230,7 +231,7 @@ export default function UserPromosPage() {
                     <InfoCard
 
                       icon={
-                        promo.rewardType === RewardType.CASH
+                        promo.rewardType === 'cash'
                         ?
                         <Wallet/>
                         :
@@ -242,7 +243,7 @@ export default function UserPromosPage() {
 
 
                       value={
-                        promo.rewardType === RewardType.CASH
+                        promo.rewardType === 'cash'
 
                         ?
 
@@ -288,7 +289,7 @@ export default function UserPromosPage() {
 
 
                   {
-                    promo.requirement !== PromoRequirement.REGISTER && (
+                    promo.requirement !== 'register'&& (
 
                       <div className="space-y-2">
 
@@ -388,7 +389,7 @@ export default function UserPromosPage() {
 
 
                   {
-                    promo.requirement !== PromoRequirement.REGISTER && (
+                    promo.requirement !== 'register' && (
 
                       <Button
 

@@ -42,7 +42,6 @@ export default function DisclaimerPage() {
 
         <LegalContentLayout
           title="Disclaimer"
-          items={disclaimerToc}
         >
 
           {disclaimerContent}

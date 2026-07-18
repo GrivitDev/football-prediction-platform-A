@@ -41,7 +41,6 @@ export default function PrivacyPolicyPage() {
 
         <LegalContentLayout
           title="Privacy Policy"
-          items={privacyToc}
         >
 
           {privacyContent}

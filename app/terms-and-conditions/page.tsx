@@ -42,7 +42,6 @@ export default function TermsAndConditionsPage() {
 
         <LegalContentLayout
           title="Terms and Conditions"
-          items={termsToc}
         >
 
           {termsContent}

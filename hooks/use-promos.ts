@@ -7,13 +7,17 @@ import {
 } from '@tanstack/react-query';
 
 import {
+  getMyPromoProgress,
+} from '@/services/promos.service';
+
+
+import {
   getPromos,
-  getActivePromos,
   createPromo,
   updatePromo,
   deactivatePromo,
-  getMyPromoProgress,
-} from '@/services/promos.service';
+} from '@/services/admin-promos.service';
+import { PromoProgress } from '@/types/promo';
 
 export function usePromos() {
   return useQuery({
@@ -22,19 +26,6 @@ export function usePromos() {
   });
 }
 
-export function useActivePromos() {
-  return useQuery({
-    queryKey: ['active-promos'],
-    queryFn: getActivePromos,
-  });
-}
-
-export function useMyPromoProgress() {
-  return useQuery({
-    queryKey: ['promo-progress'],
-    queryFn: getMyPromoProgress,
-  });
-}
 
 export function useCreatePromo() {
   const queryClient = useQueryClient();
@@ -94,4 +85,18 @@ export function useDeactivatePromo() {
       });
     },
   });
+}
+
+export function useMyPromoProgress() {
+
+  return useQuery<PromoProgress[]>({
+
+    queryKey:[
+      'promo-progress',
+    ],
+
+    queryFn:getMyPromoProgress,
+
+  });
+
 }
