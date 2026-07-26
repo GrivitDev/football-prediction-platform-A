@@ -1,6 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
+
 import { usePathname } from 'next/navigation';
 
 import {
@@ -16,375 +19,501 @@ import {
   Megaphone,
   TicketPercent,
   Gift,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 
-export default function AdminSidebar() {
+
+interface Props {
+  open:boolean;
+  onClose:()=>void;
+}
+
+
+export default function AdminSidebar({
+  open,
+  onClose,
+}:Props) {
+
   const pathname = usePathname();
+
   const { logout } = useAuth();
+
+  const [collapsed,setCollapsed] = useState(false);
+
 
   const links = [
     {
-      title: 'Overview',
-      items: [
+      title:'Overview',
+      items:[
         {
-          name: 'Dashboard',
-          href: '/admin',
-          icon: LayoutDashboard,
+          name:'Dashboard',
+          href:'/admin',
+          icon:LayoutDashboard,
         },
       ],
     },
 
     {
-      title: 'Predictions',
-      items: [
+      title:'Predictions',
+      items:[
         {
-          name: 'Create Prediction',
-          href: '/admin/create-prediction',
-          icon: PlusCircle,
+          name:'Create Prediction',
+          href:'/admin/create-prediction',
+          icon:PlusCircle,
         },
         {
-          name: 'Manage Predictions',
-          href: '/admin/predictions',
-          icon: List,
-        },
-      ],
-    },
-
-    {
-      title: 'Content',
-      items: [
-        {
-          name: 'Create Article',
-          href: '/admin/create-article',
-          icon: FileText,
-        },
-        {
-          name: 'Manage Articles',
-          href: '/admin/articles',
-          icon: FileText,
+          name:'Manage Predictions',
+          href:'/admin/predictions',
+          icon:List,
         },
       ],
     },
 
     {
-      title: 'Management',
-      items: [
+      title:'Content',
+      items:[
         {
-          name: 'Users',
-          href: '/admin/users',
-          icon: Users,
+          name:'Create Article',
+          href:'/admin/create-article',
+          icon:FileText,
         },
         {
-          name: 'Subscriptions',
-          href: '/admin/subscriptions',
-          icon: CreditCard,
+          name:'Manage Articles',
+          href:'/admin/articles',
+          icon:FileText,
+        },
+      ],
+    },
+
+    {
+      title:'Management',
+      items:[
+        {
+          name:'Users',
+          href:'/admin/users',
+          icon:Users,
         },
         {
-          name: 'Ads',
-          href: '/admin/ads',
-          icon: Megaphone,
+          name:'Subscriptions',
+          href:'/admin/subscriptions',
+          icon:CreditCard,
         },
         {
-          name: 'Promos',
-          href: '/admin/promos',
-          icon: Gift,
+          name:'Ads',
+          href:'/admin/ads',
+          icon:Megaphone,
         },
         {
-          name: 'Referrals',
-          href: '/admin/referrals',
-          icon: TicketPercent,
+          name:'Promos',
+          href:'/admin/promos',
+          icon:Gift,
+        },
+        {
+          name:'Referrals',
+          href:'/admin/referrals',
+          icon:TicketPercent,
         },
       ],
     },
   ];
 
+
+
   return (
-    <aside
-      className="
-        hidden md:flex
-        w-80
-        flex-col
-        border-r
-        border-border/60
-        bg-background/80
-        backdrop-blur-xl
-        relative
-        overflow-hidden
-      "
-    >
+    <>
 
-      {/* Ambient Glow */}
-      <div
-        className="
-          absolute
-          -top-32
-          -left-32
-          h-72
-          w-72
-          rounded-full
-          bg-primary/20
-          blur-[120px]
-          pointer-events-none
-        "
-      />
-
-      <div
-        className="
-          absolute
-          bottom-0
-          right-0
-          h-64
-          w-64
-          rounded-full
-          bg-emerald-500/10
-          blur-[120px]
-          pointer-events-none
-        "
-      />
+      {
+        open && (
+          <div
+            onClick={onClose}
+            className="
+              fixed
+              inset-0
+              z-40
+              bg-black/50
+              backdrop-blur-sm
+              lg:hidden
+            "
+          />
+        )
+      }
 
 
-      {/* HEADER */}
-      <div
-        className="
-          relative
-          px-7
-          py-8
-          border-b
+      <aside
+        className={`
+          fixed
+          inset-y-0
+          left-0
+          z-50
+          flex
+          h-screen
+          shrink-0
+          flex-col
+          overflow-hidden
+          border-r
           border-border/60
-        "
+          bg-background/95
+          backdrop-blur-xl
+          transition-all
+          duration-300
+
+          w-80
+
+          lg:static
+          lg:bg-background/80
+          ${collapsed ? 'lg:w-24' : 'lg:w-80'}
+
+          ${open ? 'translate-x-0' : '-translate-x-full'}
+          lg:translate-x-0
+        `}
       >
+
+
         <div
           className="
+            absolute
+            -top-32
+            -left-32
+            h-72
+            w-72
+            rounded-full
+            bg-primary/20
+            blur-[120px]
+            pointer-events-none
+          "
+        />
+
+
+        <div
+          className="
+            absolute
+            bottom-0
+            right-0
+            h-64
+            w-64
+            rounded-full
+            bg-emerald-500/10
+            blur-[120px]
+            pointer-events-none
+          "
+        />
+
+
+
+        {/* HEADER */}
+
+        <div
+          className="
+            relative
             flex
             items-center
-            gap-3
+            border-b
+            border-border/60
+            px-7
+            py-8
           "
         >
+
           <div
             className="
               flex
-              h-12
-              w-12
               items-center
-              justify-center
-              rounded-2xl
-              bg-primary/10
-              border
-              border-primary/20
-              text-primary
-              shadow-lg
-              shadow-primary/10
+              gap-3
             "
           >
-            <ShieldCheck size={26} />
-          </div>
 
-          <div>
-            <h1
+            <div
               className="
-                text-xl
-                font-black
-                tracking-tight
+                flex
+                h-12
+                w-12
+                items-center
+                justify-center
+                rounded-2xl
+                border
+                border-primary/20
+                bg-primary/10
+                text-primary
+                shadow-lg
+                shadow-primary/10
               "
             >
-              Admin Center
-            </h1>
-
-            <p
-              className="
-                text-xs
-                text-muted-foreground
-              "
-            >
-              Platform Control
-            </p>
-          </div>
-        </div>
-      </div>
-
-
-      {/* NAVIGATION */}
-      <nav
-        className="
-          relative
-          flex-1
-          overflow-y-auto
-          px-5
-          py-6
-          space-y-7
-        "
-      >
-
-        {links.map((section) => (
-          <div key={section.title}>
-
-            <p
-              className="
-                mb-3
-                px-3
-                text-[11px]
-                uppercase
-                tracking-[0.2em]
-                text-muted-foreground/70
-                font-semibold
-              "
-            >
-              {section.title}
-            </p>
-
-
-            <div className="space-y-2">
-
-              {section.items.map((link) => {
-                const Icon = link.icon;
-
-                const isActive =
-                  pathname === link.href;
-
-                return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`
-                      group
-                      relative
-                      flex
-                      items-center
-                      gap-4
-                      rounded-2xl
-                      px-4
-                      py-3.5
-                      transition-all
-                      duration-300
-                      ${
-                        isActive
-                          ? `
-                            bg-primary
-                            text-primary-foreground
-                            shadow-xl
-                            shadow-primary/20
-                          `
-                          : `
-                            text-muted-foreground
-                            hover:bg-accent
-                            hover:text-foreground
-                          `
-                      }
-                    `}
-                  >
-
-                    {/* Active Glow */}
-                    {isActive && (
-                      <span
-                        className="
-                          absolute
-                          inset-0
-                          rounded-2xl
-                          bg-primary
-                          blur-xl
-                          opacity-30
-                          -z-10
-                        "
-                      />
-                    )}
-
-
-                    <Icon
-                      size={20}
-                      className={`
-                        transition-transform
-                        duration-300
-                        ${
-                          isActive
-                            ? ''
-                            : 'group-hover:scale-110'
-                        }
-                      `}
-                    />
-
-
-                    <span
-                      className="
-                        flex-1
-                        font-medium
-                      "
-                    >
-                      {link.name}
-                    </span>
-
-
-                    <ChevronRight
-                      size={16}
-                      className={`
-                        transition-all
-                        duration-300
-                        ${
-                          isActive
-                            ? 'opacity-100 translate-x-0'
-                            : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'
-                        }
-                      `}
-                    />
-
-                  </Link>
-                );
-              })}
-
+              <ShieldCheck size={26}/>
             </div>
 
+
+            {
+              !collapsed && (
+                <div>
+                  <h1
+                    className="
+                      text-xl
+                      font-black
+                      tracking-tight
+                    "
+                  >
+                    Admin Center
+                  </h1>
+
+                  <p
+                    className="
+                      text-xs
+                      text-muted-foreground
+                    "
+                  >
+                    Platform Control
+                  </p>
+                </div>
+              )
+            }
+
           </div>
-        ))}
-
-      </nav>
 
 
-      {/* FOOTER */}
-      <div
-        className="
-          relative
-          p-5
-          border-t
-          border-border/60
-        "
-      >
 
-        <button
-          onClick={logout}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="
+              ml-auto
+              hidden
+              rounded-xl
+              p-2
+              transition-colors
+              hover:bg-accent
+              lg:flex
+            "
+          >
+
+            {
+              collapsed
+                ? <PanelLeftOpen size={18}/>
+                : <PanelLeftClose size={18}/>
+            }
+
+          </button>
+
+
+
+          <button
+            onClick={onClose}
+            className="
+              ml-auto
+              rounded-xl
+              p-2
+              transition-colors
+              hover:bg-accent
+              lg:hidden
+            "
+          >
+            <PanelLeftClose size={18}/>
+          </button>
+
+
+        </div>
+
+
+
+        {/* NAVIGATION */}
+
+        <nav
           className="
-            group
-            w-full
-            flex
-            items-center
-            gap-4
-            rounded-2xl
-            px-4
-            py-3.5
-            text-red-500
-            transition-all
-            duration-300
-            hover:bg-red-500/10
+            flex-1
+            space-y-7
+            overflow-y-auto
+            px-5
+            py-6
+            scrollbar-hide
           "
         >
 
-          <LogOut
-            size={20}
-            className="
-              transition-transform
-              duration-300
-              group-hover:-translate-x-1
-            "
-          />
+          {
+            links.map(section => (
 
-          <span className="font-medium">
-            Logout
-          </span>
+              <div key={section.title}>
 
-        </button>
+                {
+                  !collapsed && (
+                    <p
+                      className="
+                        mb-3
+                        px-3
+                        text-[11px]
+                        font-semibold
+                        uppercase
+                        tracking-[0.2em]
+                        text-muted-foreground/70
+                      "
+                    >
+                      {section.title}
+                    </p>
+                  )
+                }
 
-      </div>
 
-    </aside>
+                <div className="space-y-2">
+
+                  {
+                    section.items.map(link => {
+
+                      const Icon = link.icon;
+
+                      const active =
+                        pathname === link.href;
+
+
+                      return (
+
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          onClick={onClose}
+                          className={`
+                            group
+                            relative
+                            flex
+                            items-center
+                            rounded-2xl
+                            py-3.5
+                            transition-all
+                            duration-300
+                            ${
+                              collapsed
+                                ? 'justify-center px-0'
+                                : 'gap-4 px-4'
+                            }
+
+                            ${
+                              active
+                                ? `
+                                  bg-primary
+                                  text-primary-foreground
+                                  shadow-xl
+                                  shadow-primary/20
+                                `
+                                : `
+                                  text-muted-foreground
+                                  hover:bg-accent
+                                  hover:text-foreground
+                                `
+                            }
+                          `}
+                        >
+
+                          <Icon
+                            size={20}
+                            className="
+                              transition-transform
+                              duration-300
+                              group-hover:scale-110
+                            "
+                          />
+
+
+                          {
+                            !collapsed && (
+                              <span className="flex-1 font-medium">
+                                {link.name}
+                              </span>
+                            )
+                          }
+
+
+                          {
+                            !collapsed && (
+                              <ChevronRight
+                                size={16}
+                                className={`
+                                  transition-all
+                                  ${
+                                    active
+                                      ? 'opacity-100'
+                                      : 'opacity-0 group-hover:opacity-100'
+                                  }
+                                `}
+                              />
+                            )
+                          }
+
+
+                        </Link>
+
+                      );
+
+                    })
+                  }
+
+                </div>
+
+
+              </div>
+
+            ))
+          }
+
+        </nav>
+
+
+
+
+        {/* FOOTER */}
+
+        <div
+          className="
+            border-t
+            border-border/60
+            p-5
+          "
+        >
+
+          <button
+            onClick={logout}
+            className={`
+              group
+              flex
+              w-full
+              items-center
+              rounded-2xl
+              py-3.5
+              text-red-500
+              transition-all
+              hover:bg-red-500/10
+
+              ${
+                collapsed
+                  ? 'justify-center'
+                  : 'gap-4 px-4'
+              }
+            `}
+          >
+
+            <LogOut
+              size={20}
+              className="
+                transition-transform
+                group-hover:-translate-x-1
+              "
+            />
+
+
+            {
+              !collapsed && (
+                <span className="font-medium">
+                  Logout
+                </span>
+              )
+            }
+
+          </button>
+
+
+        </div>
+
+
+      </aside>
+
+    </>
   );
 }

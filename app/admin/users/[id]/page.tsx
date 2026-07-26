@@ -12,6 +12,9 @@ import {
   Ban,
   LogOut,
   CheckCircle,
+  MessageCircle,
+  Mail,
+  Phone,
 } from 'lucide-react';
 
 import { motion } from 'framer-motion';
@@ -281,86 +284,239 @@ export default function UserDetailsPage() {
         ">
 
 
-          <div>
+<div>
 
-            <div className="
-              flex
-              items-center
-              gap-3
-              flex-wrap
-            ">
+  <div className="
+    flex
+    flex-wrap
+    items-center
+    gap-3
+  ">
 
-              <h1 className="
-                text-3xl
-                font-bold
-                tracking-tight
-              ">
-                {user.user?.fullName}
-              </h1>
-
-
-              <AttentionIndicator
-                level={attention.level}
-                count={attention.count}
-              />
-
-            </div>
+    <h1 className="
+      text-3xl
+      font-bold
+      tracking-tight
+    ">
+      {user.user?.fullName}
+    </h1>
 
 
-            <p className="
-              mt-2
-              text-muted-foreground
-            ">
-              {user.user?.email}
-            </p>
+    <AttentionIndicator
+      level={attention.level}
+      count={attention.count}
+    />
+
+  </div>
 
 
 
-            <div className="
-              mt-4
-              flex
-              flex-wrap
-              gap-3
-            ">
-
-
-              <span className="
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                bg-muted/50
-                px-3
-                py-1
-                text-xs
-              ">
-                <UserRound size={14}/>
-                {user.user?.role}
-              </span>
+  <p className="
+    mt-2
+    text-sm
+    text-muted-foreground
+  ">
+    @{user.user?.username}
+  </p>
 
 
 
-              <span className="
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                border
-                bg-muted/50
-                px-3
-                py-1
-                text-xs
-              ">
-                <ShieldCheck size={14}/>
-                {user.user?.status}
-              </span>
+
+  <div className="
+    mt-5
+    flex
+    flex-wrap
+    gap-3
+  ">
 
 
-            </div>
+    {/* EMAIL */}
+
+    <div className="
+      flex
+      items-center
+      gap-2
+      rounded-xl
+      border
+      bg-muted/40
+      px-4
+      py-2
+      text-sm
+    ">
+
+      <Mail
+        size={15}
+        className="text-primary"
+      />
+
+      {user.user?.email}
+
+    </div>
 
 
-          </div>
+
+
+
+    {/* PHONE */}
+
+    {
+      user.user?.phoneNumber && (
+
+        <a
+          href={`tel:${user.user.phoneNumber}`}
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            bg-green-500/10
+            px-4
+            py-2
+            text-sm
+            text-green-500
+            transition
+            hover:bg-green-500/20
+          "
+        >
+
+          <Phone size={15}/>
+
+          {user.user.phoneNumber}
+
+        </a>
+
+      )
+    }
+
+
+
+
+
+
+
+    {/* WHATSAPP */}
+
+    {
+      user.user?.phoneNumber && (
+
+        <a
+          href={`https://wa.me/${user.user.phoneNumber.replace(/\D/g,'')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            bg-emerald-500/10
+            px-4
+            py-2
+            text-sm
+            text-emerald-500
+            transition
+            hover:bg-emerald-500/20
+          "
+        >
+
+          <MessageCircle size={15}/>
+
+          WhatsApp
+
+        </a>
+
+      )
+    }
+
+
+  </div>
+
+
+
+
+
+  <div className="
+    mt-5
+    flex
+    flex-wrap
+    gap-3
+  ">
+
+
+    <span className="
+      inline-flex
+      items-center
+      gap-2
+      rounded-full
+      border
+      bg-muted/50
+      px-3
+      py-1
+      text-xs
+    ">
+
+      <UserRound size={14}/>
+
+      {user.user?.role}
+
+    </span>
+
+
+
+
+
+    <span className="
+      inline-flex
+      items-center
+      gap-2
+      rounded-full
+      border
+      bg-muted/50
+      px-3
+      py-1
+      text-xs
+    ">
+
+      <ShieldCheck size={14}/>
+
+      {user.user?.status}
+
+    </span>
+
+
+
+
+
+    {
+      user.subscription?.plan && (
+
+        <span className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-full
+          border
+          border-primary/20
+          bg-primary/10
+          px-3
+          py-1
+          text-xs
+          text-primary
+        ">
+
+          <ShieldCheck size={14}/>
+
+          {user.subscription.plan}
+
+        </span>
+
+      )
+    }
+
+
+  </div>
+
+
+</div>
 
 
 

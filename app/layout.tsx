@@ -164,11 +164,10 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
-      <body className="min-h-screen overflow-x-hidden transition-colors duration-300 bg-background text-foreground">
+<body className="min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300 ">
         <QueryProvider>
           <AuthProvider>
             <ThemeProvider>
-              <Navbar />
               {children}
                 <Toaster
                   position="top-right"
@@ -178,8 +177,6 @@ export default function RootLayout({
                       'border border-border bg-card text-foreground',
                   }}
                 />
-              <CookieConsent />
-              <Footer />
             </ThemeProvider>
           </AuthProvider>
         </QueryProvider>

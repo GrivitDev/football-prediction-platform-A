@@ -1,7 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Moon, Sun, Monitor } from 'lucide-react';
+
+import {
+  Moon,
+  Sun,
+  Monitor,
+  Check,
+} from 'lucide-react';
+
 import { useTheme } from 'next-themes';
 
 import {
@@ -13,61 +20,233 @@ import {
 
 import { Button } from '@/components/ui/button';
 
+
+
 export default function ThemeSwitcher() {
-  const { setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  const {
+    theme,
+    setTheme,
+  } = useTheme();
 
-  if (!mounted) return null;
+
+  const [mounted,setMounted] = useState(false);
+
+
+  useEffect(() => {
+    setMounted(true);
+  },[]);
+
+
+  if (!mounted) {
+    return null;
+  }
+
+
+
+  const themes = [
+    {
+      name:'Light',
+      value:'light',
+      icon:Sun,
+    },
+
+    {
+      name:'Dark',
+      value:'dark',
+      icon:Moon,
+    },
+
+    {
+      name:'System',
+      value:'system',
+      icon:Monitor,
+    },
+  ];
+
+
+
+  const ActiveIcon =
+    theme === 'dark'
+      ? Moon
+      : theme === 'light'
+        ? Sun
+        : Monitor;
+
+
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="
-            relative rounded-full
-            border border-border/60
-            bg-muted/30 backdrop-blur-md
-            text-foreground hover:bg-muted/50
-            transition
-          "
-        >
-          <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-          <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
 
-          <span className="sr-only">Toggle Theme</span>
-        </Button>
-      </DropdownMenuTrigger>
+    <DropdownMenu>
+
+
+<DropdownMenuTrigger asChild>
+
+  <Button
+    variant="ghost"
+    className="
+      group
+      flex
+      h-10
+      w-10
+      items-center
+      justify-center
+      rounded-xl
+      border
+      border-border/60
+      bg-background/40
+      p-0
+      backdrop-blur-xl
+      transition-all
+      hover:border-primary/30
+      hover:bg-primary/10
+
+      lg:h-10
+      lg:w-10
+    "
+  >
+
+    <div
+      className="
+        flex
+        h-7
+        w-7
+        items-center
+        justify-center
+        rounded-lg
+        bg-primary/10
+        text-primary
+        transition-transform
+        group-hover:scale-110
+      "
+    >
+
+      <ActiveIcon size={16}/>
+
+    </div>
+
+  </Button>
+
+</DropdownMenuTrigger>
+
+
+
 
       <DropdownMenuContent
-        align="end"
+        align="start"
         className="
-          w-48 rounded-xl
-          border border-border/60
-          bg-background/95 backdrop-blur-xl
-          text-foreground shadow-sm
+          w-54
+          rounded-2xl
+          border
+          border-border/60
+          bg-background/95
+          p-1
+          shadow-xl
+          backdrop-blur-xl
         "
       >
-        <div className="h-[1px] w-full bg-gradient-to-r from-indigo-500/20 via-sky-500/20 to-emerald-500/20" />
 
-        <DropdownMenuItem onClick={() => setTheme('light')}>
-          <Sun className="h-4 w-4 opacity-70 mr-2" />
-          Light
-        </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => setTheme('dark')}>
-          <Moon className="h-4 w-4 opacity-70 mr-2" />
-          Dark
-        </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => setTheme('system')}>
-          <Monitor className="h-4 w-4 opacity-70 mr-2" />
-          System
-        </DropdownMenuItem>
+        {
+          themes.map(item => {
+
+            const Icon = item.icon;
+
+            const active =
+              theme === item.value;
+
+
+            return (
+
+              <DropdownMenuItem
+                key={item.value}
+                onClick={() => setTheme(item.value)}
+                className="
+                  flex
+                  cursor-pointer
+                  items-center
+                  justify-between
+                  rounded-xl
+                  px-2
+                  py-2
+                  transition
+                  hover:bg-accent
+                "
+              >
+
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    gap-1
+                  "
+                >
+
+                  <div
+                    className={`
+                      flex
+                      h-5
+                      w-5
+                      items-center
+                      justify-center
+                      rounded-xl
+
+                      ${
+                        active
+                          ? 'bg-primary/10 text-primary'
+                          : 'bg-muted text-muted-foreground'
+                      }
+                    `}
+                  >
+
+                    <Icon size={18}/>
+
+                  </div>
+
+
+                  <div>
+
+                    <p
+                      className="
+                        text-sm
+                        font-medium
+                      "
+                    >
+                      {item.name}
+                    </p>
+
+                  </div>
+
+
+                </div>
+
+
+
+                {
+                  active && (
+                    <Check
+                      size={18}
+                      className="text-primary"
+                    />
+                  )
+                }
+
+
+              </DropdownMenuItem>
+
+            );
+
+          })
+        }
+
+
       </DropdownMenuContent>
+
+
     </DropdownMenu>
+
   );
+
 }

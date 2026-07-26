@@ -3,9 +3,9 @@ export interface User {
 
   email: string;
 
-  isVip: boolean;
-
   role: string;
+
+  sessionId: string;
 }
 
 export interface AuthContextType {

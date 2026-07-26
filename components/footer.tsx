@@ -9,8 +9,8 @@ import {
   FaInstagram,
   FaXTwitter,
   FaTelegram,
-  FaWhatsapp,
 } from 'react-icons/fa6';
+import { useAuth } from '@/providers/auth-provider';
 
 
 const explore = [
@@ -25,19 +25,15 @@ const explore = [
   {
     name: 'Articles',
     href: '/articles',
-  },
+  },  
   {
-    name: 'About',
-    href: '/about',
+    name: 'Pricing',
+    href: '/pricing',
   },
 ];
 
 
 const company = [
-  {
-    name: 'VIP Membership',
-    href: '/vip-payment',
-  },
   {
     name: 'About Us',
     href: '/about',
@@ -58,35 +54,10 @@ const legal = [
     name: 'Terms & Conditions',
     href: '/terms-and-conditions',
   },
-  {
-    name: 'Cookie Policy',
-    href: '/cookie-policy',
-  },
-  {
-    name: 'Disclaimer',
-    href: '/disclaimer',
-  },
-  {
-    name: 'Refund Policy',
-    href: '/refund-policy',
-  },
-  {
-    name: 'Responsible Gambling',
-    href: '/responsible-gambling',
-  },
-  {
-    name: 'Advertising Policy',
-    href: '/advertising-policy',
-  },
 ];
 
 
 const socials = [
-  {
-    icon: FaWhatsapp,
-    href:
-      'https://wa.me/2348164580712?text=Hello%20PredictPro%20Support,%20I%20need%20assistance%20with%20your%20platform.',
-  },
   {
     icon: FaXTwitter,
     href: '#',
@@ -107,7 +78,17 @@ const socials = [
 
 
 export default function Footer() {
+  const { user } = useAuth();
 
+  const exploreLinks = user
+    ? [
+        ...explore,
+        {
+          name: 'Dashboard',
+          href: '/dashboard',
+        },
+      ]
+    : explore;
   return (
 
     <footer
@@ -215,8 +196,8 @@ export default function Footer() {
           relative
           mx-auto
           max-w-7xl
-          px-6
-          py-5
+          px-4
+          py-3
         "
       >
 <div
@@ -235,23 +216,23 @@ export default function Footer() {
           <div
             className="
               grid
-              gap-14
+              gap-10
               p-10
-              lg:grid-cols-[1.5fr_1fr_1fr_1fr_1.2fr]
+              lg:grid-cols-[3fr_1fr_1fr_2.8fr]
             "
           >
             {/* BRAND */}
             <div>
               <Link
                 href="/"
-                className="flex items-center gap-3"
+                className="flex items-center gap-0"
               >
                 <Image
                   src="/logo.png"
                   alt="PredictPro"
-                  width={48}
-                  height={48}
-                  className="rounded-lg"
+                  width={98}
+                  height={68}
+                  className="rounded-lg h-auto "
                 />
                 <span
                   className="
@@ -270,7 +251,7 @@ export default function Footer() {
               </Link>
               <p
                 className="
-                  mt-6
+                  mt-0
                   max-w-sm
                   leading-8
                   text-muted-foreground
@@ -285,17 +266,12 @@ export default function Footer() {
             {/* EXPLORE */}
             <FooterColumn
               title="Explore"
-              items={explore}
+              items={exploreLinks}
             />
             {/* COMPANY */}
             <FooterColumn
               title="Company"
               items={company}
-            />
-            {/* LEGAL */}
-            <FooterColumn
-              title="Legal"
-              items={legal}
             />
             {/* VIP CARD */}
             <div>
@@ -345,7 +321,7 @@ export default function Footer() {
                   and members-only content.
                 </p>
                 <Link
-                  href="/vip-payment"
+                  href="/pricing"
                   className="
                     mt-8
                     inline-flex
@@ -368,64 +344,107 @@ export default function Footer() {
                 </Link>
               </div>
             </div>
+
+  <div
+    className="
+      flex
+      flex-wrap
+      items-center
+      gap-6
+      text-s
+      text-muted-foreground
+      -mt-12
+      -mb-20
+    "
+  >
+    <Link
+      href="/terms-and-conditions"
+      className="
+        transition
+        hover:text-foreground
+      "
+    >
+      Terms of Use
+    </Link>
+
+    <Link
+      href="/privacy-policy"
+      className="
+        transition
+        hover:text-foreground
+      "
+    >
+      Privacy Policy
+    </Link>
+  </div>
+
           </div>
           {/* BOTTOM BAR */}
           <div
             className="
               border-t
               border-border/60
-              px-10
-              py-8
+              px-5
+              py-4
             "
           >
             <div
               className="
                 flex
                 flex-col
-                items-center
                 justify-between
-                gap-6
+                gap-4
                 md:flex-row
               "
             >
-              <div>
-                <p className="font-medium">
-                  © 2026 PredictPro
-                </p>
-                <p
-                  className="
-                    mt-2
-                    text-sm
-                    text-muted-foreground
-                  "
-                >
-                  Predict with confidence.
-                  Football never stops.
-                </p>
-                <p
-                  className="
-                    mt-4
-                    text-sm
-                    text-muted-foreground
-                  "
-                >
-                  Designed & Developed by{' '}
-                  <a
-                    href='https://wa.me/2348164580712?text=Hello%20PredictPro%20Support,%20I%20need%20assistance%20with%20your%20platform.'
-                    className="
-                      font-semibold
-                      tracking-wide
-                      text-foreground
-                      transition
-                      hover:text-primary
-                    "
-                  >
-                    GrivitDev
-                  </a>
-                </p>
-              </div>
+<div
+  className="
+    flex
+    flex-col
+    gap-2
+    sm:flex-row
+    sm:items-center
+    sm:gap-4
+    -mb-4
+  "
+>
+  <p className="font-medium">
+    © 2026 PredictPro
+  </p>
+
+  <p className="text-sm text-muted-foreground">
+    All rights reserved.
+  </p>
+</div>
+<div
+  className="
+    -mt-2
+    text-sm
+    text-muted-foreground
+  "
+>
+  <p>
+    Designed & Developed by GrivitDev
+  </p>
+
+  <p className="mt-2">
+    For more information visit{' '}
+    <a
+      href="https://wa.me/2348164580712?text=Hello%20GrivitDev,%20I%20would%20like%20to%20know%20more%20about%20your%20website%20development%20services."
+      target="_blank"
+      className="
+        font-semibold
+        text-foreground
+        transition
+        hover:text-primary
+      "
+    >
+      www.grivitdev.com
+    </a>
+  </p>
+</div>
               {/* SOCIALS */}
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 {socials.map(
                   ({ icon: Icon, href }, index) => (
                     <Link
@@ -448,6 +467,7 @@ export default function Footer() {
                         hover:-translate-y-1
                         hover:border-indigo-500/40
                         hover:bg-muted
+                        mt-2
                       "
                     >
                       <Icon className="h-5 w-5" />

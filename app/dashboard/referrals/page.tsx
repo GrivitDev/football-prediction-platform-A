@@ -2,71 +2,292 @@
 
 
 import {
+  PageHero,
+} from '@/components/dashboard/shared/PageHero';
+
+
+import {
+  DashboardSection,
+} from '@/components/dashboard/shared/DashboardSection';
+
+
+import {
+  SectionTitle,
+} from '@/components/dashboard/shared/SectionTitle';
+
+
+import {
   ReferralLinkCard,
 } from '@/components/dashboard/referrals/ReferralLinkCard';
 
 
+import {
+  ReferralStatsCards,
+} from '@/components/dashboard/referrals/ReferralStatsCards';
 
 
 import {
-  AvailablePromos,
-} from '@/components/dashboard/referrals/AvailablePromos';
+  AvailableCampaigns,
+} from '@/components/dashboard/referrals/AvailableCampaigns';
 
 
 import {
-  PromoProgressCard,
-} from '@/components/dashboard/referrals/PromoProgressCard';
-import { ReferralTable } from '@/components/dashboard/referrals/ReferralTable';
-import { RewardHistory } from '@/components/dashboard/referrals/RewardHistory';
-import { ReferralStatsCards } from '@/components/dashboard/referrals/ReferralStatsCards';
+  ActiveCampaigns,
+} from '@/components/dashboard/referrals/ActiveCampaigns';
+
+
+import {
+  ReferralActivity,
+} from '@/components/dashboard/referrals/ReferralActivity';
+
+
+import {
+  RewardHistory,
+} from '@/components/dashboard/referrals/RewardHistory';
 
 
 
-export default function ReferralDashboardPage(){
+export default function ReferralDashboardPage() {
 
 
   return (
 
-    <div className="space-y-8">
+    <div
+      className="
+        relative
+        space-y-8
+        sm:space-y-10
+      "
+    >
 
 
-      <div>
+      {/* Ambient Glow */}
 
-        <h1 className="text-3xl font-bold">
+      <div
+        className="
+          pointer-events-none
+          absolute
+          -right-32
+          -top-32
+          h-80
+          w-80
+          rounded-full
+          bg-primary/10
+          blur-3xl
+        "
+      />
 
-          Referral Center
-
-        </h1>
 
 
-        <p className="text-muted-foreground">
 
-          Invite friends and earn rewards.
 
-        </p>
+      {/* HERO */}
+
+      <PageHero
+
+        title="Referral Center"
+
+        description="
+          Invite friends, grow the community,
+          and earn rewards through successful referrals.
+        "
+
+      />
+
+
+
+
+
+
+
+
+      {/* REFERRAL LINK */}
+
+      <DashboardSection>
+
+
+        <SectionTitle
+
+          title="Your Referral Link"
+
+          description="
+            Share your unique link and start earning rewards.
+          "
+
+        />
+
+
+        <ReferralLinkCard />
+
+
+      </DashboardSection>
+
+
+
+
+
+
+
+
+
+
+      {/* REFERRAL STATS */}
+
+      <DashboardSection>
+
+
+        <SectionTitle
+
+          title="Referral Overview"
+
+          description="
+            Track your growth, conversions and rewards.
+          "
+
+        />
+
+
+        <ReferralStatsCards />
+
+
+      </DashboardSection>
+
+
+
+
+
+
+
+
+
+      {/* CAMPAIGNS */}
+
+      <div
+        className="
+          grid
+          gap-6
+          xl:grid-cols-2
+        "
+      >
+
+
+        <DashboardSection>
+
+
+          <SectionTitle
+
+            title="Available Campaigns"
+
+            description="
+              Join active reward campaigns.
+            "
+
+          />
+
+
+          <AvailableCampaigns />
+
+
+        </DashboardSection>
+
+
+
+
+
+
+
+
+        <DashboardSection>
+
+
+          <SectionTitle
+
+            title="Active Campaigns"
+
+            description="
+              Monitor your ongoing campaigns.
+            "
+
+          />
+
+
+          <ActiveCampaigns />
+
+
+        </DashboardSection>
 
 
       </div>
 
 
 
-      <ReferralLinkCard />
 
 
 
-      <ReferralStatsCards />
 
 
 
-      <AvailablePromos />
+      {/* ACTIVITY + REWARDS */}
+
+      <div
+        className="
+          grid
+          gap-6
+          xl:grid-cols-2
+        "
+      >
+
+
+        <DashboardSection>
+
+
+          <SectionTitle
+
+            title="Referral Activity"
+
+            description="
+              Recent referral progress and milestones.
+            "
+
+          />
+
+
+          <ReferralActivity />
+
+
+        </DashboardSection>
 
 
 
-      <PromoProgressCard />
 
-      <ReferralTable />
 
-      <RewardHistory />
+
+
+
+
+        <DashboardSection>
+
+
+          <SectionTitle
+
+            title="Reward History"
+
+            description="
+              Rewards earned from your referrals.
+            "
+
+          />
+
+
+          <RewardHistory />
+
+
+        </DashboardSection>
+
+
+      </div>
+
+
 
 
     </div>

@@ -4,17 +4,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import api from '@/lib/axios';
-import { usePurchase } from '@/hooks/usePurchases';
+import { usePurchases } from '@/hooks/usePurchases';
 import { usePredictionCountdown } from '@/hooks/usePredictionCountdown';
 
-import type { PredictionAccess } from '@/types/prediction';
+import type { PredictionDetails } from '@/services/prediction.service';
 
 export function usePrediction(predictionId: string) {
   const router = useRouter();
 
-  const { initializePurchase, loading: buying } = usePurchase();
+  const { initializePurchase, loading: buying } = usePurchases();
 
-  const [access, setAccess] = useState<PredictionAccess | null>(null);
+  const [access, setAccess] = useState<PredictionDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,20 +51,20 @@ export function usePrediction(predictionId: string) {
   }, [router]);
 
   const countdown = usePredictionCountdown(
-    access?.matchDate ?? '',
-    access?.accessType ?? 'free',
-  );
+  access?.access.releaseAt,
+  access?.access.released,
+);
 
-  return {
-    access,
-    loading,
-    buying,
-    error,
+return {
+  access,
+  loading,
+  buying,
+  error,
 
-    countdown,
+  countdown,
 
-    buyPrediction,
-    upgradePlan,
-    reload: loadPrediction,
-  };
+  buyPrediction,
+  upgradePlan,
+  reload: loadPrediction,
+};
 }

@@ -1,202 +1,914 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import Image from 'next/image';
 import api from '@/lib/axios';
+
 import PredictionModal from '@/components/predictions/PredictionModal';
-import { formatMatchTime } from '@/lib/formatMatchTime';
 
-export default function PredictionsPage() {
-  const [predictions, setPredictions] = useState<any[]>([]);
-  const [selected, setSelected] = useState<any | null>(null);
+import PredictionCard from '@/components/predictions/PredictionCard';
 
-  // =========================
-  // FILTER STATES
-  // =========================
-  const [search, setSearch] = useState('');
-  const [league, setLeague] = useState('all');
-  const [minConfidence, setMinConfidence] = useState(0);
-  const [dateFilter, setDateFilter] = useState('all');
+import PredictionTable from '@/components/predictions/PredictionTable';
 
-  useEffect(() => {
-    const fetchPredictions = async () => {
-      const res = await api.get('/predictions');
-      setPredictions(res.data);
+import PredictionPagination from '@/components/predictions/PredictionPagination';
+
+
+
+export default function PredictionsPage(){
+
+
+  const [
+    predictions,
+    setPredictions,
+  ] = useState<any[]>([]);
+
+
+
+  const [
+    selected,
+    setSelected,
+  ] = useState<any | null>(null);
+
+
+
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
+
+
+
+
+  // FILTERS
+
+
+  const [
+    search,
+    setSearch,
+  ] = useState('');
+
+
+
+  const [
+    league,
+    setLeague,
+  ] = useState('all');
+
+
+
+  const [
+    minConfidence,
+    setMinConfidence,
+  ] = useState(0);
+
+
+
+  const [
+    dateFilter,
+    setDateFilter,
+  ] = useState('all');
+
+
+
+
+
+  // PAGINATION
+
+
+  const [
+    page,
+    setPage,
+  ] = useState(1);
+
+
+
+  const ITEMS_PER_PAGE = 10;
+
+
+
+
+
+  useEffect(()=>{
+
+
+    const fetchPredictions = async()=>{
+
+
+      try{
+
+
+        const res =
+          await api.get('/predictions');
+
+
+        setPredictions(
+          res.data
+        );
+
+
+      }
+
+      finally{
+
+        setLoading(false);
+
+      }
+
+
     };
 
+
+
     fetchPredictions();
-  }, []);
 
-  // =========================
-  // SORT + FILTER LOGIC
-  // =========================
-  const filtered = useMemo(() => {
-    const now = Date.now();
 
-    return predictions
-      .filter((p) => {
-        const matchTime = new Date(p.matchDate).getTime();
 
-        // league filter
-        if (league !== 'all' && p.leagueCode !== league) return false;
+  },[]);
 
-        // search filter (teams)
-        if (
-          search &&
-          !(
-            p.homeTeam.toLowerCase().includes(search.toLowerCase()) ||
-            p.awayTeam.toLowerCase().includes(search.toLowerCase())
+
+
+
+
+
+
+
+
+  const filtered =
+    useMemo(()=>{
+
+
+      const now =
+        Date.now();
+
+
+
+      return predictions
+
+        .filter((prediction)=>{
+
+
+          const matchTime =
+            new Date(
+              prediction.matchDate
+            ).getTime();
+
+
+
+
+          if(
+            league !== 'all' &&
+            prediction.leagueCode !== league
+          ){
+
+            return false;
+
+          }
+
+
+
+
+          if(
+            search &&
+            !(
+              prediction.homeTeam
+                .toLowerCase()
+                .includes(
+                  search.toLowerCase()
+                )
+              ||
+
+              prediction.awayTeam
+                .toLowerCase()
+                .includes(
+                  search.toLowerCase()
+                )
+            )
+          ){
+
+            return false;
+
+          }
+
+
+
+
+
+          if(
+            prediction.confidence <
+            minConfidence
+          ){
+
+            return false;
+
+          }
+
+
+
+
+
+
+          if(
+            dateFilter === 'upcoming' &&
+            matchTime < now
+          ){
+
+            return false;
+
+          }
+
+
+
+
+
+          if(
+            dateFilter === 'past' &&
+            matchTime > now
+          ){
+
+            return false;
+
+          }
+
+
+
+
+
+          return true;
+
+
+        })
+
+
+        .sort((a,b)=>{
+
+
+          const aTime =
+            new Date(
+              a.matchDate
+            ).getTime();
+
+
+
+          const bTime =
+            new Date(
+              b.matchDate
+            ).getTime();
+
+
+
+          const aPast =
+            aTime < now;
+
+
+
+          const bPast =
+            bTime < now;
+
+
+
+
+          if(
+            aPast !== bPast
+          ){
+
+            return aPast ? 1 : -1;
+
+          }
+
+
+
+          return aTime - bTime;
+
+
+        });
+
+
+
+    },[
+      predictions,
+      search,
+      league,
+      minConfidence,
+      dateFilter,
+    ]);
+
+
+
+
+
+
+
+  useEffect(()=>{
+
+    const timeout = setTimeout(()=>{
+      setPage(1);
+    }, 0);
+
+    return () => clearTimeout(timeout);
+
+  },[
+    search,
+    league,
+    minConfidence,
+    dateFilter,
+  ]);
+
+
+
+
+
+
+
+  const leagues =
+    useMemo(()=>{
+
+
+      return Array.from(
+        new Set(
+          predictions.map(
+            (p)=>
+              p.leagueCode
           )
-        ) {
-          return false;
-        }
+        )
+      );
 
-        // confidence filter
-        if (p.confidence < minConfidence) return false;
 
-        // date filter
-        if (dateFilter === 'upcoming' && matchTime < now) return false;
-        if (dateFilter === 'past' && matchTime > now) return false;
+    },[
+      predictions
+    ]);
 
-        return true;
-      })
-      .sort((a, b) => {
-        const aTime = new Date(a.matchDate).getTime();
-        const bTime = new Date(b.matchDate).getTime();
 
-        const now = Date.now();
 
-        const aPast = aTime < now;
-        const bPast = bTime < now;
 
-        // upcoming first, past last
-        if (aPast !== bPast) return aPast ? 1 : -1;
 
-        // otherwise sort by nearest date
-        return aTime - bTime;
-      });
-  }, [predictions, search, league, minConfidence, dateFilter]);
 
-  // =========================
-  // UNIQUE LEAGUES
-  // =========================
-  const leagues = useMemo(() => {
-    const set = new Set(predictions.map((p) => p.leagueCode));
-    return Array.from(set);
-  }, [predictions]);
+
+  const totalPages =
+    Math.ceil(
+      filtered.length /
+      ITEMS_PER_PAGE
+    );
+
+
+
+
+
+
+  const paginated =
+    filtered.slice(
+
+      (page - 1) *
+      ITEMS_PER_PAGE,
+
+      page *
+      ITEMS_PER_PAGE
+
+    );
+
+
+
+
+
+
+
+
 
   return (
-    <div className="space-y-6">
 
-      <h1 className="text-white text-2xl font-bold">
-        Predictions
-      </h1>
+    <div
+      className="
+        space-y-8
+      "
+    >
 
-      {/* =========================
-          FILTER BAR
-      ========================= */}
-      <div className="grid grid-cols-4 gap-3 bg-gray-900 p-3 rounded-xl">
 
-        {/* SEARCH */}
+
+
+
+
+      {/* HEADER */}
+
+<div
+  className="
+    relative
+    overflow-hidden
+    rounded-3xl
+    border
+    border-border
+    bg-card
+    p-3
+    sm:p-4
+  "
+>
+
+<div
+  className="
+    relative
+    space-y-5
+  "
+>
+
+  <div
+    className="
+      flex
+      items-center
+      gap-1
+      -mb-3
+    "
+  >
+
+    <Image
+
+      src="/logo.png"
+
+      alt="HonestPredict"
+
+      width={64}
+
+      height={64}
+
+      className="
+        h-14
+        w-14
+        object-contain
+        shrink-0
+      "
+
+    />
+
+
+
+    <span
+      className="
+        text-lg
+        font-black
+        uppercase
+        tracking-[0.3em]
+        text-primary
+      "
+    >
+
+      HonestPredict
+
+    </span>
+
+  </div>
+
+
+
+  <div>
+
+    <h1
+      className="
+        text-2xl
+        font-black
+        tracking-tight
+      "
+    >
+
+      Prediction Hub
+
+    </h1>
+
+
+
+    <p
+      className="
+        max-w-3xl
+        text-sm
+        leading-7
+        text-muted-foreground
+        sm:text-base
+      "
+    >
+
+      Professional football predictions with detailed match analysis & confidence ratings.
+
+    </p>
+
+  </div>
+
+</div>
+
+</div>
+
+
+
+
+
+
+
+
+
+      {/* FILTERS */}
+
+
+
+      <div
+
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-4
+          gap-3
+          rounded-3xl
+          border
+          border-border
+          bg-card/70
+          backdrop-blur-xl
+          p-4
+        "
+
+      >
+
+
+
         <input
-          placeholder="Search teams..."
-          className="bg-gray-800 text-white p-2 rounded"
+
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+
+          onChange={(e)=>
+            setSearch(
+              e.target.value
+            )
+          }
+
+          placeholder="
+            Search teams...
+          "
+
+          className="
+            rounded-xl
+            border
+            border-border
+            bg-background
+            px-4
+            py-3
+            outline-none
+          "
+
         />
 
-        {/* LEAGUE */}
+
+
+
+
+
+
         <select
-          className="bg-gray-800 text-white p-2 rounded"
+
           value={league}
-          onChange={(e) => setLeague(e.target.value)}
+
+          onChange={(e)=>
+            setLeague(
+              e.target.value
+            )
+          }
+
+          className="
+            rounded-xl
+            border
+            border-border
+            bg-background
+            px-4
+            py-3
+          "
+
         >
-          <option value="all">All Leagues</option>
-          {leagues.map((l) => (
-            <option key={l} value={l}>
-              {l}
-            </option>
-          ))}
-        </select>
 
-        {/* CONFIDENCE */}
-        <select
-          className="bg-gray-800 text-white p-2 rounded"
-          value={minConfidence}
-          onChange={(e) => setMinConfidence(Number(e.target.value))}
-        >
-          <option value={0}>All Confidence</option>
-          <option value={50}>50%+</option>
-          <option value={70}>70%+</option>
-          <option value={80}>80%+</option>
-        </select>
+          <option value="all">
+            All Leagues
+          </option>
 
-        {/* DATE FILTER */}
-        <select
-          className="bg-gray-800 text-white p-2 rounded"
-          value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
-        >
-          <option value="all">All Matches</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="past">Past</option>
-        </select>
 
-      </div>
+          {
+            leagues.map((item)=>(
 
-      {/* =========================
-          TABLE
-      ========================= */}
-      <div className="bg-gray-900 rounded-xl overflow-hidden">
-
-        <table className="w-full text-left text-sm">
-          <thead className="text-gray-400 border-b border-gray-800">
-            <tr>
-              <th className="p-3">Home</th>
-              <th className="p-3">Away</th>
-              <th className="p-3">Date/Time</th>
-              <th className="p-3">Confidence</th>
-              <th className="p-3">Status</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filtered.map((p) => (
-              <tr
-                key={p._id}
-                onClick={() => setSelected(p)}
-                className="border-b border-gray-800 hover:bg-gray-800 cursor-pointer"
+              <option
+                key={item}
+                value={item}
               >
-                <td className="p-3 text-white">{p.homeTeam}</td>
-                <td className="p-3 text-white">{p.awayTeam}</td>
 
-                {/* DATE */}
-                <td className="p-3 text-gray-300">
-                  {formatMatchTime(p.matchDate)}
-                </td>
+                {item}
 
-                {/* CONFIDENCE */}
-                <td className="p-3 text-green-400">
-                  {p.confidence}%
-                </td>
+              </option>
 
-                <td className="p-3 text-gray-400">
-                  {p.accessType}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            ))
+          }
+
+
+        </select>
+
+
+
+
+
+
+
+
+        <select
+
+          value={minConfidence}
+
+          onChange={(e)=>
+            setMinConfidence(
+              Number(
+                e.target.value
+              )
+            )
+          }
+
+          className="
+            rounded-xl
+            border
+            border-border
+            bg-background
+            px-4
+            py-3
+          "
+
+        >
+
+          <option value={0}>
+            All Confidence
+          </option>
+
+          <option value={50}>
+            50%+
+          </option>
+
+          <option value={70}>
+            70%+
+          </option>
+
+          <option value={80}>
+            80%+
+          </option>
+
+
+        </select>
+
+
+
+
+
+
+
+
+        <select
+
+          value={dateFilter}
+
+          onChange={(e)=>
+            setDateFilter(
+              e.target.value
+            )
+          }
+
+          className="
+            rounded-xl
+            border
+            border-border
+            bg-background
+            px-4
+            py-3
+          "
+
+        >
+
+          <option value="all">
+            All Matches
+          </option>
+
+          <option value="upcoming">
+            Upcoming
+          </option>
+
+          <option value="past">
+            Past
+          </option>
+
+
+        </select>
+
+
+
 
       </div>
 
-      {/* MODAL */}
-      {selected && (
-        <PredictionModal
-          prediction={selected}
-          onClose={() => setSelected(null)}
-        />
-      )}
+
+
+
+
+
+
+
+
+      {
+        loading && (
+
+          <div
+            className="
+              rounded-3xl
+              border
+              p-10
+              text-center
+              text-muted-foreground
+            "
+          >
+
+            Loading predictions...
+
+          </div>
+
+        )
+      }
+
+
+
+
+
+
+
+
+
+      {
+        !loading &&
+        paginated.length === 0 && (
+
+          <div
+            className="
+              rounded-3xl
+              border
+              p-10
+              text-center
+            "
+          >
+
+            <h3
+              className="
+                font-semibold
+              "
+            >
+
+              No predictions found
+
+            </h3>
+
+
+            <p
+              className="
+                text-sm
+                text-muted-foreground
+                mt-2
+              "
+            >
+
+              Try changing your filters.
+
+            </p>
+
+
+          </div>
+
+        )
+      }
+
+
+
+
+
+
+
+
+
+      {
+        !loading &&
+        paginated.length > 0 && (
+
+          <>
+
+            {/* DESKTOP */}
+
+            <PredictionTable
+
+              predictions={
+                paginated
+              }
+
+              onSelect={
+                setSelected
+              }
+
+            />
+
+
+
+
+
+            {/* MOBILE */}
+
+            <div
+              className="
+                lg:hidden
+                space-y-4
+              "
+            >
+
+              {
+                paginated.map(
+                  (prediction)=>(
+
+                    <PredictionCard
+
+                      key={
+                        prediction._id
+                      }
+
+                      prediction={
+                        prediction
+                      }
+
+                      onClick={()=>
+                        setSelected(
+                          prediction
+                        )
+                      }
+
+                    />
+
+                  )
+                )
+              }
+
+            </div>
+
+
+          </>
+
+        )
+      }
+
+
+
+
+
+
+
+
+
+      <PredictionPagination
+
+        page={
+          page
+        }
+
+        totalPages={
+          totalPages
+        }
+
+        onChange={
+          setPage
+        }
+
+      />
+
+
+
+
+
+
+
+
+      {
+        selected && (
+
+          <PredictionModal
+
+            prediction={
+              selected
+            }
+
+            onClose={()=>
+              setSelected(null)
+            }
+
+          />
+
+        )
+      }
+
+
+
 
     </div>
+
   );
+
 }

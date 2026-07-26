@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
@@ -11,6 +11,7 @@ import { LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/providers/auth-provider';
 
 import AdminSidebar from '@/components/admin/admin-sidebar';
+import AdminHeader from '@/components/admin/admin-header';
 
 
 export default function AdminLayout({
@@ -20,6 +21,8 @@ export default function AdminLayout({
 }) {
 
   const router = useRouter();
+
+  const [sidebarOpen,setSidebarOpen] = useState(false);
 
   const {
     user,
@@ -43,7 +46,7 @@ export default function AdminLayout({
       router.push('/');
     }
 
-  }, [
+  },[
     user,
     loading,
     router,
@@ -51,78 +54,31 @@ export default function AdminLayout({
 
 
 
-
   if (loading) {
 
     return (
-
-      <div
-        className="
-          min-h-screen
-          flex
-          items-center
-          justify-center
-          bg-background
-        "
-      >
-
-        <div
+      <div className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-background
+      ">
+        <LoaderCircle
+          size={32}
           className="
-            flex
-            flex-col
-            items-center
-            gap-4
+            animate-spin
+            text-primary
           "
-        >
-
-          <div
-            className="
-              flex
-              h-14
-              w-14
-              items-center
-              justify-center
-              rounded-2xl
-              bg-primary/10
-              text-primary
-              animate-pulse
-            "
-          >
-
-            <LoaderCircle
-              size={28}
-              className="animate-spin"
-            />
-
-          </div>
-
-
-          <p
-            className="
-              text-sm
-              text-muted-foreground
-            "
-          >
-            Loading admin panel...
-          </p>
-
-
-        </div>
-
-
+        />
       </div>
-
     );
 
   }
 
 
 
-
-  if (
-    !user ||
-    user.role !== 'admin'
-  ) {
+  if (!user || user.role !== 'admin') {
     return null;
   }
 
@@ -133,94 +89,53 @@ export default function AdminLayout({
     <main
       className="
         relative
-        min-h-screen
         flex
+        h-screen
         overflow-hidden
         bg-background
         text-foreground
       "
     >
 
-
-      {/* BACKGROUND EFFECTS */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -top-40
-          left-20
-          h-96
-          w-96
-          rounded-full
-          bg-primary/10
-          blur-[150px]
-        "
+      <AdminSidebar
+        open={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
       />
 
 
-      <div
+      <section
         className="
-          pointer-events-none
-          absolute
-          bottom-0
-          right-0
-          h-96
-          w-96
-          rounded-full
-          bg-emerald-500/10
-          blur-[150px]
+          flex-1
+          min-w-0
+          overflow-y-auto
+          scrollbar-hide
         "
-      />
+      >
+
+        <AdminHeader
+          onMenuClick={() => setSidebarOpen(true)}
+        />
 
 
-
-      {/* SIDEBAR */}
-
-      <AdminSidebar />
-
-
-
-      {/* CONTENT */}
-
-<section
-  className="
-    relative
-    flex-1
-    min-w-0
-    overflow-y-auto
-  "
->
-
-<div
-  className="
-    min-h-screen
-    w-full
-    p-4
-    lg:p-6
-  "
->
+        <div
+          className="
+            min-h-full
+            p-4
+            lg:p-6
+          "
+        >
 
           {children}
 
         </div>
 
-
       </section>
 
 
-
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          className:
-            'border border-border bg-card text-foreground',
-          duration: 3500,
-        }}
-      />
-
+      <Toaster />
 
     </main>
 
   );
+
 }

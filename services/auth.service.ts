@@ -19,6 +19,21 @@ interface VerifyOtpData {
   email: string;
   code: string;
 }
+interface ChangePasswordData {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export const changePassword = async (
+  data: ChangePasswordData,
+) => {
+  const response = await api.post(
+    '/auth/change-password',
+    data,
+  );
+
+  return response.data;
+};
 
 export const loginUser = async (
   data: LoginData,
@@ -94,3 +109,4 @@ export const getCurrentUser =
 
     return response.data;
   };
+  

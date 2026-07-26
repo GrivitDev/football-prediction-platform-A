@@ -22,7 +22,15 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/providers/auth-provider';
 
 export default function UserMenu() {
-  const { user, logout } = useAuth();
+const {
+  user,
+  logout,
+  loading,
+} = useAuth();
+
+if (loading) {
+  return null;
+}
 
   if (!user) {
     return (

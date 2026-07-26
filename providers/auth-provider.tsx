@@ -4,11 +4,11 @@ import {
   createContext,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from 'react';
 
 import Cookies from 'js-cookie';
-
 import { jwtDecode } from 'jwt-decode';
 
 import {
@@ -17,9 +17,7 @@ import {
 } from '@/types/auth';
 
 const AuthContext =
-  createContext<AuthContextType | null>(
-    null,
-  );
+  createContext<AuthContextType | null>(null);
 
 export function AuthProvider({
   children,
@@ -44,8 +42,8 @@ export function AuthProvider({
       storedToken.split('.').length === 3
     ) {
       try {
-        const decoded: User =
-          jwtDecode(storedToken);
+        const decoded =
+          jwtDecode<User>(storedToken);
 
         setUser(decoded);
 
@@ -72,32 +70,29 @@ export function AuthProvider({
   const login = (
     newToken: string,
   ) => {
-    try {
-      if (
-        !newToken ||
-        newToken.split('.').length !== 3
-      ) {
-        throw new Error(
-          'Invalid JWT token',
-        );
-      }
-
-      Cookies.set('token', newToken, {
-        expires: 7,
-      });
-
-      const decoded: User =
-        jwtDecode(newToken);
-
-      setUser(decoded);
-
-      setToken(newToken);
-    } catch (error) {
-      console.error(
-        'Login token error:',
-        error,
+    if (
+      !newToken ||
+      newToken.split('.').length !== 3
+    ) {
+      throw new Error(
+        'Invalid JWT token',
       );
     }
+
+    Cookies.set(
+      'token',
+      newToken,
+      {
+        expires: 7,
+      },
+    );
+
+    const decoded =
+      jwtDecode<User>(newToken);
+
+    setUser(decoded);
+
+    setToken(newToken);
   };
 
   const logout = () => {
@@ -108,20 +103,24 @@ export function AuthProvider({
     setToken(null);
   };
 
-  return (
-    <AuthContext.Provider
-      value={{
+  const value =
+    useMemo(
+      () => ({
         user,
-
         token,
-
         loading,
-
         login,
-
         logout,
-      }}
-    >
+      }),
+      [
+        user,
+        token,
+        loading,
+      ],
+    );
+
+  return (
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

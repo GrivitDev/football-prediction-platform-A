@@ -1,18 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { getReleaseTime } from '@/lib/predictionRelease';
+import { useEffect, useState } from 'react';
 
 export function usePredictionCountdown(
-  matchDate: string,
-  accessType: 'free' | 'regular' | 'vip',
+  releaseAt?: number,
+  released?: boolean,
 ) {
-  const releaseTime = useMemo(() => {
-    if (!matchDate) return 0;
-
-    return getReleaseTime(matchDate, accessType);
-  }, [matchDate, accessType]);
-
   const calculate = () => {
-    if (!releaseTime) {
+    if (!releaseAt) {
       return {
         released: false,
         days: 0,
@@ -22,9 +15,7 @@ export function usePredictionCountdown(
       };
     }
 
-    const diff = releaseTime - Date.now();
-
-    if (diff <= 0) {
+    if (released || Date.now() >= releaseAt) {
       return {
         released: true,
         days: 0,
@@ -33,6 +24,8 @@ export function usePredictionCountdown(
         seconds: 0,
       };
     }
+
+    const diff = releaseAt - Date.now();
 
     return {
       released: false,
@@ -53,7 +46,7 @@ export function usePredictionCountdown(
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [releaseTime]);
+  }, [releaseAt, released]);
 
   return time;
 }

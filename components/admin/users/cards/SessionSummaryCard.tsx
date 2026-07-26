@@ -13,8 +13,11 @@ type Props = {
     totalSessions: number;
     activeSessions: number;
     lastLogin: string | null;
+    latestSessions: unknown[];
+    currentSession: unknown | null;
   };
 };
+
 
 
 

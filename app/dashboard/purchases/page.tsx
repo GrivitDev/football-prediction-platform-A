@@ -1,120 +1,233 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import axios from '@/lib/axios';
+import { useState } from 'react';
 
-import { Card } from '@/components/ui/card';
-import Spinner from '@/components/spinner';
+import {PageHero} from '@/components/dashboard/shared/PageHero';
+import {DashboardSection} from '@/components/dashboard/shared/DashboardSection';
+import {SectionTitle } from '@/components/dashboard/shared/SectionTitle';
 
-type Prediction = {
-  _id: string;
-  homeTeam: string;
-  awayTeam: string;
-  leagueCode: string;
-  prediction: string;
-  confidence: number;
-  matchDate: string;
-  status: string;
-};
+import SubscriptionOverview from '@/components/dashboard/purchases/SubscriptionOverview';
+import UpgradeCard from '@/components/dashboard/purchases/UpgradeCard';
+import TransactionSummary from '@/components/dashboard/purchases/TransactionSummary';
+import TransactionTable from '@/components/dashboard/purchases/TransactionTable';
 
-type Purchase = {
-  _id: string;
-  predictionId: Prediction;
-  amount: number;
-  createdAt: string;
-};
+import PaymentModal from '@/components/pricing/PaymentModal';
 
-export default function PurchasesPage() {
-  const [loading, setLoading] = useState(true);
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
+import { usePurchases } from '@/hooks/usePurchases';
+import { usePlanConfig } from '@/hooks/usePlanConfig';
 
-  const loadData = async () => {
-    try {
-      setLoading(true);
 
-      const res = await axios.get('/purchases/me');
 
-      setPurchases(res.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function PurchasesPage(){
 
-  useEffect(() => {
-    loadData();
-  }, []);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-[60vh]">
-        <Spinner />
-      </div>
-    );
-  }
+  const {
+    loading,
+    payments,
+    subscription,
+    plan,
+  } = usePurchases();
+
+
+
+  const {
+    config,
+  } = usePlanConfig();
+
+
+
+
+  const [upgrade,setUpgrade] =
+    useState<
+      'regular' | 'vip' | null
+    >(null);
+
+
+
+
 
   return (
-    <div className="space-y-6">
-      {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-bold">
-          My Predictions
-        </h1>
-        <p className="text-gray-500">
-          All predictions you have access to
-        </p>
-      </div>
 
-      {/* LIST */}
-      <div className="space-y-4">
-        {purchases.length === 0 && (
-          <Card className="p-6 text-center text-gray-500">
-            No predictions purchased yet
-          </Card>
-        )}
+    <>
 
-        {purchases.map((p) => (
-          <Card
-            key={p._id}
-            className="p-5 flex flex-col md:flex-row md:items-center justify-between"
-          >
-            {/* MATCH INFO */}
-            <div>
-              <h2 className="font-semibold text-lg">
-                {p.predictionId?.homeTeam} vs{' '}
-                {p.predictionId?.awayTeam}
-              </h2>
+      <PageHero
 
-              <p className="text-sm text-gray-500">
-                {p.predictionId?.leagueCode}
-              </p>
+        title="Purchases"
 
-              <p className="text-sm mt-1">
-                Prediction:{' '}
-                <span className="font-bold">
-                  {p.predictionId?.prediction}
-                </span>
-              </p>
-            </div>
+        description="
+          Manage your subscriptions and view all your payment activities.
+        "
 
-            {/* RIGHT SIDE */}
-            <div className="text-right mt-3 md:mt-0">
-              <p className="text-sm text-gray-500">
-                Confidence
-              </p>
+      />
 
-              <p className="font-bold">
-                {p.predictionId?.confidence}%
-              </p>
 
-              <p className="text-xs text-gray-400 mt-1">
-                {new Date(
-                  p.createdAt,
-                ).toDateString()}
-              </p>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
+
+
+      <DashboardSection>
+
+        <SectionTitle
+
+          title="Subscription"
+
+          description="
+            View your current membership status.
+          "
+
+        />
+
+
+        <SubscriptionOverview
+
+          loading={loading}
+
+          subscription={subscription}
+
+          plan={plan}
+
+        />
+
+      </DashboardSection>
+
+
+
+
+
+
+      {
+        config && (
+
+          <DashboardSection>
+
+            <SectionTitle
+
+              title="Upgrade Membership"
+
+              description="
+                Get more benefits by upgrading your plan.
+              "
+
+            />
+
+
+            <UpgradeCard
+
+              plan={plan}
+
+              config={config}
+
+              onUpgrade={(target)=>
+                setUpgrade(target)
+              }
+
+            />
+
+          </DashboardSection>
+
+        )
+      }
+
+
+
+
+
+
+
+      <DashboardSection>
+
+        <SectionTitle
+
+          title="Payment Summary"
+
+          description="
+            Overview of your transaction history.
+          "
+
+        />
+
+
+        <TransactionSummary
+
+          payments={payments}
+
+        />
+
+      </DashboardSection>
+
+
+
+
+
+
+
+      <DashboardSection>
+
+        <SectionTitle
+
+          title="Transaction History"
+
+          description="
+            All your payments and subscription activities.
+          "
+
+        />
+
+
+        <TransactionTable
+
+          loading={loading}
+
+          payments={payments}
+
+        />
+
+      </DashboardSection>
+
+
+
+
+
+
+
+
+      {
+        upgrade && config && (
+
+          <PaymentModal
+
+            type="vip_upgrade"
+
+            target={upgrade}
+
+            amount={
+              upgrade === 'regular'
+                ? config.regularPrice
+                : config.vipPrice
+            }
+
+            config={config}
+
+            title={
+              `Upgrade to ${
+                upgrade.toUpperCase()
+              }`
+            }
+
+            description="
+              Complete payment to upgrade your membership.
+            "
+
+            onClose={()=>
+              setUpgrade(null)
+            }
+
+          />
+
+        )
+      }
+
+
+    </>
+
   );
+
 }

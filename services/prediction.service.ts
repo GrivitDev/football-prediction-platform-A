@@ -1,70 +1,105 @@
 import api from '@/lib/axios';
 
-// =========================
-// TYPES (UI SAFE MODEL)
-// =========================
-export interface PredictionDetails {
+// ========================================
+// SHARED TYPES
+// ========================================
 
+export type PredictionResult =
+  | 'HOME'
+  | 'DRAW'
+  | 'AWAY';
+
+export type PredictionStatus =
+  | 'pending'
+  | 'won'
+  | 'lost'
+  | 'void';
+
+export type PredictionPlan =
+  | 'free'
+  | 'regular'
+  | 'vip';
+
+export type PredictionAccessState =
+  | 'subscription'
+  | 'purchased'
+  | 'locked'
+  | 'upgrade_required'
+  | 'login_required';
+
+export interface LeagueInfo {
+  code: string;
+  name: string;
+  country: string;
+  emblem?: string;
+}
+
+export interface PredictionProbability {
+  home: number;
+  draw: number;
+  away: number;
+}
+
+export interface PredictionMarket {
+  market: string;
+  selection?: string;
+}
+
+// ========================================
+// USER PREDICTION RESPONSE
+// ========================================
+
+export interface PredictionDetails {
   id: string;
 
+  matchId: string;
 
   homeTeam: string;
-
   awayTeam: string;
 
-
   homeTeamBadge?: string;
-
   awayTeamBadge?: string;
 
-
   leagueCode: string;
-
-
-  league?: {
-    code: string;
-    name: string;
-    country: string;
-    emblem?: string;
-  };
-
+  league?: LeagueInfo;
 
   matchDate: string;
 
-  status: string;
+  kickoffTimestamp: number;
 
+  status: PredictionStatus;
 
-  preview: {
-    prediction: string;
-    confidence: number;
-  };
+  accessType: PredictionPlan;
 
+  price: number;
+
+  confidence: number;
 
   access: {
     allowed: boolean;
-    state: 'full' | 'locked';
-    price?: number;
-    message?: string;
-    purchased?: boolean;
+
+    state: PredictionAccessState;
+
+    purchased: boolean;
+
+    plan: PredictionPlan;
+
+    released: boolean;
+
+    releaseAt: number;
+
+    message: string | null;
   };
 
+  actions?: string[];
 
-  data?: {
+  data: {
+    prediction?: PredictionResult;
 
-    probabilities?: {
-      home: number;
-      draw: number;
-      away: number;
-    };
+    probabilities?: PredictionProbability | null;
 
-
-    markets?: {
-      market: string;
-      selection?: string;
-    }[];
-
-  };
-
+    markets?: PredictionMarket[] | null;
+  } | null;
 }
 
 export interface CreatePredictionPayload {
@@ -164,7 +199,7 @@ export const deletePrediction = async (id: string) => {
 
 export const settlePrediction = async (
   id: string,
-  actualResult: 'HOME' | 'AWAY' | 'DRAW' | 'VOID',
+  actualResult: PredictionResult | 'VOID',
 ) => {
 
   const res = await api.post(`/settlement/${id}`, {

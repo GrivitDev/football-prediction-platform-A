@@ -1,24 +1,24 @@
 'use client';
 
+import {
+  Crown,
+  ShoppingBag,
+  UserCheck,
+  Users,
+  Sparkles,
+} from 'lucide-react';
 
 import {
   useQuery,
 } from '@tanstack/react-query';
 
+import {
+  DashboardGrid,
+} from '@/components/dashboard/shared/DashboardGrid';
 
 import {
-  Users,
-  UserCheck,
-  Crown,
-  ShoppingBag,
-} from 'lucide-react';
-
-
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
-
+  StatCard,
+} from '@/components/dashboard/shared/StatCard';
 
 import {
   getReferralStats,
@@ -26,19 +26,17 @@ import {
 
 
 
-
-
-export function ReferralStatsCards(){
+export function ReferralStatsCards() {
 
 
   const {
     data,
+    isLoading,
   } = useQuery({
 
     queryKey:[
       'referral-stats',
     ],
-
 
     queryFn:
       getReferralStats,
@@ -52,7 +50,6 @@ export function ReferralStatsCards(){
   const stats = [
 
     {
-
       title:
         'Total Referrals',
 
@@ -62,11 +59,17 @@ export function ReferralStatsCards(){
       icon:
         Users,
 
+      description:
+        'People invited through your link',
+
+      glow:
+        'from-primary/20',
+
     },
 
 
-    {
 
+    {
       title:
         'Registered',
 
@@ -76,11 +79,37 @@ export function ReferralStatsCards(){
       icon:
         UserCheck,
 
+      description:
+        'Successful signups',
+
+      glow:
+        'from-emerald-500/20',
+
     },
 
 
-    {
 
+    {
+      title:
+        'Regular Subscribers',
+
+      value:
+        data?.regularSubscribers ?? 0,
+
+      icon:
+        Crown,
+
+      description:
+        'Regular subscription conversions',
+
+      glow:
+        'from-blue-500/20',
+
+    },
+
+
+
+    {
       title:
         'VIP Subscribers',
 
@@ -90,19 +119,60 @@ export function ReferralStatsCards(){
       icon:
         Crown,
 
+      description:
+        'VIP subscription conversions',
+
+      glow:
+        'from-yellow-500/20',
+
+      premium:
+        true,
+
     },
 
 
-    {
 
+    {
       title:
-        'Prediction Purchases',
+        'Total Subscribers',
+
+      value:
+        (
+          data?.regularSubscribers ?? 0
+        )
+        +
+        (
+          data?.vipSubscribers ?? 0
+        ),
+
+      icon:
+        Crown,
+
+      description:
+        'Combined subscription growth',
+
+      glow:
+        'from-purple-500/20',
+
+    },
+
+
+
+    {
+      title:
+        'Predictions Purchased',
 
       value:
         data?.predictionPurchases ?? 0,
 
       icon:
         ShoppingBag,
+
+      description:
+        'Referral generated sales',
+
+      glow:
+        'from-cyan-500/20',
 
     },
 
@@ -114,65 +184,111 @@ export function ReferralStatsCards(){
 
   return (
 
-    <div className="grid gap-4 md:grid-cols-4">
-
+    <DashboardGrid
+      cols={3}
+    >
 
       {
-        stats.map((item)=>{
+        stats.map((item)=>(
 
+          <div
 
-          const Icon =
-            item.icon;
+            key={item.title}
 
+            className={`
+              group
+              relative
+              overflow-hidden
+              rounded-3xl
+              border
+              border-border/50
+              bg-gradient-to-br
+              ${item.glow}
+              via-background
+              to-background
+              p-1
+              transition-all
+              duration-500
+              hover:-translate-y-1
+              hover:shadow-2xl
+            `}
 
-
-          return (
-
-            <Card
-              key={item.title}
-              className="surface-card"
-            >
-
-              <CardContent className="p-6">
-
-
-                <div className="flex items-center justify-between">
-
-
-                  <p className="text-sm text-muted-foreground">
-
-                    {item.title}
-
-                  </p>
-
-
-                  <Icon className="h-5 w-5"/>
-
-
-                </div>
+          >
 
 
 
-                <p className="mt-3 text-3xl font-bold">
+            <div
 
-                  {item.value}
+              className="
+                pointer-events-none
+                absolute
+                -right-10
+                -top-10
+                h-32
+                w-32
+                rounded-full
+                bg-primary/10
+                blur-3xl
+                opacity-0
+                transition-opacity
+                duration-500
+                group-hover:opacity-100
+              "
 
-                </p>
+            />
 
 
-              </CardContent>
 
 
-            </Card>
 
-          );
+            {
+              item.premium && (
+
+                <Sparkles
+
+                  className="
+                    absolute
+                    right-5
+                    top-5
+                    h-5
+                    w-5
+                    text-yellow-500
+                    opacity-70
+                  "
+
+                />
+
+              )
+            }
 
 
-        })
+
+
+
+            <StatCard
+
+              title={item.title}
+
+              value={
+                isLoading
+                  ? 0
+                  : item.value
+              }
+
+              icon={item.icon}
+
+              description={item.description}
+
+            />
+
+
+          </div>
+
+        ))
       }
 
 
-    </div>
+    </DashboardGrid>
 
   );
 
