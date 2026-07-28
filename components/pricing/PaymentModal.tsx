@@ -16,6 +16,7 @@ import type { PlanConfig } from '@/types/plan-config';
 import PaymentProofUpload from './PaymentProofUpload';
 
 
+
 interface PaymentModalProps {
 
   type:
@@ -36,6 +37,7 @@ interface PaymentModalProps {
   onClose:()=>void;
 
 }
+
 
 
 export default function PaymentModal({
@@ -78,6 +80,7 @@ export default function PaymentModal({
 
 
 
+
   async function submitPayment(){
 
 
@@ -110,6 +113,7 @@ export default function PaymentModal({
 
 
     try{
+
 
       setLoading(true);
 
@@ -162,19 +166,24 @@ export default function PaymentModal({
 
     }finally{
 
+
       setLoading(false);
 
+
     }
+
 
   }
 
 
 
 
-const paymentLabel =
-  type === 'prediction'
-    ? 'Prediction Purchase'
-    : (target || '').toUpperCase();
+
+  const paymentLabel =
+    type === 'prediction'
+      ? 'Prediction Purchase'
+      : (target || '').toUpperCase();
+
 
 
 
@@ -186,32 +195,37 @@ const paymentLabel =
         fixed
         inset-0
         z-50
-        flex
-        items-end
-        justify-center
-        bg-black/70
-        backdrop-blur-sm
+        overflow-y-auto
+        bg-black/60
+        p-4
+        pt-8
+        pb-8
+        backdrop-blur-md
+        sm:flex
         sm:items-center
+        sm:justify-center
       "
     >
+
 
       <div
         className="
           relative
+          mx-auto
           flex
-          max-h-[95vh]
+          max-h-[calc(100vh-4rem)]
           w-full
           flex-col
           overflow-hidden
-          rounded-t-3xl
+          rounded-3xl
           border
-          border-border
+          border-border/60
           bg-background
           shadow-2xl
-          sm:max-w-xl
-          sm:rounded-3xl
+          sm:max-w-2xl
         "
       >
+
 
 
         <button
@@ -220,9 +234,18 @@ const paymentLabel =
             absolute
             right-5
             top-5
+            z-10
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
             rounded-full
-            p-2
-            transition
+            border
+            bg-background/70
+            backdrop-blur
+            transition-all
+            hover:scale-105
             hover:bg-muted
           "
         >
@@ -238,16 +261,14 @@ const paymentLabel =
           className="
             overflow-y-auto
             px-5
-            pb-6
+            pb-8
             pt-16
             sm:px-8
             sm:pt-8
-            scrollbar-hide
           "
         >
 
-
-        {
+                  {
           success ? (
 
             <div
@@ -262,9 +283,15 @@ const paymentLabel =
 
               <div
                 className="
+                  flex
+                  h-24
+                  w-24
+                  items-center
+                  justify-center
                   rounded-full
                   bg-green-500/10
-                  p-4
+                  ring-8
+                  ring-green-500/5
                 "
               >
 
@@ -312,11 +339,15 @@ const paymentLabel =
                 className="
                   mt-8
                   w-full
-                  rounded-xl
+                  rounded-2xl
                   bg-primary
                   py-3
                   font-bold
                   text-primary-foreground
+                  shadow-lg
+                  shadow-primary/20
+                  transition
+                  hover:opacity-90
                 "
               >
 
@@ -334,7 +365,19 @@ const paymentLabel =
             <>
 
 
-              <div>
+              <div
+                className="
+                  rounded-3xl
+                  border-b
+                  border-border/50
+                  bg-gradient-to-b
+                  from-primary/10
+                  via-primary/5
+                  to-transparent
+                  px-6
+                  py-7
+                "
+              >
 
                 <p
                   className="
@@ -349,11 +392,13 @@ const paymentLabel =
                 </p>
 
 
+
                 <h2
                   className="
                     mt-2
                     text-3xl
                     font-black
+                    tracking-tight
                   "
                 >
 
@@ -362,19 +407,38 @@ const paymentLabel =
                 </h2>
 
 
-                <p
-                  className="
-                    mt-2
-                    text-muted-foreground
-                  "
-                >
 
-                  {
-                    description ||
-                    'Transfer the amount below and upload your payment proof.'
-                  }
+                  <p
+                    className="
+                      mt-3
+                      text-muted-foreground
+                    "
+                  >
 
-                </p>
+                    {
+                      description ||
+                      'Transfer the amount below and upload your payment proof.'
+                    }
+
+                  </p>
+
+
+                  <p
+                    className="
+                      mt-3
+                      rounded-xl
+                      border
+                      border-primary/20
+                      bg-primary/5
+                      p-3
+                      text-sm
+                      text-muted-foreground
+                    "
+                  >
+
+                    After submitting your payment, please allow the admin about 30 minutes to confirm your payment and activate your subscription.
+
+                  </p>
 
 
               </div>
@@ -383,27 +447,40 @@ const paymentLabel =
 
 
 
+
               <div
                 className="
-                  mt-6
-                  rounded-2xl
-                  bg-primary/5
-                  p-6
+                  mt-8
+                  rounded-3xl
+                  border
+                  border-primary/15
+                  bg-gradient-to-br
+                  from-primary/10
+                  to-primary/5
+                  p-7
+                  shadow-sm
                 "
               >
 
-                <p className="text-sm text-muted-foreground">
+                <p
+                  className="
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
 
                   Amount to pay
 
                 </p>
 
 
+
                 <p
                   className="
-                    mt-1
-                    text-4xl
+                    mt-2
+                    text-5xl
                     font-black
+                    tracking-tight
                   "
                 >
 
@@ -412,12 +489,14 @@ const paymentLabel =
                 </p>
 
 
+
+
                 {
                   type !== 'prediction' && (
 
                     <p
                       className="
-                        mt-2
+                        mt-3
                         text-sm
                         text-muted-foreground
                       "
@@ -440,16 +519,24 @@ const paymentLabel =
 
 
 
+
               <div
                 className="
-                  mt-6
-                  rounded-2xl
+                  mt-8
+                  rounded-3xl
                   border
-                  p-5
+                  border-border/60
+                  bg-card
+                  p-6
+                  shadow-sm
                 "
               >
 
-                <h3 className="font-bold">
+                <h3
+                  className="
+                    font-bold
+                  "
+                >
 
                   Bank Transfer Details
 
@@ -459,31 +546,40 @@ const paymentLabel =
 
                 <div
                   className="
-                    mt-4
-                    space-y-2
+                    mt-5
+                    space-y-3
                     text-sm
                   "
                 >
 
                   <p>
+
                     Bank:
                     {' '}
                     {config.bankDetails.bankName}
+
                   </p>
 
 
+
                   <p>
+
                     Account Name:
                     {' '}
                     {config.bankDetails.accountName}
+
                   </p>
+
 
 
                   <p>
+
                     Account Number:
                     {' '}
                     {config.bankDetails.accountNumber}
+
                   </p>
+
 
 
 
@@ -492,7 +588,7 @@ const paymentLabel =
 
                       <p
                         className="
-                          pt-2
+                          pt-3
                           text-muted-foreground
                         "
                       >
@@ -510,12 +606,12 @@ const paymentLabel =
 
               </div>
 
-
-
-
-
-
-              <div className="mt-6 space-y-4">
+                            <div
+                className="
+                  mt-8
+                  space-y-5
+                "
+              >
 
 
                 <PaymentProofUpload
@@ -529,6 +625,8 @@ const paymentLabel =
                   }}
 
                 />
+
+
 
 
 
@@ -552,17 +650,23 @@ const paymentLabel =
 
                   className="
                     w-full
-                    rounded-xl
+                    rounded-2xl
                     border
-                    bg-transparent
+                    border-border/60
+                    bg-muted/30
                     px-4
-                    py-3
+                    py-3.5
                     outline-none
-                    focus:ring-2
-                    focus:ring-primary
+                    transition-all
+                    focus:border-primary
+                    focus:bg-background
+                    focus:ring-4
+                    focus:ring-primary/10
                   "
 
                 />
+
+
 
 
 
@@ -585,14 +689,18 @@ const paymentLabel =
                   className="
                     min-h-28
                     w-full
-                    rounded-xl
+                    rounded-2xl
                     border
-                    bg-transparent
+                    border-border/60
+                    bg-muted/30
                     px-4
-                    py-3
+                    py-3.5
                     outline-none
-                    focus:ring-2
-                    focus:ring-primary
+                    transition-all
+                    focus:border-primary
+                    focus:bg-background
+                    focus:ring-4
+                    focus:ring-primary/10
                   "
 
                 />
@@ -605,13 +713,15 @@ const paymentLabel =
 
 
 
+
+
               {
                 error && (
 
                   <div
                     className="
-                      mt-5
-                      rounded-xl
+                      mt-6
+                      rounded-2xl
                       border
                       border-red-500/20
                       bg-red-500/10
@@ -633,6 +743,8 @@ const paymentLabel =
 
 
 
+
+
               <button
 
                 disabled={loading}
@@ -640,19 +752,23 @@ const paymentLabel =
                 onClick={submitPayment}
 
                 className="
-                  mt-6
+                  mt-8
                   flex
+                  h-14
                   w-full
                   items-center
                   justify-center
-                  gap-2
-                  rounded-xl
+                  gap-3
+                  rounded-2xl
                   bg-primary
-                  py-3
                   font-bold
                   text-primary-foreground
-                  transition
-                  hover:opacity-90
+                  shadow-lg
+                  shadow-primary/20
+                  transition-all
+                  hover:-translate-y-0.5
+                  hover:shadow-xl
+                  disabled:translate-y-0
                   disabled:cursor-not-allowed
                   disabled:opacity-50
                 "
@@ -678,7 +794,9 @@ const paymentLabel =
 
                     <>
 
-                      <UploadCloud size={18}/>
+                      <UploadCloud
+                        size={18}
+                      />
 
                       Submit Payment
 
@@ -691,10 +809,10 @@ const paymentLabel =
               </button>
 
 
-
             </>
 
           )
+
         }
 
 
