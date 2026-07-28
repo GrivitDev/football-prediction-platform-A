@@ -43,6 +43,90 @@ useEffect(() => {
   );
 }, []);
 
+const disposableEmailDomains = [
+  'tempmail.com',
+  'temp-mail.org',
+  '10minutemail.com',
+  'guerrillamail.com',
+  'mailinator.com',
+  'throwawaymail.com',
+  'yopmail.com',
+  'trashmail.com',
+  'fakeinbox.com',
+];
+
+
+const validateEmail = (value: string) => {
+  const cleanEmail = value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+
+  const emailRegex =
+    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+
+  if (!emailRegex.test(cleanEmail)) {
+    return {
+      valid: false,
+      message: 'Please enter a valid email address.',
+    };
+  }
+
+
+  const domain =
+    cleanEmail.split('@')[1];
+
+
+  if (
+    disposableEmailDomains.includes(domain)
+  ) {
+    return {
+      valid: false,
+      message:
+        'Disposable email addresses are not allowed.',
+    };
+  }
+
+
+  return {
+    valid: true,
+    email: cleanEmail,
+  };
+};
+
+
+
+const validatePhone = (value: string) => {
+
+  const cleanPhone =
+    value
+      .trim()
+      .replace(/\s+/g, '')
+      .replace(/-/g, '')
+      .replace(/\(/g, '')
+      .replace(/\)/g, '');
+
+
+  const phoneRegex =
+    /^(\+?\d{10,15})$/;
+
+
+  if (!phoneRegex.test(cleanPhone)) {
+    return {
+      valid: false,
+      message:
+        'Please enter a valid phone number.',
+    };
+  }
+
+
+  return {
+    valid: true,
+    phone: cleanPhone,
+  };
+};
+
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -56,11 +140,62 @@ useEffect(() => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const handleRegister = async (
-    e: React.FormEvent,
-  ) => {
-    e.preventDefault();
+const handleRegister = async (
+  e: React.FormEvent,
+) => {
 
+  e.preventDefault();
+
+
+  const emailValidation =
+    validateEmail(email);
+
+
+  if (!emailValidation.valid) {
+
+    toast.error(
+      emailValidation.message || 'Invalid email'
+    );
+
+    return;
+  }
+
+
+
+  const phoneValidation =
+    validatePhone(phoneNumber);
+
+
+  if (!phoneValidation.valid) {
+
+    toast.error(
+      phoneValidation.message || 'Invalid phone number'
+    );
+
+    return;
+  }
+
+
+
+  if (password !== confirmPassword) {
+
+    toast.error(
+      'Passwords do not match.'
+    );
+
+    return;
+  }
+
+
+
+  if (password.length < 6) {
+
+    toast.error(
+      'Password must be at least 6 characters.'
+    );
+
+    return;
+  }
     
 
 if (password !== confirmPassword) {
@@ -78,13 +213,27 @@ if (password.length < 6) {
   setLoading(true);
 
 const response = await registerUser({
-  fullName,
-  username,
-  phoneNumber,
-  email,
+
+  fullName:
+    fullName.trim(),
+
+  username:
+    username.trim().toLowerCase(),
+
+  phoneNumber:
+    phoneValidation.phone!,
+
+  email:
+    emailValidation.email!,
+
   password,
-  referralCode: referralCode || undefined,
-  promoCode: promoCode || undefined,
+
+  referralCode:
+    referralCode.trim() || undefined,
+
+  promoCode:
+    promoCode.trim() || undefined,
+
 });
 
   setSuccess(true);
@@ -98,7 +247,7 @@ const response = await registerUser({
 
   setTimeout(() => {
     router.push(
-      `/verify-email?email=${encodeURIComponent(email)}`,
+      `/verify-email?email=${encodeURIComponent(emailValidation.email!)}`,
     );
   }, 1500);
 
@@ -307,7 +456,12 @@ const response = await registerUser({
                 type="tel"
                 placeholder="Phone Number"
                 value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
+                onChange={(e) =>
+                  setPhoneNumber(
+                    e.target.value
+                      .replace(/[^\d+]/g, '')
+                  )
+                }
                 className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
@@ -322,11 +476,100 @@ const response = await registerUser({
                 type="email"
                 placeholder="Email Address"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) =>
+                    setEmail(
+                      e.target.value
+                        .trimStart()
+                        .replace(/\s+/g, '')
+                        .toLowerCase()
+                    )
+                  }
                 className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
             </div>
+                          {/* REFERRAL CODE */}
+
+              {referralCode && (
+                <div className="relative mb-5">
+
+                  <AtSign className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+
+                  <input
+                    type="text"
+                    value={referralCode}
+                    readOnly
+                    className="
+                      h-14
+                      w-full
+                      rounded-xl
+                      border
+                      border-primary/30
+                      bg-primary/5
+                      pl-12
+                      pr-32
+                      text-foreground
+                      outline-none
+                      cursor-not-allowed
+                    "
+                  />
+
+                  <span className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-xs
+                    font-semibold
+                    text-primary
+                  ">
+                    Referral Applied
+                  </span>
+
+                </div>
+              )}
+
+
+              {/* PROMO CODE */}
+
+              {promoCode && (
+                <div className="relative mb-5">
+
+                  <Trophy className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-cyan-500" />
+
+                  <input
+                    type="text"
+                    value={promoCode}
+                    readOnly
+                    className="
+                      h-14
+                      w-full
+                      rounded-xl
+                      border
+                      border-cyan-500/30
+                      bg-cyan-500/5
+                      pl-12
+                      pr-4
+                      text-foreground
+                      outline-none
+                      cursor-not-allowed
+                    "
+                  />
+
+                  <span className="
+                    absolute
+                    right-4
+                    top-1/2
+                    -translate-y-1/2
+                    text-xs
+                    font-semibold
+                    text-cyan-500
+                  ">
+                    Promo Applied
+                  </span>
+
+                </div>
+              )}
 
                         {/* PASSWORD */}
 
@@ -433,6 +676,7 @@ const response = await registerUser({
                 ✓ Passwords match.
               </p>
             )}
+
 
             {/* PROFILE COMPLETION */}
 

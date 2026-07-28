@@ -52,13 +52,16 @@ export default function ReferralDashboardPage() {
 
   return (
 
-    <div
-      className="
-        relative
-        space-y-8
-        sm:space-y-10
-      "
-    >
+<div
+  className="
+    relative
+    min-w-0
+    max-w-full
+    space-y-8
+    overflow-x-hidden
+    sm:space-y-10
+  "
+>
 
 
       {/* Ambient Glow */}
@@ -162,13 +165,14 @@ export default function ReferralDashboardPage() {
 
       {/* CAMPAIGNS */}
 
-      <div
-        className="
-          grid
-          gap-6
-          xl:grid-cols-2
-        "
-      >
+        <div
+          className="
+            grid
+            min-w-0
+            gap-6
+            xl:grid-cols-2
+          "
+        >
 
 
         <DashboardSection>
@@ -229,13 +233,14 @@ export default function ReferralDashboardPage() {
 
       {/* ACTIVITY + REWARDS */}
 
-      <div
-        className="
-          grid
-          gap-6
-          xl:grid-cols-2
-        "
-      >
+        <div
+          className="
+            grid
+            min-w-0
+            gap-6
+            xl:grid-cols-2
+          "
+        >
 
 
         <DashboardSection>

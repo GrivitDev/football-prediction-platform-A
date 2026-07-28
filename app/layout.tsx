@@ -6,9 +6,6 @@ import QueryProvider from '@/providers/query-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { SEO } from '@/config/seo';
-import Navbar from '@/components/navbar/navbar';
-import Footer from '@/components/footer';
-import CookieConsent from '@/components/CookieConsent';
 import { Toaster } from 'react-hot-toast';
 
 export const metadata: Metadata = {
@@ -163,6 +160,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
     >
 <body className="min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300 ">
         <QueryProvider>

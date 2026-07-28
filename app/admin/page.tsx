@@ -88,9 +88,13 @@ if(!data){
 return (
 
 <div
-className="
-space-y-8
-"
+  className="
+    relative
+    min-w-0
+    max-w-full
+    space-y-8
+    overflow-x-hidden
+  "
 >
 
 

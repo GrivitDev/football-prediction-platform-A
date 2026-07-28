@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { Toaster } from 'react-hot-toast';
-
 import { LoaderCircle } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
@@ -103,36 +101,43 @@ export default function AdminLayout({
       />
 
 
-      <section
-        className="
-          flex-1
-          min-w-0
-          overflow-y-auto
-          scrollbar-hide
-        "
-      >
+          <section
+            className="
+              flex
+              min-w-0
+              flex-1
+              flex-col
+              overflow-hidden
+            "
+          >
+            <div className="z-40 shrink-0">
+              <AdminHeader
+                onMenuClick={() => setSidebarOpen(true)}
+              />
+            </div>
 
-        <AdminHeader
-          onMenuClick={() => setSidebarOpen(true)}
-        />
-
-
-        <div
-          className="
-            min-h-full
-            p-4
-            lg:p-6
-          "
-        >
-
-          {children}
-
-        </div>
-
-      </section>
-
-
-      <Toaster />
+            <div
+              className="
+                min-w-0
+                flex-1
+                overflow-x-hidden
+                overflow-y-auto
+                scrollbar-hide
+              "
+            >
+              <div
+                className="
+                  min-h-full
+                  min-w-0
+                  max-w-full
+                  p-4
+                  lg:p-6
+                "
+              >
+                {children}
+              </div>
+            </div>
+          </section>
 
     </main>
 

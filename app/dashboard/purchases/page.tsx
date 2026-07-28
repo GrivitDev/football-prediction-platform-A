@@ -48,7 +48,7 @@ export default function PurchasesPage(){
 
   return (
 
-    <>
+      <div className="w-full min-w-0 max-w-full overflow-x-hidden">
 
       <PageHero
 
@@ -226,7 +226,7 @@ export default function PurchasesPage(){
       }
 
 
-    </>
+   </div>
 
   );
 

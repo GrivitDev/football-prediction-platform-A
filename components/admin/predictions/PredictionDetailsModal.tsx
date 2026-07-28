@@ -1,10 +1,23 @@
 'use client';
 
+import Image from 'next/image';
+
+import {
+  AlertTriangle,
+  CalendarDays,
+  CheckCircle2,
+  Clock3,
+  Save,
+  ShieldCheck,
+  Target,
+  Trash2,
+  Trophy,
+  X,
+} from 'lucide-react';
+
 import {
   getLeagueName,
 } from '@/constants/leagues';
-
-import Image from 'next/image';
 
 type Props = {
   prediction: any;
@@ -31,40 +44,35 @@ type Props = {
 
 const getSettlementStatus = (prediction: any) => {
   const now = new Date();
+  const matchTime = new Date(prediction.matchDate);
 
-  const matchTime =
-    new Date(
-      prediction.matchDate,
-    );
-
-  const settlementTime =
-    new Date(
-      matchTime.getTime() + 2 * 60 * 60 * 1000,
-    );
-
+  const settlementTime = new Date(
+    matchTime.getTime() + 2 * 60 * 60 * 1000,
+  );
 
   if (prediction.settled) {
     return {
       type: 'settled',
       label: 'Settled',
-      icon: '✓',
+      icon: <CheckCircle2 className="h-4 w-4" />,
+      classes: 'bg-emerald-500/10 text-emerald-600',
     };
   }
-
 
   if (now >= settlementTime) {
     return {
       type: 'pending',
       label: 'Awaiting Settlement',
-      icon: '!',
+      icon: <AlertTriangle className="h-4 w-4" />,
+      classes: 'bg-amber-500/10 text-amber-600',
     };
   }
-
 
   return {
     type: 'upcoming',
     label: 'Scheduled',
-    icon: '•',
+    icon: <Clock3 className="h-4 w-4" />,
+    classes: 'bg-muted text-muted-foreground',
   };
 };
 
@@ -79,1141 +87,1133 @@ export default function PredictionDetailsModal({
   saveEdit,
   deleteItem,
 }: Props) {
-
-
-  if (!prediction)
+  if (!prediction) {
     return null;
+  }
 
-const settlementStatus =
-  getSettlementStatus(prediction);
+  const settlementStatus = getSettlementStatus(prediction);
+
+  const leagueName =
+    prediction.league?.name ??
+    getLeagueName(prediction.leagueCode);
+
+  const matchDate = new Date(prediction.matchDate);
+
+  const confidence = Math.max(
+    0,
+    Math.min(100, Number(prediction.confidence) || 0),
+  );
 
   const predictionHero = (() => {
-  switch (prediction.prediction) {
-    case 'HOME':
-      return {
-        badge: prediction.homeTeamBadge,
-        title: `${prediction.homeTeam} To Win`,
-      };
+    switch (prediction.prediction) {
+      case 'HOME':
+        return {
+          badge: prediction.homeTeamBadge,
+          title: `${prediction.homeTeam} To Win`,
+          description: 'Home victory predicted',
+        };
 
-    case 'AWAY':
-      return {
-        badge: prediction.awayTeamBadge,
-        title: `${prediction.awayTeam} To Win`,
-      };
+      case 'AWAY':
+        return {
+          badge: prediction.awayTeamBadge,
+          title: `${prediction.awayTeam} To Win`,
+          description: 'Away victory predicted',
+        };
 
-    case 'DRAW':
-      return {
-        badge: undefined,
-        title: 'Draw',
-      };
+      case 'DRAW':
+        return {
+          badge: undefined,
+          title: 'Draw',
+          description: 'Draw predicted',
+        };
 
-    default:
-      return {
-        badge: undefined,
-        title: prediction.prediction,
-      };
-  }
-})();
+      default:
+        return {
+          badge: undefined,
+          title: prediction.prediction || 'No prediction',
+          description: 'Prediction selected',
+        };
+    }
+  })();
+
+  const canSave =
+    Boolean(settlementResult) ||
+    probabilityTotal === 100;
 
   return (
-
     <div
       className="
         fixed
         inset-0
         z-50
         flex
-        items-center
+        items-end
         justify-center
-        bg-black/50
-        backdrop-blur-sm
-        p-4
-        animate-in
-        fade-in
-        duration-200
+        bg-slate-950/70
+        p-0
+        backdrop-blur-md
+        sm:items-center
+        sm:p-4
       "
     >
-
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Prediction details"
         className="
           flex
-          max-h-[92vh]
+          h-[100dvh]
           w-full
-          max-w-5xl
+          max-w-6xl
           flex-col
           overflow-hidden
-          rounded-2xl
           border
           border-border
           bg-background
           shadow-2xl
-          animate-in
-          zoom-in-95
-          slide-in-from-bottom-4
-          duration-300
+          sm:h-auto
+          sm:max-h-[92vh]
+          sm:rounded-3xl
         "
       >
-
-
-<div
-  className="
-    border-b
-    border-border
-    bg-gradient-to-b
-    from-muted/40
-    via-background
-    to-background
-    px-2
-    py-2
-  "
->
-
-  {/* Top Bar */}
-
-  <div className="mb-1 flex items-center justify-between">
-
-    <span
-      className={`
-        inline-flex
-        items-center
-        gap-2
-        rounded-full
-        px-5
-        py-2
-        text-sm
-        font-semibold
-
-        ${
-          settlementStatus.type === 'settled'
-            ? 'bg-green-500/10 text-green-600'
-            : settlementStatus.type === 'pending'
-              ? 'bg-yellow-500/10 text-yellow-600'
-              : 'bg-muted text-muted-foreground'
-        }
-      `}
-    >
-      <span>{settlementStatus.icon}</span>
-
-      {settlementStatus.label}
-    </span>
-
-    <button
-      onClick={onClose}
-      className="
-        rounded-xl
-        border
-        border-border
-        px-4
-        py-2
-        text-sm
-        transition
-        hover:bg-muted
-      "
-    >
-      Close
-    </button>
-
-  </div>
- </div>
-
-        {/* HEADER */}
-
-
-        <div
+        <header
           className="
-            flex-1
-            space-y-8
-            overflow-y-auto
-            p-6
+            shrink-0
+            border-b
+            border-border
+            bg-background/95
+            px-4
+            py-3
+            backdrop-blur-xl
+            sm:px-6
           "
         >
-
-<div
-  className="
-    border-b
-    border-border
-    bg-gradient-to-b
-    from-muted/40
-    via-background
-    to-background
-  "
->
-
-
-  {/* LEAGUE */}
-
-  <div className="flex -mt-8 flex-col items-center">
-
-    {prediction.league?.emblem && (
-
-      <Image
-        src={prediction.league.emblem}
-        alt={prediction.league.name}
-        width={40}
-        height={40}
-        className="object-contain"
-      />
-
-    )}
-
-    <h2
-      className="
-        text-l
-        font-bold
-        uppercase
-        tracking-widest
-        text-center
-      "
-    >
-      {
-        prediction.league?.name ??
-        getLeagueName(prediction.leagueCode)
-      }
-    </h2>
-
-  </div>
-
-
-
-
-
-  {/* TEAMS */}
-
-  <div
-    className="
-      flex
-      items-center
-      justify-between
-      gap-1
-      mb-4
-    "
-  >
-
-    {/* Home */}
-
-    <div
-      className="
-        flex-1
-        flex
-        flex-col
-        items-center
-      "
-    >
-
-      {prediction.homeTeamBadge && (
-
-        <Image
-          src={prediction.homeTeamBadge}
-          alt={prediction.homeTeam}
-          width={40}
-          height={40}
-          className="
-            object-contain
-          "
-        />
-
-      )}
-
-      <h3
-        className="
-          text-s
-          font-bold
-          text-center
-        "
-      >
-        {prediction.homeTeam}
-      </h3>
-
-    </div>
-
-
-
-
-
-    {/* VS */}
-
-    <div
-      className="
-        flex
-        h-10
-        w-10
-        shrink-0
-        items-center
-        justify-center
-        rounded-full
-        border-2
-        border-border
-        bg-background
-        text-l
-        font-black
-        shadow-sm
-      "
-    >
-      VS
-    </div>
-
-
-
-
-
-    {/* Away */}
-
-    <div
-      className="
-        flex-1
-        flex
-        flex-col
-        items-center
-      "
-    >
-
-      {prediction.awayTeamBadge && (
-
-        <Image
-          src={prediction.awayTeamBadge}
-          alt={prediction.awayTeam}
-          width={40}
-          height={40}
-          className="
-            object-contain
-          "
-        />
-
-      )}
-
-      <h3
-        className="
-          text-s
-          font-bold
-          text-center
-        "
-      >
-        {prediction.awayTeam}
-      </h3>
-
-    </div>
-
-  </div>
-
-
-
-
-
-  {/* PREDICTION */}
-
-  <div
-    className="
-      mx-auto
-      mt-2
-      max-w-xl
-      rounded-3xl
-      border
-      border-primary/20
-      bg-primary/4
-      px-1
-      py-1
-      mb-4
-    "
-  >
-
-    <p
-      className="
-        text-center
-        text-xs
-        font-bold
-        uppercase
-        tracking-[0.35em]
-        text-primary
-      "
-    >
-      Prediction
-    </p>
-
-    <div
-      className="
-        flex
-        items-center
-        justify-center
-        gap-2
-      "
-    >
-
-      {predictionHero.badge && (
-
-        <Image
-          src={predictionHero.badge}
-          alt={predictionHero.title}
-          width={32}
-          height={32}
-          className="
-          mb-4
-            object-contain
-          "
-        />
-
-      )}
-
-      <div className="text-center">
-
-        <h3
-          className="
-            text-xs
-            font-bold
-          "
-        >
-          {predictionHero.title}
-        </h3>
-
-        <p
-          className="
-            mt-0
-            text-base
-            text-muted-foreground
-          "
-        >
-          Confidence {prediction.confidence}%
-        </p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-
-          {/* MATCH INFORMATION */}
-
-          <Section title="Match Information">
-
+          <div className="flex items-center justify-between gap-3">
             <div
-              className="
-                grid
-                gap-3
-                md:grid-cols-2
-              "
+              className={`
+                inline-flex
+                items-center
+                gap-2
+                rounded-full
+                px-3
+                py-1.5
+                text-xs
+                font-semibold
+                ${settlementStatus.classes}
+              `}
             >
-
-              <Info
-                label="Match ID"
-                value={
-                  prediction.matchId
-                }
-              />
-
-
-              <Info
-                label="League"
-                value={
-                  getLeagueName(
-                    prediction.leagueCode,
-                  )
-                }
-              />
-
-
-              <Info
-                label="Home Team"
-                value={
-                  prediction.homeTeam
-                }
-              />
-
-
-              <Info
-                label="Away Team"
-                value={
-                  prediction.awayTeam
-                }
-              />
-
-
-              <Info
-                label="Match Date"
-                value={
-                  new Date(
-                    prediction.matchDate,
-                  )
-                  .toLocaleString()
-                }
-              />
-
-
+              {settlementStatus.icon}
+              {settlementStatus.label}
             </div>
 
-          </Section>
-
-
-
-
-
-
-
-          {/* PREDICTION */}
-
-          <Section title="Prediction Information">
-
-
-            <div
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close prediction details"
               className="
-                grid
-                gap-3
-                md:grid-cols-3
-              "
-            >
-
-              <Info
-                label="Prediction"
-                value={
-                  prediction.prediction
-                }
-              />
-
-
-              <Info
-                label="Confidence"
-                value={
-                  `${prediction.confidence}%`
-                }
-              />
-
-
-              <Info
-                label="Access"
-                value={
-                  prediction.accessType
-                }
-              />
-
-
-              <Info
-                label="Price"
-                value={
-                  `₦${prediction.price}`
-                }
-              />
-
-
-              <Info
-                label="Status"
-                value={
-                  prediction.status
-                }
-              />
-
-
-              <Info
-                label="Settled"
-                value={
-                  prediction.settled
-                    ? 'Yes'
-                    : 'No'
-                }
-              />
-
-
-            </div>
-
-
-          </Section>
-
-
-
-
-
-
-
-
-
-          {/* PROBABILITIES */}
-
-          <Section title="Probabilities">
-
-
-            <div
-              className="
-                mb-4
+                inline-flex
+                h-10
+                w-10
+                items-center
+                justify-center
                 rounded-xl
                 border
                 border-border
-                bg-muted/40
-                p-4
+                text-muted-foreground
+                transition
+                hover:bg-muted
+                hover:text-foreground
               "
             >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </header>
 
+        <main
+          className="
+            min-h-0
+            flex-1
+            overflow-x-hidden
+            overflow-y-auto
+            scrollbar-hide
+          "
+        >
+          <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
+            <section
+              className="
+                overflow-hidden
+                rounded-3xl
+                border
+                border-border
+                bg-gradient-to-br
+                from-primary/[0.08]
+                via-background
+                to-background
+              "
+            >
               <div
                 className="
                   flex
-                  justify-between
+                  flex-col
+                  gap-3
+                  border-b
+                  border-border/70
+                  px-5
+                  py-4
+                  sm:flex-row
+                  sm:items-center
+                  sm:justify-between
+                  sm:px-6
                 "
               >
-
-                <span>
-                  Total
-                </span>
-
-
-                <span
-                  className={
-                    probabilityTotal === 100
-                    ? 'text-primary font-semibold'
-                    : 'text-destructive font-semibold'
-                  }
-                >
-                  {probabilityTotal}%
-                </span>
-
-
-              </div>
-
-
-            </div>
-
-
-
-
-
-            <div
-              className="
-                grid
-                gap-3
-                md:grid-cols-3
-              "
-            >
-
-              {(
-                [
-                  'home',
-                  'draw',
-                  'away',
-                ] as const
-              )
-              .map(
-                (field) => (
-
-                  <input
-                    key={field}
-                    type="number"
-                    value={
-                      prediction.probabilities[field]
-                    }
-                    onChange={(e) =>
-                      updateProbability(
-                        field,
-                        Number(
-                          e.target.value,
-                        ),
-                      )
-                    }
+                <div className="flex min-w-0 items-center gap-3">
+                  <div
                     className="
-                      rounded-xl
+                      flex
+                      h-11
+                      w-11
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-2xl
                       border
                       border-border
                       bg-background
-                      px-4
-                      py-3
-                      outline-none
-                      focus:ring-2
-                      focus:ring-primary/30
+                      shadow-sm
                     "
-                  />
+                  >
+                    {prediction.league?.emblem ? (
+                      <Image
+                        src={prediction.league.emblem}
+                        alt={leagueName}
+                        width={28}
+                        height={28}
+                        className="object-contain"
+                      />
+                    ) : (
+                      <Trophy className="h-5 w-5 text-primary" />
+                    )}
+                  </div>
 
-                ),
-              )}
-
-
-            </div>
-
-
-          </Section>
-
-
-
-
-
-
-
-
-
-          {/* MARKETS */}
-
-          <Section
-            title={`Markets (${prediction.markets?.length || 0})`}
-          >
-
-            <div
-              className="
-                grid
-                gap-4
-                md:grid-cols-2
-              "
-            >
-
-              {
-                prediction.markets?.map(
-                  (
-                    market:any,
-                    index:number,
-                  ) => (
-
-                    <div
-                      key={index}
+                  <div className="min-w-0">
+                    <p
                       className="
-                        rounded-xl
-                        border
-                        border-border
-                        bg-muted/30
-                        p-4
+                        truncate
+                        text-xs
+                        font-semibold
+                        uppercase
+                        tracking-[0.16em]
+                        text-primary
                       "
                     >
+                      {leagueName}
+                    </p>
 
-                      <p
-                        className="
-                          mb-2
-                          text-xs
-                          uppercase
-                          text-muted-foreground
-                        "
-                      >
-                        {
-                          market.market
-                        }
-                      </p>
+                    <p className="mt-1 truncate text-sm text-muted-foreground">
+                      Match command centre
+                    </p>
+                  </div>
+                </div>
 
+                <div
+                  className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    text-sm
+                    text-muted-foreground
+                  "
+                >
+                  <CalendarDays className="h-4 w-4 text-primary" />
 
-                      <input
-                        value={
-                          market.selection
-                        }
-                        onChange={(e)=>
-                          updateMarketSelection(
-                            index,
-                            e.target.value,
-                          )
-                        }
-                        className="
-                          w-full
-                          rounded-xl
-                          border
-                          border-border
-                          bg-background
-                          px-3
-                          py-2
-                        "
-                      />
+                  {matchDate.toLocaleDateString('en-NG', {
+                    weekday: 'short',
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
 
-                    </div>
+                  <span className="text-border">•</span>
 
-                  ),
-                )
-              }
-
-            </div>
-
-          </Section>
-
-
-
-
-
-
-
-
-
-          {/* SETTLEMENT */}
-
-          <Section title="Settlement">
-
-{settlementStatus.type === 'pending' && (
-  <div
-    className="
-      rounded-xl
-      border
-      border-yellow-500/30
-      bg-yellow-500/10
-      p-4
-      text-sm
-      text-yellow-700
-    "
-  >
-    This match has passed the settlement window.
-    Please enter the final result.
-  </div>
-)}
-            <select
-              value={
-                settlementResult
-              }
-              onChange={(e)=>
-                setSettlementResult(
-                  e.target.value,
-                )
-              }
-              className="
-                w-full
-                rounded-xl
-                border
-                border-border
-                bg-background
-                px-4
-                py-3
-              "
-            >
-
-              <option value="">
-                Settle Match
-              </option>
-
-
-              <option value="HOME">
-                {prediction.homeTeam} Won
-              </option>
-
-
-              <option value="DRAW">
-                Draw
-              </option>
-
-
-              <option value="AWAY">
-                {prediction.awayTeam} Won
-              </option>
-
-
-              <option value="VOID">
-                Void
-              </option>
-
-
-            </select>
-
-
-
-            {prediction.settledAt && (
-
-              <div className="mt-4">
-
-                <Info
-                  label="Settled At"
-                  value={
-                    new Date(
-                      prediction.settledAt,
-                    )
-                    .toLocaleString()
-                  }
-                />
-
+                  {matchDate.toLocaleTimeString('en-NG', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}
+                </div>
               </div>
 
-            )}
+              <div className="p-5 sm:p-8">
+                <div
+                  className="
+                    grid
+                    grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
+                    items-center
+                    gap-3
+                    sm:gap-6
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      min-w-0
+                      flex-col
+                      items-center
+                      text-center
+                    "
+                  >
+                    <div
+                      className="
+                        flex
+                        h-16
+                        w-16
+                        items-center
+                        justify-center
+                        rounded-2xl
+                        border
+                        border-border
+                        bg-background
+                        shadow-sm
+                        sm:h-20
+                        sm:w-20
+                      "
+                    >
+                      {prediction.homeTeamBadge ? (
+                        <Image
+                          src={prediction.homeTeamBadge}
+                          alt={prediction.homeTeam}
+                          width={56}
+                          height={56}
+                          className="h-12 w-12 object-contain sm:h-14 sm:w-14"
+                        />
+                      ) : (
+                        <ShieldCheck className="h-7 w-7 text-muted-foreground" />
+                      )}
+                    </div>
 
+                    <h2
+                      className="
+                        mt-3
+                        line-clamp-2
+                        text-sm
+                        font-bold
+                        sm:text-lg
+                      "
+                    >
+                      {prediction.homeTeam}
+                    </h2>
 
-          </Section>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Home
+                    </p>
+                  </div>
 
+                  <div
+                    className="
+                      flex
+                      h-12
+                      w-12
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-full
+                      border
+                      border-primary/30
+                      bg-primary/10
+                      text-xs
+                      font-black
+                      tracking-wider
+                      text-primary
+                      shadow-sm
+                      sm:h-14
+                      sm:w-14
+                    "
+                  >
+                    VS
+                  </div>
 
+                  <div
+                    className="
+                      flex
+                      min-w-0
+                      flex-col
+                      items-center
+                      text-center
+                    "
+                  >
+                    <div
+                      className="
+                        flex
+                        h-16
+                        w-16
+                        items-center
+                        justify-center
+                        rounded-2xl
+                        border
+                        border-border
+                        bg-background
+                        shadow-sm
+                        sm:h-20
+                        sm:w-20
+                      "
+                    >
+                      {prediction.awayTeamBadge ? (
+                        <Image
+                          src={prediction.awayTeamBadge}
+                          alt={prediction.awayTeam}
+                          width={56}
+                          height={56}
+                          className="h-12 w-12 object-contain sm:h-14 sm:w-14"
+                        />
+                      ) : (
+                        <ShieldCheck className="h-7 w-7 text-muted-foreground" />
+                      )}
+                    </div>
 
+                    <h2
+                      className="
+                        mt-3
+                        line-clamp-2
+                        text-sm
+                        font-bold
+                        sm:text-lg
+                      "
+                    >
+                      {prediction.awayTeam}
+                    </h2>
 
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Away
+                    </p>
+                  </div>
+                </div>
 
+                <div
+                  className="
+                    mx-auto
+                    mt-7
+                    max-w-2xl
+                    rounded-2xl
+                    border
+                    border-primary/20
+                    bg-primary/[0.07]
+                    p-4
+                    sm:p-5
+                  "
+                >
+                  <div className="flex items-center gap-2 text-primary">
+                    <Target className="h-4 w-4" />
 
+                    <span
+                      className="
+                        text-xs
+                        font-bold
+                        uppercase
+                        tracking-[0.18em]
+                      "
+                    >
+                      Prediction verdict
+                    </span>
+                  </div>
 
+                  <div
+                    className="
+                      mt-4
+                      flex
+                      flex-col
+                      gap-4
+                      sm:flex-row
+                      sm:items-center
+                      sm:justify-between
+                    "
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div
+                        className="
+                          flex
+                          h-12
+                          w-12
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-xl
+                          bg-background
+                          shadow-sm
+                        "
+                      >
+                        {predictionHero.badge ? (
+                          <Image
+                            src={predictionHero.badge}
+                            alt={predictionHero.title}
+                            width={34}
+                            height={34}
+                            className="object-contain"
+                          />
+                        ) : (
+                          <Target className="h-5 w-5 text-primary" />
+                        )}
+                      </div>
 
-          {/* SYSTEM */}
+                      <div className="min-w-0">
+                        <h3 className="truncate text-base font-bold sm:text-lg">
+                          {predictionHero.title}
+                        </h3>
 
-          <Section title="System Information">
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {predictionHero.description}
+                        </p>
+                      </div>
+                    </div>
 
+                    <div className="min-w-[150px]">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-muted-foreground">
+                          Confidence
+                        </span>
 
-            <div
-              className="
-                grid
-                gap-3
-                md:grid-cols-2
-              "
-            >
+                        <span className="text-sm font-bold text-primary">
+                          {confidence}%
+                        </span>
+                      </div>
 
-              <Info
-                label="Created"
-                value={
-                  new Date(
-                    prediction.createdAt,
-                  )
-                  .toLocaleString()
-                }
-              />
+                      <div
+                        className="
+                          mt-2
+                          h-2
+                          overflow-hidden
+                          rounded-full
+                          bg-primary/15
+                        "
+                      >
+                        <div
+                          className="
+                            h-full
+                            rounded-full
+                            bg-gradient-to-r
+                            from-primary
+                            to-cyan-400
+                            transition-all
+                          "
+                          style={{
+                            width: `${confidence}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
 
+            <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
+              <div className="space-y-6">
+                <Section
+                  title="Match Overview"
+                  description="Core fixture and prediction information."
+                  icon={<Trophy className="h-5 w-5" />}
+                >
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Info
+                      label="Match ID"
+                      value={prediction.matchId}
+                    />
 
-              <Info
-                label="Updated"
-                value={
-                  new Date(
-                    prediction.updatedAt,
-                  )
-                  .toLocaleString()
-                }
-              />
+                    <Info
+                      label="League"
+                      value={leagueName}
+                    />
 
+                    <Info
+                      label="Prediction"
+                      value={predictionHero.title}
+                      highlight
+                    />
 
-              <Info
-                label="Deleted"
-                value={
-                  prediction.deleted
-                    ? 'Yes'
-                    : 'No'
-                }
-              />
+                    <Info
+                      label="Access"
+                      value={
+                        <span className="capitalize">
+                          {prediction.accessType || 'Free'}
+                        </span>
+                      }
+                    />
 
+                    <Info
+                      label="Price"
+                      value={`₦${Number(
+                        prediction.price || 0,
+                      ).toLocaleString()}`}
+                    />
 
+                    <Info
+                      label="Match status"
+                      value={prediction.status || 'Upcoming'}
+                    />
+                  </div>
+                </Section>
+
+                <Section
+                  title="Markets"
+                  description={`${
+                    prediction.markets?.length || 0
+                  } market selection${
+                    prediction.markets?.length === 1 ? '' : 's'
+                  } available.`}
+                  icon={<Target className="h-5 w-5" />}
+                >
+                  {prediction.markets?.length ? (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {prediction.markets.map(
+                        (
+                          market: any,
+                          index: number,
+                        ) => (
+                          <div
+                            key={index}
+                            className="
+                              rounded-2xl
+                              border
+                              border-border
+                              bg-muted/30
+                              p-4
+                            "
+                          >
+                            <p
+                              className="
+                                text-xs
+                                font-semibold
+                                uppercase
+                                tracking-wider
+                                text-muted-foreground
+                              "
+                            >
+                              {market.market}
+                            </p>
+
+                            <input
+                              value={market.selection}
+                              onChange={(event) =>
+                                updateMarketSelection(
+                                  index,
+                                  event.target.value,
+                                )
+                              }
+                              aria-label={`${market.market} selection`}
+                              className="
+                                mt-3
+                                h-11
+                                w-full
+                                rounded-xl
+                                border
+                                border-input
+                                bg-background
+                                px-3
+                                text-sm
+                                font-medium
+                                outline-none
+                                transition
+                                focus-visible:ring-2
+                                focus-visible:ring-primary/30
+                              "
+                            />
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  ) : (
+                    <EmptyState message="No markets have been added to this prediction." />
+                  )}
+                </Section>
+
+                <Section
+                  title="System Information"
+                  description="Administrative record details."
+                  icon={<ShieldCheck className="h-5 w-5" />}
+                >
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <Info
+                      label="Created"
+                      value={new Date(
+                        prediction.createdAt,
+                      ).toLocaleString()}
+                    />
+
+                    <Info
+                      label="Last updated"
+                      value={new Date(
+                        prediction.updatedAt,
+                      ).toLocaleString()}
+                    />
+
+                    <Info
+                      label="Settled"
+                      value={prediction.settled ? 'Yes' : 'No'}
+                    />
+
+                    <Info
+                      label="Settled at"
+                      value={
+                        prediction.settledAt
+                          ? new Date(
+                              prediction.settledAt,
+                            ).toLocaleString()
+                          : 'Not settled'
+                      }
+                    />
+                  </div>
+                </Section>
+              </div>
+
+              <div className="space-y-6">
+                <Section
+                  title="Probability Controls"
+                  description="Total probability must equal 100%."
+                  icon={<Target className="h-5 w-5" />}
+                >
+                  <div
+                    className={`
+                      flex
+                      items-center
+                      justify-between
+                      rounded-2xl
+                      border
+                      p-4
+                      ${
+                        probabilityTotal === 100
+                          ? 'border-emerald-500/20 bg-emerald-500/5'
+                          : 'border-destructive/20 bg-destructive/5'
+                      }
+                    `}
+                  >
+                    <div>
+                      <p className="font-semibold">
+                        Probability total
+                      </p>
+
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Keep the three outcomes balanced.
+                      </p>
+                    </div>
+
+                    <span
+                      className={`
+                        text-2xl
+                        font-black
+                        ${
+                          probabilityTotal === 100
+                            ? 'text-emerald-600'
+                            : 'text-destructive'
+                        }
+                      `}
+                    >
+                      {probabilityTotal}%
+                    </span>
+                  </div>
+
+                  <div className="mt-4 grid gap-3">
+                    {(
+                      [
+                        {
+                          field: 'home',
+                          label: `${prediction.homeTeam} Win`,
+                        },
+                        {
+                          field: 'draw',
+                          label: 'Draw',
+                        },
+                        {
+                          field: 'away',
+                          label: `${prediction.awayTeam} Win`,
+                        },
+                      ] as const
+                    ).map((item) => (
+                      <label
+                        key={item.field}
+                        className="
+                          flex
+                          items-center
+                          justify-between
+                          gap-4
+                          rounded-2xl
+                          border
+                          border-border
+                          bg-muted/20
+                          p-3
+                        "
+                      >
+                        <span className="min-w-0 truncate text-sm font-medium">
+                          {item.label}
+                        </span>
+
+                        <div className="relative w-24 shrink-0">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={
+                              prediction.probabilities?.[
+                                item.field
+                              ] ?? 0
+                            }
+                            onChange={(event) =>
+                              updateProbability(
+                                item.field,
+                                Number(event.target.value),
+                              )
+                            }
+                            aria-label={`${item.label} probability`}
+                            className="
+                              h-10
+                              w-full
+                              rounded-xl
+                              border
+                              border-input
+                              bg-background
+                              px-3
+                              pr-7
+                              text-right
+                              text-sm
+                              font-semibold
+                              outline-none
+                              focus-visible:ring-2
+                              focus-visible:ring-primary/30
+                            "
+                          />
+
+                          <span
+                            className="
+                              pointer-events-none
+                              absolute
+                              right-3
+                              top-1/2
+                              -translate-y-1/2
+                              text-xs
+                              text-muted-foreground
+                            "
+                          >
+                            %
+                          </span>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </Section>
+
+                <Section
+                  title="Settlement"
+                  description="Confirm the final match result when available."
+                  icon={<CheckCircle2 className="h-5 w-5" />}
+                >
+                  {settlementStatus.type === 'pending' && (
+                    <div
+                      className="
+                        mb-4
+                        flex
+                        gap-3
+                        rounded-2xl
+                        border
+                        border-amber-500/30
+                        bg-amber-500/10
+                        p-4
+                        text-sm
+                        text-amber-700
+                      "
+                    >
+                      <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+
+                      <p>
+                        This fixture is ready for settlement. Select
+                        the final result below.
+                      </p>
+                    </div>
+                  )}
+
+                  <label className="block">
+                    <span
+                      className="
+                        text-xs
+                        font-semibold
+                        uppercase
+                        tracking-wider
+                        text-muted-foreground
+                      "
+                    >
+                      Final result
+                    </span>
+
+                    <select
+                      value={settlementResult}
+                      onChange={(event) =>
+                        setSettlementResult(
+                          event.target.value,
+                        )
+                      }
+                      className="
+                        mt-2
+                        h-12
+                        w-full
+                        rounded-xl
+                        border
+                        border-input
+                        bg-background
+                        px-4
+                        text-sm
+                        font-medium
+                        outline-none
+                        focus-visible:ring-2
+                        focus-visible:ring-primary/30
+                      "
+                    >
+                      <option value="">
+                        Choose settlement result
+                      </option>
+
+                      <option value="HOME">
+                        {prediction.homeTeam} won
+                      </option>
+
+                      <option value="DRAW">
+                        Draw
+                      </option>
+
+                      <option value="AWAY">
+                        {prediction.awayTeam} won
+                      </option>
+
+                      <option value="VOID">
+                        Void fixture
+                      </option>
+                    </select>
+                  </label>
+                </Section>
+              </div>
             </div>
+          </div>
+        </main>
 
+        <footer
+          className="
+            shrink-0
+            border-t
+            border-border
+            bg-background/95
+            px-4
+            py-3
+            backdrop-blur-xl
+            sm:px-6
+            sm:py-4
+          "
+        >
+          <div
+            className="
+              flex
+              flex-col
+              gap-3
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+            "
+          >
+            <p className="text-xs text-muted-foreground">
+              Changes are saved directly to this prediction.
+            </p>
 
-          </Section>
+            <div className="grid grid-cols-2 gap-3 sm:flex">
+              <button
+                type="button"
+                onClick={deleteItem}
+                className="
+                  inline-flex
+                  h-11
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  border
+                  border-destructive/30
+                  px-4
+                  text-sm
+                  font-semibold
+                  text-destructive
+                  transition
+                  hover:bg-destructive
+                  hover:text-white
+                "
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </button>
 
+              <button
+                type="button"
+                onClick={saveEdit}
+                disabled={!canSave}
+                className="
+                  inline-flex
+                  h-11
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-primary
+                  px-5
+                  text-sm
+                  font-semibold
+                  text-primary-foreground
+                  shadow-sm
+                  transition
+                  hover:brightness-110
+                  disabled:pointer-events-none
+                  disabled:opacity-40
+                "
+              >
+                <Save className="h-4 w-4" />
 
-
-        </div>
-
-
-
-
-
-
-{/* FOOTER */}
-
-<div
-  className="
-    flex
-    items-center
-    justify-between
-    gap-4
-    border-t
-    border-border
-    bg-muted/20
-    px-6
-    py-4
-  "
->
-
-  <div
-    className="
-      text-xs
-      text-muted-foreground
-    "
-  >
-    Changes are applied immediately
-  </div>
-
-
-  <div
-    className="
-      flex
-      gap-3
-    "
-  >
-
-    <button
-      onClick={deleteItem}
-      className="
-        flex
-        h-11
-        items-center
-        gap-2
-        rounded-xl
-        border
-        border-destructive/30
-        px-5
-        text-sm
-        font-medium
-        text-destructive
-        transition-all
-        duration-200
-
-        hover:bg-destructive
-        hover:text-white
-        hover:shadow-md
-        hover:shadow-destructive/20
-
-        active:scale-95
-      "
-    >
-
-      <span
-        className="
-          h-2
-          w-2
-          rounded-full
-          bg-destructive
-          transition-colors
-          group-hover:bg-white
-        "
-      />
-
-      Delete
-
-    </button>
-
-
-
-    <button
-      onClick={saveEdit}
-      disabled={
-        !settlementResult &&
-        probabilityTotal !== 100
-      }
-      className="
-        flex
-        h-11
-        items-center
-        gap-2
-        rounded-xl
-        border
-        border-primary
-        bg-primary
-        px-7
-        text-sm
-        font-semibold
-        text-primary-foreground
-
-        transition-all
-        duration-200
-
-        hover:-translate-y-0.5
-        hover:shadow-lg
-        hover:shadow-primary/25
-
-        active:translate-y-0
-        active:scale-95
-
-        disabled:pointer-events-none
-        disabled:opacity-40
-      "
-    >
-
-      <span
-        className="
-          flex
-          h-5
-          w-5
-          items-center
-          justify-center
-          rounded-full
-          bg-white/20
-          text-xs
-        "
-      >
-        ✓
-      </span>
-
-
-      {
-        settlementResult
-          ? 'Settle Prediction'
-          : 'Save Changes'
-      }
-
-    </button>
-
-
-  </div>
-
-
-</div>
-
-
+                {settlementResult
+                  ? 'Settle Prediction'
+                  : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </footer>
       </div>
-
-
     </div>
-
   );
 }
-
-
-
-
-
 
 function Section({
   title,
+  description,
+  icon,
   children,
 }: {
-  title:string;
-  children:React.ReactNode;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
 }) {
-
   return (
-
     <section
       className="
-        space-y-4
+        rounded-3xl
+        border
+        border-border
+        bg-card/60
+        p-4
+        shadow-sm
+        sm:p-5
       "
     >
+      <div className="flex items-start gap-3">
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            shrink-0
+            items-center
+            justify-center
+            rounded-xl
+            bg-primary/10
+            text-primary
+          "
+        >
+          {icon}
+        </div>
 
-      <h3
-        className="
-          text-lg
-          font-semibold
-        "
-      >
-        {title}
-      </h3>
+        <div>
+          <h3 className="text-base font-bold">
+            {title}
+          </h3>
 
+          <p className="mt-1 text-sm text-muted-foreground">
+            {description}
+          </p>
+        </div>
+      </div>
 
-      {children}
-
-
+      <div className="mt-5">
+        {children}
+      </div>
     </section>
-
   );
-
 }
-
-
-
-
 
 function Info({
   label,
   value,
+  highlight = false,
 }: {
-  label:string;
-  value:any;
+  label: string;
+  value: React.ReactNode;
+  highlight?: boolean;
 }) {
-
   return (
-
     <div
-      className="
-        rounded-xl
+      className={`
+        min-w-0
+        rounded-2xl
         border
-        border-border
-        bg-muted/20
         p-4
-      "
+        ${
+          highlight
+            ? 'border-primary/20 bg-primary/[0.06]'
+            : 'border-border bg-muted/20'
+        }
+      `}
     >
-
       <p
         className="
           text-xs
+          font-semibold
+          uppercase
+          tracking-wider
           text-muted-foreground
         "
       >
         {label}
       </p>
 
-
-      <p
-        className="
-          mt-1
-          font-medium
-        "
+      <div
+        className={`
+          mt-2
+          truncate
+          text-sm
+          font-semibold
+          ${
+            highlight
+              ? 'text-primary'
+              : 'text-foreground'
+          }
+        `}
       >
         {value ?? '-'}
-      </p>
-
-
+      </div>
     </div>
-
   );
+}
 
+function EmptyState({
+  message,
+}: {
+  message: string;
+}) {
+  return (
+    <div
+      className="
+        rounded-2xl
+        border
+        border-dashed
+        border-border
+        bg-muted/20
+        p-6
+        text-center
+        text-sm
+        text-muted-foreground
+      "
+    >
+      {message}
+    </div>
+  );
 }

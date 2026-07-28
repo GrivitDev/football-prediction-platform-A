@@ -163,6 +163,115 @@ export const LEAGUE_NAMES: Record<string, string> = {
   CWC: 'FIFA Club World Cup',
 };
 
+export type LeagueCatalogItem = {
+  code: string;
+  name: string;
+  country: string;
+  emblem?: string;
+};
+
+export const LEAGUE_COUNTRIES: Record<string, string> = {
+  PL: 'England',
+  ELC: 'England',
+  EL1: 'England',
+  EL2: 'England',
+
+  PD: 'Spain',
+  SD: 'Spain',
+
+  BL1: 'Germany',
+  BL2: 'Germany',
+
+  SA: 'Italy',
+  SB: 'Italy',
+
+  FL1: 'France',
+  FL2: 'France',
+
+  DED: 'Netherlands',
+  PPL: 'Portugal',
+  BSA: 'Belgium',
+  SPL: 'Scotland',
+  TSL: 'Turkey',
+  GSL: 'Greece',
+  BUN: 'Austria',
+  SUI: 'Switzerland',
+  DSL: 'Denmark',
+  ENS: 'Norway',
+  ALL: 'Sweden',
+  EKS: 'Poland',
+  CFL: 'Czech Republic',
+  LIG1: 'Romania',
+  HNL: 'Croatia',
+  SLS: 'Serbia',
+  UPL: 'Ukraine',
+
+  SPLSA: 'Saudi Arabia',
+  UAEPL: 'United Arab Emirates',
+  QSL: 'Qatar',
+  EPLEG: 'Egypt',
+  PSL: 'South Africa',
+  BOTOLA: 'Morocco',
+  ALG1: 'Algeria',
+  TUN1: 'Tunisia',
+  NPFL: 'Nigeria',
+
+  MLS: 'United States',
+  LMX: 'Mexico',
+  LPF: 'Argentina',
+  BSAA: 'Brazil',
+  BSB: 'Brazil',
+  COLA: 'Colombia',
+  CHI1: 'Chile',
+  UYPD: 'Uruguay',
+  PER1: 'Peru',
+
+  J1: 'Japan',
+  KL1: 'South Korea',
+  CSL: 'China',
+  AL: 'Australia',
+
+  CL: 'Europe',
+  EL: 'Europe',
+  ECL: 'Europe',
+  SC: 'Europe',
+
+  WC: 'International',
+  EC: 'Europe',
+  UNL: 'Europe',
+
+  AFCON: 'Africa',
+  CAFCL: 'Africa',
+  CAFCC: 'Africa',
+
+  LIB: 'South America',
+  SUD: 'South America',
+  CCL: 'North America',
+  CWC: 'International',
+};
+
+export const LEAGUE_CATALOG: LeagueCatalogItem[] =
+  Object.entries(LEAGUE_NAMES).map(
+    ([code, name]) => ({
+      code,
+      name,
+      country:
+        LEAGUE_COUNTRIES[code] || 'International',
+    }),
+  );
+
+export const getLeague = (
+  code?: string,
+): LeagueCatalogItem | undefined => {
+  if (!code) {
+    return undefined;
+  }
+
+  return LEAGUE_CATALOG.find(
+    (league) => league.code === code,
+  );
+};
+
 export const getLeagueName = (
   code?: string,
 ): string => {
