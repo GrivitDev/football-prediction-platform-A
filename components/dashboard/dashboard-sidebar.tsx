@@ -117,7 +117,7 @@ export default function DashboardSidebar({
           left-0
           z-50
           flex
-          h-screen
+          h-[100dvh]
           shrink-0
           flex-col
           overflow-hidden
@@ -287,16 +287,17 @@ export default function DashboardSidebar({
 
         {/* Navigation */}
 
-        <nav
-          className="
-            flex-1
-            space-y-7
-            overflow-y-auto
-            px-5
-            py-6
-            scrollbar-hide
-          "
-        >
+          <nav
+            className="
+              flex-1
+              min-h-0
+              space-y-7
+              overflow-y-auto
+              px-5
+              py-6
+              scrollbar-hide
+            "
+          >
           {links.map((section) => (
             <div key={section.title}>
               {!collapsed && (
@@ -405,6 +406,7 @@ export default function DashboardSidebar({
 
         <div
           className="
+            shrink-0
             border-t
             border-border/60
             p-5
