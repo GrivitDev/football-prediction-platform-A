@@ -1,281 +1,582 @@
-import { Standing } from '@/types/livescore';
+import Image from 'next/image';
+
+import {
+  Trophy,
+} from 'lucide-react';
+
+
+
+
+
+interface Standing {
+  
+  teamId?:number;
+
+  position:number;
+
+  team:string;
+
+  crest?:string;
+
+  playedGames:number;
+
+  won:number;
+
+  draw:number;
+
+  lost:number;
+
+  goalsFor:number;
+
+  goalsAgainst:number;
+
+  goalDifference:number;
+
+  points:number;
+
+}
+
+
+
 
 
 interface Props {
 
-  table: Standing[];
+  table:Standing[];
 
 }
 
 
 
-export default function LeagueTable(
-{
-  table
-}: Props
-){
 
 
-return (
 
-<section className="
-rounded-2xl
-border
-border-border
-bg-card
-p-6
-">
 
+export default function LeagueTable({
+  table,
+}:Props){
 
-<h2 className="
-text-xl
-font-bold
-mb-5
-">
 
-🏆 League Table
 
-</h2>
+  return (
 
+    <section
+      className="
+        relative
+        overflow-hidden
+        rounded-3xl
+        border
+        border-border
+        bg-card/60
+        p-6
+        shadow-xl
+        backdrop-blur-xl
+      "
+    >
 
 
-<div className="
-overflow-x-auto
-">
 
 
-<table className="
-w-full
-text-sm
-">
 
+      {/* GLOW */}
 
-<thead>
+      <div
+        className="
+          absolute
+          -right-20
+          bottom-0
+          h-56
+          w-56
+          rounded-full
+          bg-yellow-500/10
+          blur-3xl
+        "
+      />
 
-<tr className="
-border-b
-border-border
-text-muted-foreground
-">
 
 
-<th className="
-text-left
-py-3
-">
 
-#
 
-</th>
 
 
-<th className="
-text-left
-">
+      {/* HEADER */}
 
-Team
+      <div
+        className="
+          relative
+          mb-6
+          flex
+          items-center
+          gap-3
+        "
+      >
 
-</th>
 
 
-<th>
+        <div
+          className="
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-2xl
+            bg-yellow-500/10
+            text-yellow-500
+          "
+        >
 
-P
+          <Trophy
+            size={22}
+          />
 
-</th>
+        </div>
 
 
-<th>
 
-W
 
-</th>
 
+        <div>
 
-<th>
+          <h2
+            className="
+              font-bold
+            "
+          >
+            League Table
+          </h2>
 
-D
 
-</th>
+          <p
+            className="
+              text-xs
+              text-muted-foreground
+            "
+          >
+            Current standings
+          </p>
 
 
-<th>
+        </div>
 
-L
 
-</th>
 
+      </div>
 
-<th>
 
-GD
 
-</th>
 
 
-<th>
 
-PTS
 
-</th>
 
 
-</tr>
+      {
+        table.length === 0
 
-</thead>
+        ?
 
+        (
 
+          <div
+            className="
+              rounded-2xl
+              border
+              border-border
+              bg-background/40
+              p-6
+              text-center
+              text-sm
+              text-muted-foreground
+            "
+          >
 
-<tbody>
+            No standings available
 
+          </div>
 
-{
-table.map(
-(team)=>(
+        )
 
 
-<tr
+        :
 
-key={
-team.position
-}
 
-className="
-border-b
-border-border/50
-"
+        (
 
->
+          <div
+            className="
+              relative
+              overflow-x-auto
+            "
+          >
 
 
-<td className="
-py-3
-font-semibold
-">
+            <table
+              className="
+                w-full
+                min-w-[480px]
+                text-sm
+              "
+            >
 
-{team.position}
 
-</td>
 
+              <thead>
 
+                <tr
+                  className="
+                    border-b
+                    border-border
+                    text-xs
+                    uppercase
+                    text-muted-foreground
+                  "
+                >
 
-<td>
+                  <th
+                    className="
+                      px-3
+                      py-3
+                      text-left
+                    "
+                  >
+                    #
+                  </th>
 
-<div className="
-flex
-items-center
-gap-3
-">
 
+                  <th
+                    className="
+                      px-4
+                      py-4
+                      text-left
+                    "
+                  >
+                    Team
+                  </th>
 
-<img
 
-src={
-team.crest
-}
+                  <th
+                    className="
+                      px-2
+                      py-2
+                    "
+                  >
+                    P
+                  </th>
 
-alt={
-team.team
-}
 
-className="
-h-7
-w-7
-object-contain
-"
+                  <th
+                    className="
+                      px-2
+                      py-2
+                    "
+                  >
+                    W
+                  </th>
 
-/>
 
+                  <th
+                    className="
+                      px-2
+                      py-2
+                    "
+                  >
+                    D
+                  </th>
 
-<span className="
-font-medium
-">
 
-{team.team}
+                  <th
+                    className="
+                      px-2
+                      py-2
+                    "
+                  >
+                    L
+                  </th>
 
-</span>
 
+                  <th
+                    className="
+                      px-2
+                      py-2
+                    "
+                  >
+                    GD
+                  </th>
 
-</div>
 
-</td>
+                  <th
+                    className="
+                      px-2
+                      py-2
+                    "
+                  >
+                    PTS
+                  </th>
 
 
+                </tr>
 
-<td className="
-text-center
-">
 
-{team.played}
+              </thead>
 
-</td>
 
 
-<td className="
-text-center
-">
 
-{team.won}
 
-</td>
 
 
-<td className="
-text-center
-">
 
-{team.draw}
+              <tbody>
 
-</td>
 
+                {
+                  table.map(
+                    (team, index)=>(
 
-<td className="
-text-center
-">
 
-{team.lost}
+                        <tr
 
-</td>
+                          key={
+                            team.teamId ?? `${team.team}-${team.position}`
+                          }
+                        className={`
+                          border-b
+                          border-border/50
+                          transition
+                          hover:bg-muted/40
+                                                      ${
+                            index % 2 === 0
+                            ? 'bg-background/60'
+                            : 'bg-muted/20'
+                            }
+                        `}
 
+                      >
 
-<td className="
-text-center
-">
 
-{team.goalDifference}
 
-</td>
+                        {/* POSITION */}
 
+                        <td
+                          className="
+                            px-3
+                            py-3
+                            font-bold
+                          "
+                        >
 
-<td className="
-text-center
-font-bold
-">
+                          {team.position}
 
-{team.points}
+                        </td>
 
-</td>
 
 
-</tr>
 
 
-))
 
-}
 
 
-</tbody>
 
+                        {/* TEAM */}
 
-</table>
+                        <td
+                          className="
+                            px-4
+                            py-4
+                          "
+                        >
 
 
-</div>
+                          <div
+                            className="
+                              flex
+                              items-center
+                              gap-3
+                            "
+                          >
 
 
-</section>
 
-);
+                            {
+                              team.crest && (
+
+                                <Image
+
+                                  src={
+                                    team.crest
+                                  }
+
+                                  alt={
+                                    team.team
+                                  }
+
+                                  width={32}
+
+                                  height={32}
+
+                                  className="
+                                    h-8
+                                    w-8
+                                    object-contain
+                                  "
+
+                                />
+
+                              )
+                            }
+
+
+
+                            <span
+                              className="
+                                font-semibold
+                              "
+                            >
+
+                              {team.team}
+
+                            </span>
+
+
+
+                          </div>
+
+
+                        </td>
+
+
+
+
+
+
+
+
+
+
+                        <td
+                          className="
+                            text-center
+                            px-2
+                            py-2
+                          "
+                        >
+
+                          {team.playedGames}
+
+                        </td>
+
+
+
+
+                        <td
+                          className="
+                            text-center
+                             px-2
+                            py-2
+                          "
+                        >
+
+                          {team.won}
+
+                        </td>
+
+
+
+
+                        <td
+                          className="
+                            text-center
+                             px-2
+                            py-2
+                          "
+                        >
+
+                          {team.draw}
+
+                        </td>
+
+
+
+
+
+                        <td
+                          className="
+                            text-center
+                             px-2
+                            py-2
+                          "
+                        >
+
+                          {team.lost}
+
+                        </td>
+
+
+
+
+
+                        <td
+                          className="
+                            text-center
+                             px-2
+                            py-2
+                          "
+                        >
+
+                          {team.goalDifference}
+
+                        </td>
+
+
+
+
+
+                        <td
+                          className="
+                            text-center
+                            font-black
+                             px-2
+                            py-2
+                          "
+                        >
+
+                          {team.points}
+
+                        </td>
+
+
+
+
+                      </tr>
+
+
+                    )
+                  )
+                }
+
+
+
+              </tbody>
+
+
+
+            </table>
+
+
+
+          </div>
+
+        )
+
+      }
+
+
+
+
+
+    </section>
+
+  );
 
 }

@@ -8,16 +8,28 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div
+      className="
+        min-h-screen
+        w-full
+        overflow-x-hidden
+      "
+    >
+
       <Navbar />
 
-      <main>
+      <main
+        className="
+          w-full
+        "
+      >
         {children}
       </main>
 
       <CookieConsent />
 
       <Footer />
-    </>
+
+    </div>
   );
 }

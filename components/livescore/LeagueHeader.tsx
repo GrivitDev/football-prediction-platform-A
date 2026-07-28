@@ -1,51 +1,125 @@
+'use client';
+
+import Image from 'next/image';
+
+import {
+  Trophy,
+} from 'lucide-react';
+
+import type {
+  League,
+} from '@/services/sports.service';
+
+
+
 interface Props {
 
-  leagueCode:string;
+  league:League;
 
 }
 
 
 
-export default function LeagueHeader(
-{
-  leagueCode
-}:Props
-){
+export default function LeagueHeader({
+  league,
+}:Props){
 
 
-return (
+  return (
 
-<section className="
- rounded-2xl
- border
- border-border
- bg-card
- p-6
-">
-
-
-<h1 className="
- text-3xl
- font-bold
-">
-
-{leagueCode}
-
-</h1>
+    <section
+        className="
+          w-full
+          overflow-hidden
+        "
+      >
 
 
-<p className="
- mt-2
- text-muted-foreground
-">
+        <div
+          className="
+            flex
+            flex-wrap
+            items-center
+            justify-center
+            gap-4
+            px-4
+          "
+        >
 
-Live matches, standings and results
 
-</p>
+        <div
+        className="
+        h-20
+        w-20
+        shrink-0
+        "
+        >
+
+          {
+            league?.emblem ? (
+
+              <Image
+
+                src={league.emblem}
+
+                alt={league.name}
+
+                width={80}
+
+                height={80}
+
+                className="
+                  h-full
+                  w-full
+                  object-contain
+                "
+
+              />
+
+            ) : (
+
+              <Trophy
+
+                size={45}
+
+                className="
+                  text-primary
+                "
+
+              />
+
+            )
+          }
 
 
-</section>
+        </div>
 
-);
+
+
+
+
+        {/* NAME */}
+
+        <h1
+          className="
+            text-2xl
+            font-black
+            tracking-tight
+            text-center
+          "
+        >
+
+          {league?.name}
+
+        </h1>
+
+
+
+      </div>
+
+
+    </section>
+
+  );
 
 }

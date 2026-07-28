@@ -111,13 +111,6 @@ if (loading) {
                 Profile
               </Link>
             </DropdownMenuItem>
-
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/settings" className="flex items-center">
-                <Settings className="mr-2 h-4 w-4 opacity-70" />
-                Settings
-              </Link>
-            </DropdownMenuItem>
           </>
         )}
 
