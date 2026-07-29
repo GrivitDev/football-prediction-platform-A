@@ -7,7 +7,6 @@ import {
   LogOut,
   LayoutDashboard,
   User,
-  Settings,
 } from 'lucide-react';
 
 import {
@@ -22,112 +21,242 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/providers/auth-provider';
 
 export default function UserMenu() {
-const {
-  user,
-  logout,
-  loading,
-} = useAuth();
+  const {
+    user,
+    logout,
+    loading,
+  } = useAuth();
 
-if (loading) {
-  return null;
-}
+  if (loading) {
+    return null;
+  }
+
 
   if (!user) {
     return (
-      <div className="flex items-center gap-3">
-
+      <div
+        className="
+          flex
+          items-center
+          gap-2
+        "
+      >
         <Link
           href="/login"
-          className="text-sm font-medium text-muted-foreground hover:text-foreground transition"
+          className="
+            rounded-full
+            px-3
+            py-2
+            text-sm
+            font-medium
+            text-muted-foreground
+            transition-colors
+            duration-200
+            hover:bg-muted
+            hover:text-foreground
+          "
         >
           Login
         </Link>
 
+
         <Link
           href="/register"
           className="
-            rounded-full px-4 py-2 text-sm font-medium
-            bg-gradient-to-r from-indigo-500/80 via-sky-500/80 to-emerald-500/80
-            text-white hover:opacity-90 transition
+            rounded-full
+            bg-gradient-to-r
+            from-indigo-500
+            via-sky-500
+            to-emerald-500
+            px-4
+            py-2
+            text-sm
+            font-semibold
+            text-white
+            shadow-sm
+            transition-all
+            duration-300
+            hover:opacity-90
+            hover:shadow-md
           "
         >
           Register
         </Link>
-
       </div>
     );
   }
 
-  const dashboard = user.role === 'admin' ? '/admin' : '/dashboard';
+
+  const dashboard =
+    user.role === 'admin'
+      ? '/admin'
+      : '/dashboard';
+
 
   return (
     <DropdownMenu>
 
-      {/* TRIGGER */}
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           className="
-            rounded-full border border-border/60
-            bg-muted/30 backdrop-blur-md
-            text-foreground hover:bg-muted/50
-            transition
+            h-10
+            rounded-full
+            border
+            border-border/50
+            bg-background/40
+            px-4
+            backdrop-blur-md
+            transition-all
+            duration-200
+            hover:bg-muted/60
           "
         >
-          <span className="font-medium">
-            {user.role === 'admin' ? 'Admin' : 'Dashboard'}
+          <span
+            className="
+              text-sm
+              font-semibold
+            "
+          >
+            {user.role === 'admin'
+              ? 'Admin'
+              : 'Dashboard'}
           </span>
 
-          <ChevronDown className="ml-2 h-4 w-4 opacity-70" />
+          <ChevronDown
+            className="
+              ml-2
+              h-4
+              w-4
+              text-muted-foreground
+            "
+          />
         </Button>
       </DropdownMenuTrigger>
 
-      {/* CONTENT */}
+
       <DropdownMenuContent
         align="end"
+        sideOffset={8}
         className="
-          w-56 rounded-xl
-          border border-border/60
-          bg-background/95 backdrop-blur-xl
-          text-foreground shadow-sm
+          w-60
+          rounded-2xl
+          border
+          border-border/50
+          bg-background/90
+          p-2
+          shadow-lg
+          backdrop-blur-xl
         "
       >
 
-        {/* subtle top accent line */}
-        <div className="h-[1px] w-full bg-gradient-to-r from-indigo-500/20 via-sky-500/20 to-emerald-500/20" />
+        <div
+          className="
+            mb-2
+            h-px
+            w-full
+            bg-gradient-to-r
+            from-indigo-500/30
+            via-sky-500/30
+            to-emerald-500/30
+          "
+        />
 
-        <DropdownMenuItem asChild>
-          <Link href={dashboard} className="flex items-center">
-            <LayoutDashboard className="mr-2 h-4 w-4 opacity-70" />
+
+        <DropdownMenuItem
+          asChild
+          className="
+            cursor-pointer
+            rounded-xl
+            py-2.5
+          "
+        >
+          <Link
+            href={dashboard}
+            className="
+              flex
+              items-center
+            "
+          >
+            <LayoutDashboard
+              className="
+                mr-3
+                h-4
+                w-4
+                text-muted-foreground
+              "
+            />
+
             Dashboard
           </Link>
         </DropdownMenuItem>
 
+
         {user.role !== 'admin' && (
-          <>
-            <DropdownMenuItem asChild>
-              <Link href="/dashboard/profile" className="flex items-center">
-                <User className="mr-2 h-4 w-4 opacity-70" />
-                Profile
-              </Link>
-            </DropdownMenuItem>
-          </>
+          <DropdownMenuItem
+            asChild
+            className="
+              cursor-pointer
+              rounded-xl
+              py-2.5
+            "
+          >
+            <Link
+              href="/dashboard/profile"
+              className="
+                flex
+                items-center
+              "
+            >
+              <User
+                className="
+                  mr-3
+                  h-4
+                  w-4
+                  text-muted-foreground
+                "
+              />
+
+              Profile
+            </Link>
+          </DropdownMenuItem>
         )}
 
-        <div className="my-1 border-t border-border/50" />
+
+        <div
+          className="
+            my-2
+            border-t
+            border-border/50
+          "
+        />
+
 
         <DropdownMenuItem
           onClick={logout}
           className="
-            flex items-center text-red-500
-            focus:bg-red-500/10 focus:text-red-500
+            cursor-pointer
+            rounded-xl
+            py-2.5
+            text-destructive
+            focus:bg-destructive/10
+            focus:text-destructive
           "
         >
-          <LogOut className="mr-2 h-4 w-4 opacity-70" />
+          <LogOut
+            className="
+              mr-3
+              h-4
+              w-4
+              text-destructive
+            "
+          />
+
           Logout
         </DropdownMenuItem>
 
       </DropdownMenuContent>
+
     </DropdownMenu>
   );
 }

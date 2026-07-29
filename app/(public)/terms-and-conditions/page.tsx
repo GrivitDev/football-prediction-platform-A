@@ -10,7 +10,6 @@ import {
 
 import {
   termsContent,
-  termsToc,
 } from '@/data/legal/terms';
 
 

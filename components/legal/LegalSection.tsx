@@ -11,7 +11,6 @@ export default function LegalSection({
   title,
   children,
 }: LegalSectionProps) {
-
   const sectionId =
     id ||
     title
@@ -22,37 +21,53 @@ export default function LegalSection({
     <section
       id={sectionId}
       className="
-        scroll-mt-24
-        mb-6
+        mb-10
+        scroll-mt-28
       "
     >
-
-      <h2
+      <div
         className="
-          text-lg
-          font-semibold
-          tracking-tight
-          text-white
-          lg:text-xl
+          mb-5
+          border-b
+          border-border/50
+          pb-3
         "
       >
-        {title}
-      </h2>
-
+        <h2
+          className="
+            text-xl
+            font-bold
+            tracking-tight
+            text-foreground
+            sm:text-2xl
+          "
+        >
+          {title}
+        </h2>
+      </div>
 
       <div
         className="
           prose
-          prose-invert
-          mt-2
+          dark:prose-invert
+          mt-4
           max-w-none
-          prose-p:leading-7
-          prose-li:leading-7
+          prose-headings:text-foreground
+          prose-p:text-muted-foreground
+          prose-p:leading-8
+          prose-li:text-muted-foreground
+          prose-li:leading-8
+          prose-strong:text-foreground
+          prose-a:text-primary
+          prose-a:no-underline
+          hover:prose-a:underline
+          prose-blockquote:border-primary
+          prose-blockquote:text-foreground
+          prose-code:text-primary
         "
       >
         {children}
       </div>
-
     </section>
   );
 }

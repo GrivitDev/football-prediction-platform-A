@@ -9,45 +9,90 @@ export default function LegalBreadcrumb({
 }: LegalBreadcrumbProps) {
   return (
     <nav
+      aria-label="Breadcrumb"
       className="
         mb-8
-        flex
-        items-center
-        gap-2
-        text-sm
-        text-muted-foreground
+        w-full
+        overflow-x-auto
       "
     >
-      <Link
-        href="/"
+      <div
         className="
-          transition
-          hover:text-primary
+          inline-flex
+          min-w-max
+          items-center
+          gap-2
+          rounded-full
+          border
+          border-border/60
+          bg-background/70
+          px-4
+          py-2.5
+          text-sm
+          text-muted-foreground
+          shadow-sm
+          backdrop-blur-md
+          transition-colors
+          duration-300
         "
       >
-        Home
-      </Link>
+        <Link
+          href="/"
+          className="
+            rounded-md
+            px-1
+            py-0.5
+            transition-colors
+            duration-200
+            hover:text-primary
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-primary/40
+          "
+        >
+          Home
+        </Link>
 
-      <span>
-        /
-      </span>
+        <span
+          className="
+            select-none
+            text-border
+          "
+        >
+          /
+        </span>
 
-      <span>
-        Legal
-      </span>
+        <span
+          className="
+            whitespace-nowrap
+          "
+        >
+          Legal
+        </span>
 
-      <span>
-        /
-      </span>
+        <span
+          className="
+            select-none
+            text-border
+          "
+        >
+          /
+        </span>
 
-      <span
-        className="
-          font-medium
-          text-foreground
-        "
-      >
-        {current}
-      </span>
+        <span
+          className="
+            whitespace-nowrap
+            rounded-md
+            bg-primary/10
+            px-2
+            py-0.5
+            font-semibold
+            text-primary
+          "
+        >
+          {current}
+        </span>
+      </div>
     </nav>
   );
 }

@@ -7,54 +7,49 @@ import {
   AlertTriangle,
   RotateCcw,
   Megaphone,
+  Building2,
 } from 'lucide-react';
 
 
 const legalItems = [
   {
     title: 'Privacy Policy',
-    description:
-      'Learn how we collect, use, and protect your personal information.',
     href: '/privacy-policy',
     icon: ShieldCheck,
   },
 
   {
     title: 'Terms & Conditions',
-    description:
-      'Understand the rules and conditions that guide the use of our platform.',
     href: '/terms-and-conditions',
     icon: FileText,
   },
 
   {
+  title: 'Ownership Information',
+  href: '/ownership',
+  icon: Building2,
+  },
+
+  {
     title: 'Cookie Policy',
-    description:
-      'Learn how cookies help us improve experience, security, and services.',
     href: '/cookie-policy',
     icon: Cookie,
   },
 
   {
     title: 'Disclaimer',
-    description:
-      'Important information about predictions, accuracy, and user responsibility.',
     href: '/disclaimer',
     icon: AlertTriangle,
   },
 
   {
     title: 'Refund Policy',
-    description:
-      'Understand payment conditions, subscriptions, and refund eligibility.',
     href: '/refund-policy',
     icon: RotateCcw,
   },
 
   {
     title: 'Advertising Policy',
-    description:
-      'Learn how advertisements support our platform while maintaining transparency.',
     href: '/advertising-policy',
     icon: Megaphone,
   },
@@ -69,7 +64,7 @@ export default function LegalPreview() {
       className="
         relative
         overflow-hidden
-        py-20
+        py-10
       "
     >
 
@@ -81,6 +76,7 @@ export default function LegalPreview() {
           from-transparent
           via-muted/20
           to-transparent
+          text-center
         "
       />
 
@@ -95,52 +91,27 @@ export default function LegalPreview() {
       >
 
 
-        <div
-          className="
-            mb-12
-            max-w-3xl
-          "
-        >
+<div
+  className="
+    mb-4
+    mx-auto
+    max-w-3xl
+    text-center
+  "
+>
 
-          <span
-            className="
-              text-sm
-              font-semibold
-              uppercase
-              tracking-[0.25em]
-              text-primary
-            "
-          >
-            Transparency
-          </span>
+  <h2
+    className="
+      mt-2
+      text-3xl
+      font-black
+      md:text-3xl
+    "
+  >
+    Privacy Policies & Terms and Conditions
+  </h2>
 
-
-          <h2
-            className="
-              mt-4
-              text-3xl
-              font-black
-              md:text-5xl
-            "
-          >
-            Platform Policies & Information
-          </h2>
-
-
-          <p
-            className="
-              mt-5
-              leading-8
-              text-muted-foreground
-            "
-          >
-            We believe in providing a transparent and
-            trustworthy experience. Explore our policies
-            covering privacy, payments, responsible use,
-            cookies, and platform guidelines.
-          </p>
-
-        </div>
+</div>
 
 
 
@@ -148,15 +119,15 @@ export default function LegalPreview() {
           className="
             grid
             gap-6
-            md:grid-cols-2
-            lg:grid-cols-3
+            grid-cols-2
+            md:grid-cols-3
+            lg:grid-cols-7
           "
         >
 
           {legalItems.map(
             ({
               title,
-              description,
               href,
               icon: Icon,
             }) => (
@@ -170,7 +141,7 @@ export default function LegalPreview() {
                   border
                   border-border/60
                   bg-background/60
-                  p-6
+                  p-3
                   backdrop-blur-xl
                   transition
                   hover:-translate-y-1
@@ -181,20 +152,18 @@ export default function LegalPreview() {
                 <div
                   className="
                     flex
-                    h-12
-                    w-12
                     items-center
                     justify-center
+                    text-center
                     rounded-2xl
-                    bg-primary/10
                     text-primary
                   "
                 >
 
                   <Icon
                     className="
-                      h-6
-                      w-6
+                      h-8
+                      w-8
                     "
                   />
 
@@ -204,31 +173,18 @@ export default function LegalPreview() {
 
                 <h3
                   className="
-                    mt-6
-                    text-xl
+                    mt-2
+                    text-l
                     font-bold
+                    text-center
                   "
                 >
                   {title}
                 </h3>
 
-
-                <p
-                  className="
-                    mt-3
-                    text-sm
-                    leading-7
-                    text-muted-foreground
-                  "
-                >
-                  {description}
-                </p>
-
-
-
                 <div
                   className="
-                    mt-5
+                    mt-2
                     flex
                     items-center
                     text-sm
@@ -241,7 +197,7 @@ export default function LegalPreview() {
 
                   <ArrowRight
                     className="
-                      ml-2
+                      ml-4
                       h-4
                       w-4
                       transition

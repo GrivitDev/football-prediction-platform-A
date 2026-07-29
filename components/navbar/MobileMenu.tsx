@@ -2,7 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname,useRouter } from 'next/navigation';
+import {
+  usePathname,
+  useRouter,
+} from 'next/navigation';
 
 import {
   Menu,
@@ -42,11 +45,8 @@ import { useAuth } from '@/providers/auth-provider';
 import ThemeSwitcher from './ThemeSwitcher';
 
 
-
 export default function MobileMenu() {
-
   const pathname = usePathname();
-
   const router = useRouter();
 
   const {
@@ -55,157 +55,139 @@ export default function MobileMenu() {
   } = useAuth();
 
 
-
   const publicLinks = [
     {
-      name:'Home',
-      href:'/',
-      icon:Home,
+      name: 'Home',
+      href: '/',
+      icon: Home,
     },
     {
-      name:'Live Scores',
-      href:'/livescore',
-      icon:Trophy,
+      name: 'Live Scores',
+      href: '/livescore',
+      icon: Trophy,
     },
     {
-      name:'Articles',
-      href:'/articles',
-      icon:Newspaper,
+      name: 'Articles',
+      href: '/articles',
+      icon: Newspaper,
     },
     {
-      name:'About',
-      href:'/about',
-      icon:Info,
+      name: 'About',
+      href: '/about',
+      icon: Info,
     },
   ];
-
 
 
   const adminLinks = [
-
     {
-      title:'Overview',
-      items:[
+      title: 'Overview',
+      items: [
         {
-          name:'Dashboard',
-          href:'/admin',
-          icon:LayoutDashboard,
+          name: 'Dashboard',
+          href: '/admin',
+          icon: LayoutDashboard,
         },
       ],
     },
-
     {
-      title:'Predictions',
-      items:[
+      title: 'Predictions',
+      items: [
         {
-          name:'Create Prediction',
-          href:'/admin/create-prediction',
-          icon:PlusCircle,
+          name: 'Create Prediction',
+          href: '/admin/create-prediction',
+          icon: PlusCircle,
         },
         {
-          name:'Manage Predictions',
-          href:'/admin/predictions',
-          icon:List,
+          name: 'Manage Predictions',
+          href: '/admin/predictions',
+          icon: List,
         },
       ],
     },
-
-
     {
-      title:'Content',
-      items:[
+      title: 'Content',
+      items: [
         {
-          name:'Create Article',
-          href:'/admin/create-article',
-          icon:FileText,
+          name: 'Create Article',
+          href: '/admin/create-article',
+          icon: FileText,
         },
         {
-          name:'Manage Articles',
-          href:'/admin/articles',
-          icon:FileText,
+          name: 'Manage Articles',
+          href: '/admin/articles',
+          icon: FileText,
         },
       ],
     },
-
-
     {
-      title:'Management',
-      items:[
+      title: 'Management',
+      items: [
         {
-          name:'Users',
-          href:'/admin/users',
-          icon:Users,
+          name: 'Users',
+          href: '/admin/users',
+          icon: Users,
         },
         {
-          name:'Subscriptions',
-          href:'/admin/subscriptions',
-          icon:CreditCard,
+          name: 'Subscriptions',
+          href: '/admin/subscriptions',
+          icon: CreditCard,
         },
         {
-          name:'Ads',
-          href:'/admin/ads',
-          icon:Megaphone,
+          name: 'Ads',
+          href: '/admin/ads',
+          icon: Megaphone,
         },
         {
-          name:'Promos',
-          href:'/admin/promos',
-          icon:Gift,
+          name: 'Promos',
+          href: '/admin/promos',
+          icon: Gift,
         },
         {
-          name:'Referrals',
-          href:'/admin/referrals',
-          icon:TicketPercent,
+          name: 'Referrals',
+          href: '/admin/referrals',
+          icon: TicketPercent,
         },
       ],
     },
-
   ];
-
 
 
   const userLinks = [
-
     {
-      name:'Dashboard',
-      href:'/dashboard',
-      icon:LayoutDashboard,
+      name: 'Dashboard',
+      href: '/dashboard',
+      icon: LayoutDashboard,
     },
-
     {
-      name:'My Predictions',
-      href:'/dashboard/predictions',
-      icon:TrendingUp,
+      name: 'My Predictions',
+      href: '/dashboard/predictions',
+      icon: TrendingUp,
     },
-
     {
-      name:'My Purchases',
-      href:'/dashboard/purchases',
-      icon:ShoppingCart,
+      name: 'My Purchases',
+      href: '/dashboard/purchases',
+      icon: ShoppingCart,
     },
-
     {
-      name:'Referrals & Promos',
-      href:'/dashboard/referrals',
-      icon:Gift,
+      name: 'Referrals & Promos',
+      href: '/dashboard/referrals',
+      icon: Gift,
     },
-
     {
-      name:'My Profile',
-      href:'/dashboard/profile',
-      icon:User,
+      name: 'My Profile',
+      href: '/dashboard/profile',
+      icon: User,
     },
-
     {
-      name:'Settings',
-      href:'/dashboard/settings',
-      icon:Settings,
+      name: 'Settings',
+      href: '/dashboard/settings',
+      icon: Settings,
     },
-
   ];
 
 
-
-  const linkClass = (active:boolean) => `
+  const linkClass = (active: boolean) => `
     group
     flex
     items-center
@@ -214,6 +196,7 @@ export default function MobileMenu() {
     px-4
     py-3
     text-sm
+    font-medium
     transition-all
     duration-300
 
@@ -224,25 +207,20 @@ export default function MobileMenu() {
           border-primary/20
           bg-primary/10
           text-primary
-          shadow-lg
-          shadow-primary/10
         `
         : `
           text-muted-foreground
-          hover:bg-accent
+          hover:bg-muted
           hover:text-foreground
         `
     }
   `;
 
 
-
   return (
-
     <div className="lg:hidden">
 
       <Sheet>
-
 
         <SheetTrigger asChild>
 
@@ -250,17 +228,21 @@ export default function MobileMenu() {
             variant="ghost"
             size="icon"
             className="
+              h-10
+              w-10
               rounded-xl
+              border
+              border-border/50
+              bg-background/40
+              backdrop-blur-md
+              transition
               hover:bg-primary/10
             "
           >
-
-            <Menu size={24}/>
-
+            <Menu className="h-5 w-5" />
           </Button>
 
         </SheetTrigger>
-
 
 
         <SheetContent
@@ -269,44 +251,39 @@ export default function MobileMenu() {
             flex
             w-[340px]
             flex-col
-            border-border/60
-            bg-background/95
+            border-border/50
+            bg-background/90
             p-0
             backdrop-blur-2xl
           "
         >
 
-
-          {/* Glow */}
-
           <div
             className="
               pointer-events-none
               absolute
+              -right-20
               -top-20
-              right-0
               h-60
               w-60
               rounded-full
-              bg-primary/20
-              blur-[100px]
+              bg-primary/10
+              blur-3xl
             "
           />
 
 
-
-          {/* HEADER */}
-
           <SheetHeader
             className="
+              relative
               border-b
-              border-border/60
+              border-border/50
               px-6
               py-6
             "
           >
 
-            <SheetTitle>
+            <SheetTitle asChild>
 
               <Link
                 href="/"
@@ -322,7 +299,11 @@ export default function MobileMenu() {
                   alt="PredictPro"
                   width={42}
                   height={42}
-                  className="rounded-xl"
+                  className="
+                    rounded-xl
+                    border
+                    border-border/50
+                  "
                 />
 
 
@@ -356,10 +337,6 @@ export default function MobileMenu() {
           </SheetHeader>
 
 
-
-
-          {/* SCROLL AREA */}
-
           <div
             className="
               flex-1
@@ -370,8 +347,64 @@ export default function MobileMenu() {
             "
           >
 
-
             <div className="space-y-2">
+
+              <p
+                className="
+                  px-3
+                  text-xs
+                  font-semibold
+                  uppercase
+                  tracking-[0.2em]
+                  text-muted-foreground
+                "
+              >
+                Explore
+              </p>
+
+
+              {publicLinks.map((link) => {
+
+                const Icon = link.icon;
+
+                return (
+                  <SheetClose
+                    asChild
+                    key={link.href}
+                  >
+                    <Link
+                      href={link.href}
+                      className={linkClass(
+                        pathname === link.href
+                      )}
+                    >
+                      <Icon className="h-5 w-5" />
+
+                      {link.name}
+
+                    </Link>
+
+                  </SheetClose>
+                );
+
+              })}
+
+            </div>
+
+
+            <div
+              className="
+                mt-8
+                space-y-3
+              "
+            >
+
+              <div
+                className="
+                  border-t
+                  border-border/50
+                "
+              />
 
 
               <p
@@ -380,200 +413,83 @@ export default function MobileMenu() {
                   text-xs
                   font-semibold
                   uppercase
-                  tracking-widest
+                  tracking-[0.2em]
                   text-muted-foreground
                 "
               >
-                Explore
+                Theme
               </p>
 
 
-              {
-                publicLinks.map(link => {
-
-                  const Icon = link.icon;
-
-                  return (
-
-                    <SheetClose
-                      asChild
-                      key={link.href}
-                    >
-
-                      <Link
-                        href={link.href}
-                        className={linkClass(
-                          pathname === link.href
-                        )}
-                      >
-
-                        <Icon size={19}/>
-
-                        {link.name}
-
-                      </Link>
-
-                    </SheetClose>
-
-                  );
-
-                })
-              }
-
+              <div
+                className="
+                  rounded-2xl
+                  border
+                  border-border/50
+                  bg-muted/20
+                  p-2
+                "
+              >
+                <ThemeSwitcher />
+              </div>
 
             </div>
 
 
-{/* THEME */}
-
-<div
-  className="
-    mt-8
-    space-y-3
-  "
->
-
-  <div
-    className="
-      border-t
-      border-border/60
-    "
-  />
-
-
-  <p
-    className="
-      px-3
-      text-xs
-      font-semibold
-      uppercase
-      tracking-widest
-      text-muted-foreground
-    "
-  >
-    Theme
-  </p>
-
-
-  <div
-    className="
-      rounded-2xl
-      border
-      border-border/60
-      bg-muted/30
-      px-3
-      py-2
-    "
-  >
-
-    <ThemeSwitcher />
-
-  </div>
-
-
-</div>
-
-            {
-              user && (
+            {user && (
+              <div className="mt-8 space-y-4">
 
                 <div
                   className="
-                    mt-8
-                    space-y-4
+                    border-t
+                    border-border/50
+                  "
+                />
+
+
+                <p
+                  className="
+                    px-3
+                    text-xs
+                    font-semibold
+                    uppercase
+                    tracking-[0.2em]
+                    text-muted-foreground
                   "
                 >
-
-                  <div
-                    className="
-                      border-t
-                      border-border/60
-                    "
-                  />
+                  {user.role === 'admin'
+                    ? 'Administration'
+                    : 'Account'}
+                </p>
 
 
-                  <p
-                    className="
-                      px-3
-                      text-xs
-                      font-semibold
-                      uppercase
-                      tracking-widest
-                      text-muted-foreground
-                    "
-                  >
-                    {
-                      user.role === 'admin'
-                        ? 'Administration'
-                        : 'Account'
-                    }
-                  </p>
+                {user.role === 'admin'
+                  ? adminLinks.map((section) => (
+
+                      <div
+                        key={section.title}
+                        className="space-y-2"
+                      >
+
+                        <p
+                          className="
+                            px-3
+                            text-[11px]
+                            font-semibold
+                            uppercase
+                            tracking-wider
+                            text-muted-foreground/70
+                          "
+                        >
+                          {section.title}
+                        </p>
 
 
-                  {
-                    user.role === 'admin'
-                      ? adminLinks.map(section => (
-
-                          <div
-                            key={section.title}
-                            className="space-y-2"
-                          >
-
-                            <p
-                              className="
-                                px-3
-                                text-[11px]
-                                font-semibold
-                                uppercase
-                                tracking-wider
-                                text-muted-foreground/70
-                              "
-                            >
-                              {section.title}
-                            </p>
-
-
-                            {
-                              section.items.map(link => {
-
-                                const Icon = link.icon;
-
-                                return (
-
-                                  <SheetClose
-                                    asChild
-                                    key={link.href}
-                                  >
-
-                                    <Link
-                                      href={link.href}
-                                      className={linkClass(
-                                        pathname === link.href
-                                      )}
-                                    >
-
-                                      <Icon size={19}/>
-
-                                      {link.name}
-
-                                    </Link>
-
-                                  </SheetClose>
-
-                                );
-
-                              })
-                            }
-
-                          </div>
-
-                        ))
-
-                      : userLinks.map(link => {
+                        {section.items.map((link) => {
 
                           const Icon = link.icon;
 
                           return (
-
                             <SheetClose
                               asChild
                               key={link.href}
@@ -586,120 +502,137 @@ export default function MobileMenu() {
                                 )}
                               >
 
-                                <Icon size={19}/>
+                                <Icon className="h-5 w-5" />
 
                                 {link.name}
 
                               </Link>
 
                             </SheetClose>
-
                           );
 
-                        })
-                  }
+                        })}
 
+                      </div>
 
-                </div>
+                    ))
 
-              )
-            }
+                  : userLinks.map((link) => {
 
+                      const Icon = link.icon;
+
+                      return (
+                        <SheetClose
+                          asChild
+                          key={link.href}
+                        >
+
+                          <Link
+                            href={link.href}
+                            className={linkClass(
+                              pathname === link.href
+                            )}
+                          >
+
+                            <Icon className="h-5 w-5" />
+
+                            {link.name}
+
+                          </Link>
+
+                        </SheetClose>
+                      );
+
+                    })
+                }
+
+              </div>
+            )}
 
           </div>
 
-
-
-
-
-          {/* FOOTER */}
 
           <div
             className="
               border-t
-              border-border/60
+              border-border/50
               p-5
             "
           >
 
-            {
-              !user ? (
+            {!user ? (
 
-                <div className="space-y-3">
+              <div className="space-y-3">
 
-                  <SheetClose asChild>
-                    <Link
-                      href="/login"
-                      className="
-                        block
-                        rounded-2xl
-                        border
-                        border-border
-                        py-3
-                        text-center
-                      "
-                    >
-                      Login
-                    </Link>
-                  </SheetClose>
-
-
-                  <SheetClose asChild>
-                    <Link
-                      href="/register"
-                      className="
-                        block
-                        rounded-2xl
-                        bg-primary
-                        py-3
-                        text-center
-                        font-semibold
-                        text-primary-foreground
-                      "
-                    >
-                      Register
-                    </Link>
-                  </SheetClose>
+                <SheetClose asChild>
+                  <Link
+                    href="/login"
+                    className="
+                      block
+                      rounded-2xl
+                      border
+                      border-border
+                      py-3
+                      text-center
+                      text-sm
+                      font-medium
+                    "
+                  >
+                    Login
+                  </Link>
+                </SheetClose>
 
 
-                </div>
+                <SheetClose asChild>
+                  <Link
+                    href="/register"
+                    className="
+                      block
+                      rounded-2xl
+                      bg-primary
+                      py-3
+                      text-center
+                      text-sm
+                      font-semibold
+                      text-primary-foreground
+                    "
+                  >
+                    Register
+                  </Link>
+                </SheetClose>
 
-              ) : (
+              </div>
 
-                <Button
-                  onClick={async()=>{
+            ) : (
 
-                    await logout();
+              <Button
+                onClick={async () => {
 
-                    router.push('/login');
+                  await logout();
 
-                  }}
-                  className="
-                    w-full
-                    rounded-2xl
-                  "
-                >
+                  router.push('/login');
 
-                  <LogOut size={18}/>
+                }}
+                className="
+                  w-full
+                  rounded-2xl
+                "
+              >
 
-                  Logout
+                <LogOut className="h-5 w-5" />
 
-                </Button>
+                Logout
 
-              )
-            }
+              </Button>
+
+            )}
 
           </div>
 
-
-
         </SheetContent>
-
 
       </Sheet>
 
     </div>
-
   );
-
 }

@@ -10,7 +10,6 @@ import {
 
 import {
   responsibleGamblingContent,
-  responsibleGamblingToc,
 } from '@/data/legal/responsible-gambling';
 
 

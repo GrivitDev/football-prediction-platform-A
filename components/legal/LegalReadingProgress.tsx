@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 export default function LegalReadingProgress() {
-
   const [progress, setProgress] =
     useState(0);
 
-
   useEffect(() => {
-
     const updateProgress = () => {
-
       const scrollTop =
         window.scrollY;
 
@@ -19,10 +18,10 @@ export default function LegalReadingProgress() {
         document.documentElement.scrollHeight -
         window.innerHeight;
 
-
       const percentage =
-        (scrollTop / documentHeight) * 100;
-
+        documentHeight > 0
+          ? (scrollTop / documentHeight) * 100
+          : 0;
 
       setProgress(
         Math.min(
@@ -30,44 +29,56 @@ export default function LegalReadingProgress() {
           Math.max(0, percentage)
         )
       );
-
     };
 
+    updateProgress();
 
     window.addEventListener(
       'scroll',
-      updateProgress
+      updateProgress,
+      {
+        passive: true,
+      }
     );
 
+    window.addEventListener(
+      'resize',
+      updateProgress
+    );
 
     return () => {
       window.removeEventListener(
         'scroll',
         updateProgress
       );
+
+      window.removeEventListener(
+        'resize',
+        updateProgress
+      );
     };
-
   }, []);
-
 
   return (
     <div
       className="
+        pointer-events-none
         fixed
-        left-0
+        inset-x-0
         top-0
         z-[100]
         h-1
-        w-full
-        bg-transparent
       "
     >
       <div
         className="
           h-full
+          rounded-r-full
           bg-primary
-          transition-all
-          duration-200
+          shadow-[0_0_12px_hsl(var(--primary)/0.45)]
+          transition-[width]
+          duration-150
+          ease-out
         "
         style={{
           width: `${progress}%`,

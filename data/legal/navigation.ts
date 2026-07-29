@@ -26,9 +26,17 @@ import {
   advertisingPolicyToc,
 } from './advertising-policy';
 
+import { ownershipToc } from './ownership';
+
 
 
 export const legalNavigation = [
+
+  {
+    title: 'Ownership Information',
+    href: '/ownership',
+    items: ownershipToc,
+  },
 
   {
     title: 'Privacy Policy',

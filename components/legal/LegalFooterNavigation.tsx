@@ -1,5 +1,8 @@
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+} from 'lucide-react';
 
 interface Props {
   previous?: {
@@ -18,45 +21,163 @@ export default function LegalFooterNavigation({
   next,
 }: Props) {
   return (
-    <div className="mt-20 flex justify-between gap-6">
+    <div
+      className="
+        mt-16
+        grid
+        gap-4
+        sm:mt-20
+        sm:grid-cols-2
+        sm:gap-6
+      "
+    >
       {previous ? (
         <Link
           href={previous.href}
-          className="glass-card flex items-center gap-3 rounded-2xl px-6 py-4 transition hover:scale-[1.02]"
+          className="
+            group
+            flex
+            min-h-28
+            items-center
+            gap-4
+            rounded-3xl
+            border
+            border-border/50
+            bg-background/70
+            p-5
+            shadow-sm
+            backdrop-blur-sm
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:border-primary/30
+            hover:shadow-md
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-primary/40
+          "
         >
-          <ArrowLeft className="h-5 w-5" />
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              items-center
+              justify-center
+              rounded-full
+              bg-primary/10
+              text-primary
+              transition-transform
+              duration-300
+              group-hover:-translate-x-1
+            "
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </div>
 
-          <div>
-            <p className="text-xs uppercase text-muted-foreground">
+          <div className="min-w-0">
+            <p
+              className="
+                text-xs
+                font-medium
+                uppercase
+                tracking-[0.2em]
+                text-muted-foreground
+              "
+            >
               Previous
             </p>
 
-            <p className="font-semibold">
+            <p
+              className="
+                mt-1
+                line-clamp-2
+                font-semibold
+                text-foreground
+              "
+            >
               {previous.title}
             </p>
           </div>
         </Link>
       ) : (
-        <div />
+        <div className="hidden sm:block" />
       )}
 
-      {next && (
+      {next ? (
         <Link
           href={next.href}
-          className="glass-card flex items-center gap-3 rounded-2xl px-6 py-4 transition hover:scale-[1.02]"
+          className="
+            group
+            flex
+            min-h-28
+            items-center
+            justify-between
+            gap-4
+            rounded-3xl
+            border
+            border-border/50
+            bg-background/70
+            p-5
+            text-right
+            shadow-sm
+            backdrop-blur-sm
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:border-primary/30
+            hover:shadow-md
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-primary/40
+          "
         >
-          <div className="text-right">
-            <p className="text-xs uppercase text-muted-foreground">
+          <div className="min-w-0 flex-1">
+            <p
+              className="
+                text-xs
+                font-medium
+                uppercase
+                tracking-[0.2em]
+                text-muted-foreground
+              "
+            >
               Next
             </p>
 
-            <p className="font-semibold">
+            <p
+              className="
+                mt-1
+                line-clamp-2
+                font-semibold
+                text-foreground
+              "
+            >
               {next.title}
             </p>
           </div>
 
-          <ArrowRight className="h-5 w-5" />
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-primary/10
+              text-primary
+              transition-transform
+              duration-300
+              group-hover:translate-x-1
+            "
+          >
+            <ArrowRight className="h-5 w-5" />
+          </div>
         </Link>
+      ) : (
+        <div className="hidden sm:block" />
       )}
     </div>
   );

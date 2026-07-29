@@ -5,9 +5,6 @@ import Link from 'next/link';
 import {
   ArrowRight,
   Trophy,
-  BarChart3,
-  Target,
-  ShieldCheck,
   Mail,
   Phone,
 } from 'lucide-react';
@@ -22,25 +19,7 @@ import {
 } from 'react-icons/fa6';
 
 import LegalPreview from '@/components/LegalPreview';
-
-
-const features = [
-  {
-    icon: <BarChart3 />,
-    title: 'Match Analysis',
-    text: 'We study team form, statistics, performance trends and important match factors.',
-  },
-  {
-    icon: <Target />,
-    title: 'Football Predictions',
-    text: 'Our predictions are created through careful research and football understanding.',
-  },
-  {
-    icon: <ShieldCheck />,
-    title: 'Premium Content',
-    text: 'Exclusive predictions, tactical insights, previews and football discussions.',
-  },
-];
+import AboutHero from '@/components/AboutHero';
 
 
 
@@ -49,43 +28,43 @@ const communities = [
     icon: <FaTelegram />,
     name: 'Telegram Channel',
     text: 'Daily predictions and announcements',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL || '#',
   },
   {
     icon: <FaWhatsapp />,
     name: 'WhatsApp Channel',
     text: 'Follow football updates and insights',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL || '#',
   },
   {
     icon: <FaWhatsapp />,
     name: 'WhatsApp Group',
     text: 'Discuss matches with other football fans',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_WHATSAPP_GROUP || '#',
   },
   {
     icon: <FaFacebook />,
     name: 'Facebook Page',
     text: 'News and community updates',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_FACEBOOK || '#',
   },
   {
     icon: <FaXTwitter />,
     name: 'X (Twitter)',
     text: 'Football opinions and updates',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_TWITTER || '#',
   },
   {
     icon: <FaInstagram />,
     name: 'Instagram',
     text: 'Football content and highlights',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_INSTAGRAM || '#',
   },
   {
     icon: <FaYoutube />,
     name: 'YouTube',
     text: 'Football analysis videos',
-    link: '#',
+    link: process.env.NEXT_PUBLIC_YOUTUBE || '#',
   },
 ];
 
@@ -125,135 +104,27 @@ export default function AboutPage() {
 
       </div>
 
-
-
-      <section className="mx-auto max-w-7xl px-6 pb-24 pt-24">
-
-
-        {/* HERO */}
-
-        <div className="mx-auto max-w-4xl text-center">
-
-          <div className="
-            mx-auto flex w-fit items-center gap-2
-            rounded-full border border-border
-            bg-muted/40 px-5 py-2
-            backdrop-blur-xl
-          ">
-            <Trophy className="h-4 w-4 text-cyan-500" />
-            Football Analysis Platform
-          </div>
-
-
-
-          <h1 className="
-            mt-10 text-5xl font-black tracking-tight md:text-7xl
-          ">
-            <span className="
-              bg-gradient-to-r
-              from-foreground
-              via-cyan-500
-              to-emerald-500
-              bg-clip-text
-              text-transparent
-            ">
-              About PredictPro
-            </span>
-          </h1>
-
-
-
-          <p className="
-            mt-8 text-lg leading-8 text-muted-foreground
-          ">
-            PredictPro is a football analysis and prediction platform built
-            for fans who want a deeper understanding of the game.
-
-            We provide carefully researched match insights, predictions and
-            premium football content to help our community follow football
-            with better information.
-          </p>
-
-        </div>
-
-
-
-
-
-        {/* MISSION */}
-
-        <div className="
-          mt-20 rounded-[32px]
-          border border-border/60
-          bg-background/70
-          p-10 backdrop-blur-2xl
-          md:p-14
-          animate-card-float
-        ">
-
-          <h2 className="text-3xl font-bold">
-            Our Mission
-          </h2>
-
-
-          <p className="
-            mt-5 max-w-4xl
-            leading-8 text-muted-foreground
-          ">
-            Our mission is to make football analysis simple, accessible and
-            valuable for everyone.
-
-            Football is unpredictable, and no prediction can guarantee an
-            outcome. Through research, statistics, team evaluation and
-            football knowledge, we aim to provide valuable insights that
-            help fans make better informed decisions.
-          </p>
-
-        </div>
-
-
-
-
-
-        {/* FEATURES */}
-
-        <div className="mt-16 grid gap-6 md:grid-cols-3">
-
-          {features.map((item) => (
-            <InfoCard key={item.title} {...item} />
-          ))}
-
-        </div>
-
-
-
-
-
+<AboutHero />
 
         {/* COMMUNITY */}
 
-        <section className="mt-24">
+        <section className="mt-8 px-8">
 
-          <h2 className="text-center text-4xl font-black">
-            Connect With Our Community
+          <h2 className="text-center text-3xl font-black">
+            Connect With us on our Social Media Platforms 
           </h2>
 
 
-          <p className="
-            mx-auto mt-4 max-w-2xl
-            text-center text-muted-foreground
-          ">
-            Follow PredictPro across our platforms and stay updated with
-            football insights, predictions and announcements.
-          </p>
-
-
-
-          <div className="
-            mt-12 grid gap-6
-            sm:grid-cols-2
-            lg:grid-cols-4
-          ">
+          <div
+            className="
+              mt-12
+              grid
+              grid-cols-2
+              gap-4
+              md:grid-cols-3
+              lg:grid-cols-4
+            "
+          >
 
             {communities.map((item) => (
               <SocialCard key={item.name} {...item} />
@@ -264,52 +135,55 @@ export default function AboutPage() {
         </section>
 
 
-
-
-
-
         {/* CONTACT */}
 
-        <section className="mt-24">
+        <section className="mt-8 px-12">
 
           <h2 className="text-center text-4xl font-black">
             Contact Us
           </h2>
 
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-
+          <div className="mt-4 grid gap-6 md:grid-cols-3">
 
             <ContactCard
               icon={<Mail />}
               title="Email"
-              value="support@predictpro.com"
+              value={process.env.NEXT_PUBLIC_SUPPORT_EMAIL || ''}
+              href={`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}`}
             />
-
 
             <ContactCard
               icon={<Phone />}
-              title="Phone / WhatsApp"
-              value="+234 XXX XXX XXXX"
+              title="Phone"
+              value={process.env.NEXT_PUBLIC_SUPPORT_PHONE || ''}
+              href={`tel:${process.env.NEXT_PUBLIC_SUPPORT_PHONE}`}
             />
 
+            <ContactCard
+              icon={<FaWhatsapp />}
+              title="WhatsApp Chat"
+              value="Chat with us"
+              href={process.env.NEXT_PUBLIC_WHATSAPP_CHAT || '#'}
+            />
 
           </div>
 
         </section>
 
+<section className=" px-8">
+
+      <LegalPreview/> 
+</section>
 
 
+<section className="mb-4 px-16">
 
-
-
-
-        <div className="mt-20 flex justify-center">
+        <div className="mt-8 flex justify-start">
 
           <Link
             href="/"
             className="
-              group flex items-center gap-3
+              group flex gap-3
               rounded-full border border-border
               bg-muted/40 px-8 py-4
               font-semibold backdrop-blur-xl
@@ -321,14 +195,14 @@ export default function AboutPage() {
             Explore PredictPro
 
             <ArrowRight className="
-              h-4 w-4 transition
+         h-4 w-4 transition
               group-hover:translate-x-1
             "/>
 
           </Link>
 
         </div>
-<LegalPreview/>
+
 
       </section>
 
@@ -336,47 +210,6 @@ export default function AboutPage() {
   );
 }
 
-
-
-
-
-
-function InfoCard({
-  icon,
-  title,
-  text,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  text: string;
-}) {
-
-  return (
-    <div className="
-      rounded-2xl border border-border
-      bg-muted/30 p-6
-      backdrop-blur-xl
-      transition-all duration-500
-      hover:-translate-y-3
-    ">
-
-      <div className="mb-5 text-cyan-500">
-        {icon}
-      </div>
-
-
-      <h3 className="text-xl font-bold">
-        {title}
-      </h3>
-
-
-      <p className="mt-3 text-sm text-muted-foreground">
-        {text}
-      </p>
-
-    </div>
-  );
-}
 
 
 
@@ -395,34 +228,64 @@ function SocialCard({
   text: string;
   link: string;
 }) {
-
   return (
     <Link
       href={link}
+      target="_blank"
+      rel="noopener noreferrer"
       className="
-        rounded-2xl border border-border
-        bg-muted/30 p-6
+        group
+        rounded-2xl
+        border
+        border-border
+        bg-muted/30
+        p-4
         backdrop-blur-xl
+        text-center
         transition-all
+        duration-300
         hover:-translate-y-2
         hover:border-cyan-500/40
+        sm:p-5
+        lg:p-6
       "
     >
-
-      <div className="mb-4 text-cyan-500 text-2xl">
+      <div
+        className="
+          mb-3
+          flex
+          justify-center
+          text-2xl
+          text-cyan-500
+          transition-transform
+          group-hover:scale-110
+          sm:text-3xl
+        "
+      >
         {icon}
       </div>
 
-
-      <h3 className="font-bold">
+      <h3
+        className="
+          text-sm
+          font-bold
+          sm:text-base
+        "
+      >
         {name}
       </h3>
 
-
-      <p className="mt-2 text-sm text-muted-foreground">
+      <p
+        className="
+          mt-2
+          hidden
+          text-sm
+          text-muted-foreground
+          md:block
+        "
+      >
         {text}
       </p>
-
     </Link>
   );
 }
@@ -437,33 +300,46 @@ function ContactCard({
   icon,
   title,
   value,
+  href,
 }: {
   icon: React.ReactNode;
   title: string;
   value: string;
+  href: string;
 }) {
+  const isExternal = href.startsWith('http');
 
   return (
-    <div className="
-      rounded-2xl border border-border
-      bg-muted/30 p-6
-      backdrop-blur-xl
-    ">
-
-      <div className="mb-4 text-cyan-500">
+    <Link
+      href={href}
+      target={isExternal ? '_blank' : undefined}
+      rel={isExternal ? 'noopener noreferrer' : undefined}
+      className="
+        group
+        rounded-2xl
+        border
+        border-border
+        bg-muted/30
+        p-6
+        backdrop-blur-xl
+        transition-all
+        duration-300
+        hover:-translate-y-2
+        hover:border-cyan-500/40
+        hover:bg-muted/50
+      "
+    >
+      <div className="mb-4 text-cyan-500 transition-transform group-hover:scale-110">
         {icon}
       </div>
-
 
       <h3 className="text-xl font-bold">
         {title}
       </h3>
 
-
-      <p className="mt-3 text-muted-foreground">
+      <p className="mt-3 text-muted-foreground break-all">
         {value}
       </p>
-
-    </div>
+    </Link>
   );
 }

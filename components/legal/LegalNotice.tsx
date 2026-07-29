@@ -1,4 +1,9 @@
-import { Info, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  Info,
+  AlertTriangle,
+  CheckCircle2,
+} from 'lucide-react';
+
 import { cn } from '@/lib/utils';
 
 interface LegalNoticeProps {
@@ -10,18 +15,29 @@ interface LegalNoticeProps {
 const variants = {
   info: {
     icon: Info,
-    classes:
-      'border-blue-500/30 bg-blue-500/10 text-blue-300',
+    classes: `
+      border-blue-500/20
+      bg-blue-500/8
+      text-blue-500
+    `,
   },
+
   warning: {
     icon: AlertTriangle,
-    classes:
-      'border-yellow-500/30 bg-yellow-500/10 text-yellow-300',
+    classes: `
+      border-yellow-500/20
+      bg-yellow-500/8
+      text-yellow-500
+    `,
   },
+
   success: {
     icon: CheckCircle2,
-    classes:
-      'border-green-500/30 bg-green-500/10 text-green-300',
+    classes: `
+      border-emerald-500/20
+      bg-emerald-500/8
+      text-emerald-500
+    `,
   },
 };
 
@@ -36,19 +52,75 @@ export default function LegalNotice({
   return (
     <div
       className={cn(
-        'my-8 rounded-2xl border p-6',
+        `
+          my-10
+          overflow-hidden
+          rounded-3xl
+          border
+          bg-background/70
+          shadow-sm
+          backdrop-blur-sm
+          transition-all
+          duration-300
+        `,
         variant.classes
       )}
     >
-      <div className="flex items-start gap-4">
-        <Icon className="mt-1 h-6 w-6 shrink-0" />
+      <div
+        className="
+          flex
+          items-start
+          gap-4
+          p-5
+          sm:gap-5
+          sm:p-6
+        "
+      >
+        <div
+          className={cn(
+            `
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-2xl
+              border
+              bg-background/80
+            `,
+            variant.classes
+          )}
+        >
+          <Icon
+            className="
+              h-5
+              w-5
+            "
+          />
+        </div>
 
-        <div className="space-y-2">
-          <h4 className="font-semibold">
+        <div className="min-w-0 flex-1">
+          <h4
+            className="
+              text-base
+              font-semibold
+              text-foreground
+              sm:text-lg
+            "
+          >
             {title}
           </h4>
 
-          <div className="leading-7">
+          <div
+            className="
+              mt-2
+              text-sm
+              leading-7
+              text-muted-foreground
+              sm:text-base
+            "
+          >
             {children}
           </div>
         </div>
