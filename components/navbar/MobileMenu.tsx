@@ -17,6 +17,7 @@ import {
   Settings,
   LogOut,
   Trophy,
+  Handshake,
   Users,
   PlusCircle,
   List,
@@ -65,6 +66,11 @@ export default function MobileMenu() {
       name: 'Live Scores',
       href: '/livescore',
       icon: Trophy,
+    },
+    {
+      name: 'Community',
+      href: '/community',
+      icon: Handshake,
     },
     {
       name: 'Articles',

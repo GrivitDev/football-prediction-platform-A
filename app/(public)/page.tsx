@@ -1,10 +1,10 @@
 'use client';
 
-import HeroSection from '@/components/home-sections/hero-section';
-import FeaturesSection from '@/components/home-sections/features-section';
-import TodayPredictionsPreview from '@/components/home-sections/today-predictions-preview';
+import HeroSection from '@/components/home-sections/hero/HeroSection';
+import FeaturesSection from '@/components/home-sections/features/FeaturesSection';
 import ArticlesPreview from '@/components/home-sections/articles-preview';
-import WhyChoose from '@/components/home-sections/why-choose';
+import CommunityPreviewSection from '@/components/home-sections/community-preview/CommunityPreviewSection';
+import PredictionPreview from '@/components/home-sections/PredictionsPreview';
 
 export default function HomePage() {
   return (
@@ -12,9 +12,9 @@ export default function HomePage() {
 
       <HeroSection />
       <FeaturesSection />
-      <TodayPredictionsPreview />
+      <PredictionPreview />
       <ArticlesPreview />
-      <WhyChoose />
+      <CommunityPreviewSection/>
     </main>
   );
 }

@@ -131,7 +131,7 @@ export default function SubscriptionOverview({
 
     {
       title:
-        'Subscription Status',
+        'Current Status',
 
       value:
         <StatusBadge
@@ -272,7 +272,7 @@ export default function SubscriptionOverview({
               }
 
 
-              <div className="relative">
+              <div className="relative ">
 
                 <StatCard
 

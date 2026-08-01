@@ -59,7 +59,7 @@ export default function TransactionSummary({
 
       value:
         new Intl.NumberFormat(
-          'en-GB',
+          'en-NG',
           {
             style: 'currency',
             currency: 'NGN',

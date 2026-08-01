@@ -50,6 +50,7 @@ export interface PredictionMarket {
 // ========================================
 
 export interface PredictionDetails {
+  [x: string]: any;
   id: string;
 
   matchId: string;

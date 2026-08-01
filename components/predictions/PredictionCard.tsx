@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { formatMatchTime } from '@/lib/formatMatchTime';
 
 import ConfidenceBadge from './ConfidenceBadge';
@@ -72,7 +73,7 @@ export default function PredictionCard({
           {
             prediction.league?.emblem && (
 
-              <img
+              <Image
 
                 src={
                   prediction.league.emblem
@@ -81,7 +82,9 @@ export default function PredictionCard({
                 alt={
                   prediction.league.name
                 }
+                    width={40}
 
+                  height={40}
                 className="
                   h-10
                   w-10
@@ -194,7 +197,7 @@ export default function PredictionCard({
             {
               prediction.homeTeamBadge && (
 
-                <img
+                <Image
 
                   src={
                     prediction.homeTeamBadge
@@ -203,7 +206,9 @@ export default function PredictionCard({
                   alt={
                     prediction.homeTeam
                   }
+                  width={40}
 
+                  height={40}
                   className="
                     h-12
                     w-12
@@ -272,7 +277,7 @@ export default function PredictionCard({
             {
               prediction.awayTeamBadge && (
 
-                <img
+                <Image
 
                   src={
                     prediction.awayTeamBadge
@@ -281,6 +286,10 @@ export default function PredictionCard({
                   alt={
                     prediction.awayTeam
                   }
+
+                    width={40}
+
+                    height={40}
 
                   className="
                     h-12

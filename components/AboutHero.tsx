@@ -1,12 +1,10 @@
 'use client';
 
-
 import Image from 'next/image';
 
 import {
   motion,
 } from 'framer-motion';
-
 
 import {
   Trophy,
@@ -14,7 +12,6 @@ import {
   ShieldCheck,
   Target,
 } from 'lucide-react';
-
 
 
 export default function AboutHero() {
@@ -26,17 +23,94 @@ export default function AboutHero() {
       className="
         relative
         isolate
-        overflow-hidden
         mx-auto
         max-w-7xl
+        overflow-hidden
+        rounded-3xl
+        border
+        border-border
         px-3
-        pb-4
-        pt-4
+        pb-8
+        pt-8
+        shadow-2xl
+        sm:px-6
+        sm:pb-10
+        sm:pt-10
+        lg:px-10
+        lg:pb-12
+        lg:pt-12
       "
     >
 
 
+      {/* ======================================== */}
+      {/* STADIUM BACKGROUND IMAGE */}
+      {/* ======================================== */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          -z-20
+        "
+      >
+
+        <Image
+          src="/hero/stadium-3.webp"
+          alt=""
+          fill
+          priority
+          className="
+            object-cover
+            object-center
+          "
+        />
+
+      </div>
+
+
+
+      {/* ======================================== */}
+      {/* THEME-AWARE BACKGROUND OVERLAY */}
+      {/* ======================================== */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          -z-10
+          bg-background/85
+          backdrop-blur-[2px]
+          dark:bg-background/70
+        "
+      />
+
+
+
+      {/* ======================================== */}
+      {/* STADIUM COLOR OVERLAY */}
+      {/* ======================================== */}
+
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          -z-10
+          bg-gradient-to-br
+          from-primary/10
+          via-transparent
+          to-primary/5
+        "
+      />
+
+
+
+      {/* ======================================== */}
       {/* BACKGROUND GLOW */}
+      {/* ======================================== */}
 
       <div
         className="
@@ -51,14 +125,14 @@ export default function AboutHero() {
         <motion.div
 
           animate={{
-            x:[-50,50,-50],
-            y:[0,40,0],
+            x: [-50, 50, -50],
+            y: [0, 40, 0],
           }}
 
           transition={{
-            duration:18,
-            repeat:Infinity,
-            ease:'easeInOut',
+            duration: 18,
+            repeat: Infinity,
+            ease: 'easeInOut',
           }}
 
           className="
@@ -69,7 +143,7 @@ export default function AboutHero() {
             w-[500px]
             -translate-x-1/2
             rounded-full
-            bg-cyan-500/20
+            bg-primary/15
             blur-[140px]
           "
 
@@ -79,14 +153,14 @@ export default function AboutHero() {
         <motion.div
 
           animate={{
-            x:[40,-40,40],
-            y:[30,-30,30],
+            x: [40, -40, 40],
+            y: [30, -30, 30],
           }}
 
           transition={{
-            duration:22,
-            repeat:Infinity,
-            ease:'easeInOut',
+            duration: 22,
+            repeat: Infinity,
+            ease: 'easeInOut',
           }}
 
           className="
@@ -96,7 +170,7 @@ export default function AboutHero() {
             h-[350px]
             w-[350px]
             rounded-full
-            bg-emerald-500/20
+            bg-primary/10
             blur-[120px]
           "
 
@@ -106,53 +180,61 @@ export default function AboutHero() {
 
 
 
-
-
+      {/* ======================================== */}
       {/* HERO CONTENT */}
+      {/* ======================================== */}
 
       <div
         className="
+          relative
+          z-10
           grid
           items-center
-          gap-14
+          gap-6
           lg:grid-cols-2
         "
       >
 
 
 
+        {/* ======================================== */}
         {/* LEFT SIDE */}
+        {/* ======================================== */}
 
         <div>
 
 
+          {/* EYEBROW */}
+
           <motion.div
 
             initial={{
-              opacity:0,
-              y:-20,
+              opacity: 0,
+              y: -20,
             }}
 
             animate={{
-              opacity:1,
-              y:0,
+              opacity: 1,
+              y: 0,
             }}
 
             transition={{
-              duration:.6,
+              duration: 0.6,
             }}
 
             className="
               flex
               w-fit
               items-center
-              gap-2
+              gap-1
               rounded-full
               border
               border-border
-              bg-muted/40
-              px-5
-              py-2
+              bg-background/50
+              px-3
+              py-1
+              text-foreground
+              shadow-lg
               backdrop-blur-xl
             "
           >
@@ -161,7 +243,7 @@ export default function AboutHero() {
               className="
                 h-4
                 w-4
-                text-cyan-500
+                text-primary
               "
             />
 
@@ -171,32 +253,32 @@ export default function AboutHero() {
 
 
 
-
-
+          {/* TITLE */}
 
           <motion.h1
 
             initial={{
-              opacity:0,
-              y:30,
+              opacity: 0,
+              y: 30,
             }}
 
             animate={{
-              opacity:1,
-              y:0,
+              opacity: 1,
+              y: 0,
             }}
 
             transition={{
-              duration:.8,
-              delay:.2,
+              duration: 0.8,
+              delay: 0.2,
             }}
 
             className="
-              mt-10
-              text-5xl
+              mt-2
+              text-4xl
               font-black
               tracking-tight
-              md:text-7xl
+              text-foreground
+              md:text-4xl
             "
           >
 
@@ -205,8 +287,8 @@ export default function AboutHero() {
                 block
                 bg-gradient-to-r
                 from-foreground
-                via-cyan-500
-                to-emerald-500
+                via-primary
+                to-primary/70
                 bg-[length:200%]
                 bg-clip-text
                 text-transparent
@@ -218,32 +300,29 @@ export default function AboutHero() {
 
             </span>
 
-
           </motion.h1>
 
 
 
-
-
-
+          {/* DESCRIPTION */}
 
           <motion.p
 
             initial={{
-              opacity:0,
+              opacity: 0,
             }}
 
             animate={{
-              opacity:1,
+              opacity: 1,
             }}
 
             transition={{
-              duration:.8,
-              delay:.5,
+              duration: 0.8,
+              delay: 0.5,
             }}
 
             className="
-              mt-8
+              mt-2
               max-w-xl
               text-lg
               leading-8
@@ -262,16 +341,16 @@ export default function AboutHero() {
 
 
 
+          {/* FEATURES */}
 
           <div
             className="
-              mt-10
+              mt-2
               flex
               flex-wrap
-              gap-4
+              gap-2
             "
           >
-
 
             <Feature
               icon={<TrendingUp />}
@@ -290,7 +369,6 @@ export default function AboutHero() {
               text="Prediction Accuracy"
             />
 
-
           </div>
 
 
@@ -298,14 +376,9 @@ export default function AboutHero() {
 
 
 
-
-
-
-
-
-
+        {/* ======================================== */}
         {/* RIGHT IMAGE AREA */}
-
+        {/* ======================================== */}
 
         <div
           className="
@@ -316,8 +389,7 @@ export default function AboutHero() {
         >
 
 
-
-          {/* Floating Prediction Card */}
+          {/* FLOATING PREDICTION CARD */}
 
           <FloatingCard
             className="
@@ -327,7 +399,6 @@ export default function AboutHero() {
             title="Arsenal"
             value="82%"
           />
-
 
 
           <FloatingCard
@@ -341,30 +412,34 @@ export default function AboutHero() {
 
 
 
-
-
-
+          {/* FOOTBALL */}
 
           <motion.div
 
             initial={{
-              opacity:0,
-              scale:.8,
+              opacity: 0,
+              scale: 0.8,
             }}
 
             animate={{
-              opacity:1,
-              scale:1,
-              y:[0,-15,0],
+              opacity: 1,
+              scale: 1,
+              y: [0, -15, 0],
             }}
 
             transition={{
-              opacity: { duration: 1 },
-              scale: { duration: 1 },
+              opacity: {
+                duration: 1,
+              },
+
+              scale: {
+                duration: 1,
+              },
+
               y: {
-                duration:5,
-                repeat:Infinity,
-                ease:'easeInOut',
+                duration: 5,
+                repeat: Infinity,
+                ease: 'easeInOut',
               },
             }}
 
@@ -381,7 +456,7 @@ export default function AboutHero() {
                 absolute
                 inset-0
                 rounded-full
-                bg-cyan-500/20
+                bg-primary/20
                 blur-3xl
               "
             />
@@ -404,13 +479,10 @@ export default function AboutHero() {
 
             />
 
-
           </motion.div>
 
 
-
         </div>
-
 
 
       </div>
@@ -419,21 +491,23 @@ export default function AboutHero() {
     </section>
 
   );
+
 }
 
 
 
-
-
-
-
+/*
+ * ========================================
+ * FEATURE
+ * ========================================
+ */
 
 function Feature({
   icon,
   text,
-}:{
-  icon:React.ReactNode;
-  text:string;
+}: {
+  icon: React.ReactNode;
+  text: string;
 }) {
 
 
@@ -447,20 +521,24 @@ function Feature({
         rounded-full
         border
         border-border
-        bg-background/40
+        bg-background/50
         px-4
         py-2
         text-sm
+        text-foreground
+        shadow-md
         backdrop-blur-xl
       "
     >
 
       <span
         className="
-          text-cyan-500
+          text-primary
         "
       >
+
         {icon}
+
       </span>
 
 
@@ -474,19 +552,20 @@ function Feature({
 
 
 
-
-
-
-
+/*
+ * ========================================
+ * FLOATING CARD
+ * ========================================
+ */
 
 function FloatingCard({
   title,
   value,
   className,
-}:{
-  title:string;
-  value:string;
-  className:string;
+}: {
+  title: string;
+  value: string;
+  className: string;
 }) {
 
 
@@ -495,13 +574,13 @@ function FloatingCard({
     <motion.div
 
       animate={{
-        y:[0,-15,0],
+        y: [0, -15, 0],
       }}
 
       transition={{
-        duration:4,
-        repeat:Infinity,
-        ease:'easeInOut',
+        duration: 4,
+        repeat: Infinity,
+        ease: 'easeInOut',
       }}
 
       className={`
@@ -512,6 +591,7 @@ function FloatingCard({
         border-border
         bg-background/60
         p-4
+        text-foreground
         shadow-xl
         backdrop-blur-xl
         ${className}
@@ -524,7 +604,9 @@ function FloatingCard({
           text-muted-foreground
         "
       >
+
         {title}
+
       </p>
 
 
@@ -533,10 +615,12 @@ function FloatingCard({
           mt-1
           text-2xl
           font-black
-          text-cyan-500
+          text-primary
         "
       >
+
         {value}
+
       </p>
 
 

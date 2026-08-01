@@ -90,6 +90,11 @@ export default function DashboardSidebar({
           href: '/dashboard/profile',
           icon: User,
         },
+        {
+          name: 'Subscriptions',
+          href: '/dashboard/subscriptions',
+          icon: User,
+        },
       ],
     },
   ];

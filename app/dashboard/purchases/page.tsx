@@ -6,8 +6,6 @@ import {PageHero} from '@/components/dashboard/shared/PageHero';
 import {DashboardSection} from '@/components/dashboard/shared/DashboardSection';
 import {SectionTitle } from '@/components/dashboard/shared/SectionTitle';
 
-import SubscriptionOverview from '@/components/dashboard/purchases/SubscriptionOverview';
-import UpgradeCard from '@/components/dashboard/purchases/UpgradeCard';
 import TransactionSummary from '@/components/dashboard/purchases/TransactionSummary';
 import TransactionTable from '@/components/dashboard/purchases/TransactionTable';
 
@@ -24,8 +22,6 @@ export default function PurchasesPage(){
   const {
     loading,
     payments,
-    subscription,
-    plan,
   } = usePurchases();
 
 
@@ -61,82 +57,11 @@ export default function PurchasesPage(){
       />
 
 
-
-
       <DashboardSection>
 
         <SectionTitle
 
-          title="Subscription"
-
-          description="
-            View your current membership status.
-          "
-
-        />
-
-
-        <SubscriptionOverview
-
-          loading={loading}
-
-          subscription={subscription}
-
-          plan={plan}
-
-        />
-
-      </DashboardSection>
-
-
-
-
-
-
-      {
-        config && (
-
-          <DashboardSection>
-
-            <SectionTitle
-
-              title="Upgrade Membership"
-
-              description="
-                Get more benefits by upgrading your plan.
-              "
-
-            />
-
-
-            <UpgradeCard
-
-              plan={plan}
-
-              config={config}
-
-              onUpgrade={(target)=>
-                setUpgrade(target)
-              }
-
-            />
-
-          </DashboardSection>
-
-        )
-      }
-
-
-
-
-
-
-
-      <DashboardSection>
-
-        <SectionTitle
-
-          title="Payment Summary"
+          title=""
 
           description="
             Overview of your transaction history.
@@ -166,7 +91,7 @@ export default function PurchasesPage(){
           title="Transaction History"
 
           description="
-            All your payments and subscription activities.
+        
           "
 
         />

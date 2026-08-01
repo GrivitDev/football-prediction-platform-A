@@ -396,6 +396,7 @@ export default function TransactionTable({
                     duration-300
                     hover:-translate-y-1
                     hover:shadow-xl
+                    mb-8
                   "
                 >
 

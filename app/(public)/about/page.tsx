@@ -4,7 +4,6 @@ import Link from 'next/link';
 
 import {
   ArrowRight,
-  Trophy,
   Mail,
   Phone,
 } from 'lucide-react';

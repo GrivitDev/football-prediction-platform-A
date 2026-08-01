@@ -145,10 +145,10 @@ export function StatCard({
             <h3
               className="
                 overflow-hidden
-                text-2xl
+                text-xl
                 font-black
                 tracking-tight
-                sm:text-3xl
+                sm:text-xl
               "
             >
 
