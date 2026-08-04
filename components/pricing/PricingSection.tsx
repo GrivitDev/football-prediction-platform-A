@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   TrendingUp,
 } from 'lucide-react';
+import GatewayModal from './GatewayModal';
 
 type SelectedPlan =
   | 'regular'
@@ -451,39 +452,21 @@ sm:text-sm
 
 
 
-{
-  selectedPlan && (
-
-    <PaymentModal
-
-      type="subscription"
-
-      target={selectedPlan}
-
-      amount={
-        selectedPlan === 'regular'
-          ? config.regularPrice
-          : config.vipPrice
-      }
-
-      config={config}
-
-      title={
-        `Complete ${
-          selectedPlan.toUpperCase()
-        } Subscription`
-      }
-
-      description="
-        Transfer the amount below and upload your payment proof.
-      "
-
-      onClose={()=>setSelectedPlan(null)}
-
-    />
-
-  )
-}
+{selectedPlan && (
+  <GatewayModal
+    type="subscription"
+    target={selectedPlan}
+    amount={
+      selectedPlan === 'regular'
+        ? config.regularPrice
+        : config.vipPrice
+    }
+    config={config}
+    title={`Complete ${selectedPlan.toUpperCase()} Subscription`}
+    description="Choose your preferred payment gateway to securely complete your subscription."
+    onClose={() => setSelectedPlan(null)}
+  />
+)}
 
 
 

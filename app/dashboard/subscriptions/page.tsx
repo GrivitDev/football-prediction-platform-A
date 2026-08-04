@@ -9,10 +9,9 @@ import {SectionTitle } from '@/components/dashboard/shared/SectionTitle';
 import SubscriptionOverview from '@/components/dashboard/purchases/SubscriptionOverview';
 import UpgradeCard from '@/components/dashboard/purchases/UpgradeCard';
 
-import PaymentModal from '@/components/pricing/PaymentModal';
-
 import { usePurchases } from '@/hooks/usePurchases';
 import { usePlanConfig } from '@/hooks/usePlanConfig';
+import GatewayModal from '@/components/pricing/GatewayModal';
 
 
 
@@ -127,7 +126,7 @@ export default function PurchasesPage(){
       {
         upgrade && config && (
 
-          <PaymentModal
+          <GatewayModal
 
             type="vip_upgrade"
 

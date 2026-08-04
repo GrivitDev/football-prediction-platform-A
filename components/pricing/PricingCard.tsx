@@ -127,7 +127,7 @@ export default function PricingCard({
 
     free:'Create Free Account',
 
-    regular:'Upgrade to Regular',
+    regular:'Subscribe Now',
 
     vip:'Become VIP Member',
 
