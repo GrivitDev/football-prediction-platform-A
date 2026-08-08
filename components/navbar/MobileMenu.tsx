@@ -302,7 +302,7 @@ export default function MobileMenu() {
 
                 <Image
                   src="/logo.png"
-                  alt="PredictPro"
+                  alt="HonestPredict"
                   width={42}
                   height={42}
                   className="
@@ -322,7 +322,7 @@ export default function MobileMenu() {
                       tracking-tight
                     "
                   >
-                    PredictPro
+                    HonestPredict
                   </p>
 
                   <p

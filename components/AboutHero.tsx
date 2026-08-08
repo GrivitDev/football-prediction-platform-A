@@ -296,7 +296,7 @@ export default function AboutHero() {
               "
             >
 
-              About PredictPro
+              About HonestPredict
 
             </span>
 
@@ -330,7 +330,7 @@ export default function AboutHero() {
             "
           >
 
-            PredictPro is a football analysis and prediction platform built
+            HonestPredict is a football analysis and prediction platform built
             for fans who want a deeper understanding of the game.
 
             We provide carefully researched match insights, predictions and

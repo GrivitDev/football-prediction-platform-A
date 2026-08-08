@@ -224,7 +224,7 @@ export default function IntelligenceCore() {
 
               src="/logo1.png"
 
-              alt="PredictPro Logo"
+              alt="HonestPredict Logo"
 
               fill
 
@@ -263,7 +263,7 @@ export default function IntelligenceCore() {
 
           >
 
-            PREDICTPRO
+            HonestPredict
 
           </p>
 

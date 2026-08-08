@@ -129,7 +129,7 @@ className="
               >
                 <Image
                   src="/logo.png"
-                  alt="PredictPro"
+                  alt="HonestPredict"
                   width={40}
                   height={40}
                   priority
@@ -145,7 +145,7 @@ className="
                     text-foreground
                   "
                 >
-                  PredictPro
+                  Honest Predict
                 </p>
 
                 <p

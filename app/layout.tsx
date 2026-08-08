@@ -27,18 +27,18 @@ export const metadata: Metadata = {
     canonical: SEO.url,
   },
 
-  applicationName: 'Sure Predict Pro',
+  applicationName: 'HonestPredict',
 
   authors: [
     {
-      name: 'Sure Predict Pro',
+      name: 'HonestPredict',
       url: SEO.url,
     },
   ],
 
-  creator: 'Sure Predict Pro',
+  creator: 'HonestPredict',
 
-  publisher: 'Sure Predict Pro',
+  publisher: 'HonestPredict',
 
   category: 'Sports',
 
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
         url: SEO.image,
         width: 1200,
         height: 630,
-        alt: 'Sure Predict Pro',
+        alt: 'HonestPredict',
       },
     ],
   },
@@ -127,7 +127,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
 
-    title: 'Sure Predict Pro',
+    title: 'HonestPredict',
 
     statusBarStyle: 'black-translucent',
   },

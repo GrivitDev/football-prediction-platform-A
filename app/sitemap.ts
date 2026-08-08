@@ -10,19 +10,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
 
     {
-      url: `${SEO.url}/predictions`,
+      url: `${SEO.url}/dashboard/predictions`,
       lastModified: new Date(),
       priority: 0.9,
     },
 
     {
-      url: `${SEO.url}/live-scores`,
+      url: `${SEO.url}/livescore`,
       lastModified: new Date(),
       priority: 0.9,
     },
 
     {
-      url: `${SEO.url}/fixtures`,
+      url: `${SEO.url}/community`,
       lastModified: new Date(),
       priority: 0.8,
     },
@@ -34,13 +34,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
 
     {
-      url: `${SEO.url}/standings`,
+      url: `${SEO.url}/about`,
       lastModified: new Date(),
       priority: 0.8,
     },
 
     {
       url: `${SEO.url}/pricing`,
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: `${SEO.url}/dashboard/referrals`,
+      lastModified: new Date(),
+      priority: 0.7,
+    },
+    {
+      url: `${SEO.url}/dashboard/subscriptions`,
       lastModified: new Date(),
       priority: 0.7,
     },
