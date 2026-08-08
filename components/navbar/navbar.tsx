@@ -136,7 +136,7 @@ className="
                 />
               </div>
 
-              <div className="hidden sm:block">
+              <div className="">
                 <p
                   className="
                     text-lg
