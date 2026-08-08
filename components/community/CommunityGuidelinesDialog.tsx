@@ -1,87 +1,134 @@
 'use client';
 
 import {
+  X,
+} from 'lucide-react';
+
+import {
   Dialog,
   DialogContent,
+  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 
 import {
-  VisuallyHidden,
-} from '@radix-ui/react-visually-hidden';
+  Button,
+} from '@/components/ui/button';
 
 import CommunityGuidelinesContent from './CommunityGuidelinesContent';
 
-
 interface CommunityGuidelinesDialogProps {
-
   open: boolean;
 
   onOpenChange: (
     open: boolean,
   ) => void;
-
 }
 
-
 export default function CommunityGuidelinesDialog({
-
   open,
-
   onOpenChange,
-
 }: CommunityGuidelinesDialogProps) {
-
-
   return (
-
     <Dialog
       open={open}
-      onOpenChange={
-        onOpenChange
-      }
+      onOpenChange={onOpenChange}
     >
-
       <DialogContent
         className="
-          max-h-[90dvh]
-          w-[calc(100%-2rem)]
-          max-w-3xl
+          flex
+          h-[92dvh]
+          w-full
+          max-w-none
+          flex-col
+          gap-0
+          self-end
           overflow-hidden
-          rounded-2xl
+          rounded-t-3xl
+          border-x-0
+          border-b-0
+          border-t
           border-border
-          bg-card
+          bg-background
           p-0
-          shadow-xl
+          shadow-2xl
+
+          sm:h-[90dvh]
+          sm:w-[95vw]
+          sm:max-w-5xl
+          sm:self-center
           sm:rounded-3xl
+          sm:border
+          sm:bg-card
         "
       >
+        {/* Header */}
 
-        <VisuallyHidden>
+        <DialogHeader
+          className="
+            sticky
+            top-0
+            z-20
+            flex
+            flex-row
+            items-center
+            justify-between
+            border-b
+            border-border
+            bg-background/95
+            px-4
+            py-4
+            backdrop-blur
 
-          <DialogTitle>
+            sm:bg-card/95
+            sm:px-6
+          "
+        >
+          <DialogTitle
+            className="
+              text-lg
+              font-semibold
+              text-foreground
+              sm:text-xl
+            "
+          >
             Community Guidelines
           </DialogTitle>
 
-        </VisuallyHidden>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              onOpenChange(false)
+            }
+            className="
+              h-9
+              w-9
+              rounded-full
+            "
+            aria-label="Close"
+          >
+            <X
+              className="
+                size-5
+              "
+            />
+          </Button>
+        </DialogHeader>
 
+        {/* Scrollable Content */}
 
         <div
           className="
-            max-h-[90dvh]
+            flex-1
             overflow-y-auto
             overscroll-contain
           "
         >
-
           <CommunityGuidelinesContent />
-
         </div>
-
       </DialogContent>
-
     </Dialog>
-
   );
-
 }

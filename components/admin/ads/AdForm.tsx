@@ -60,6 +60,14 @@ import {
 } from '@/components/ui/switch';
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import {
   useCreateAd,
   useUpdateAd,
 } from '@/hooks/useAds';
@@ -70,6 +78,8 @@ import {
   AdImage,
   AdminAd,
 } from '@/types/ad';
+
+import { AdAudience } from '@/constants/ads/ad-audience';
 
 
 
@@ -178,6 +188,12 @@ export function AdForm({
     );
 
 
+    const [audience,setAudience] =
+  useState<AdAudience>(
+    defaultValues?.audience ??
+    AdAudience.ALL,
+  );
+
 const [startDate,setStartDate] =
   useState(
     defaultValues?.startDate ?? '',
@@ -261,27 +277,29 @@ function submit(
 
   }
 
-  const payload = {
+const payload = {
 
-    ...values,
+  ...values,
 
-    image,
+  audience,
 
-    actions,
+  image,
 
-    displays,
+  actions,
 
-    instructions,
+  displays,
 
-    isActive,
+  instructions,
 
-    startDate:
-      startDate || undefined,
+  isActive,
 
-    endDate:
-      endDate || undefined,
+  startDate:
+    startDate || undefined,
 
-  };
+  endDate:
+    endDate || undefined,
+
+};
 
 
 
@@ -453,7 +471,52 @@ createMutation.mutate(
 
       </div>
 
+<div>
 
+  <Label>
+    Audience
+  </Label>
+
+  <Select
+    value={audience}
+    onValueChange={(value) =>
+      setAudience(value as AdAudience)
+    }
+  >
+
+    <SelectTrigger>
+
+      <SelectValue />
+
+    </SelectTrigger>
+
+    <SelectContent>
+
+      <SelectItem value={AdAudience.ALL}>
+        Everyone
+      </SelectItem>
+
+      <SelectItem value={AdAudience.GUEST}>
+        Guests
+      </SelectItem>
+
+      <SelectItem value={AdAudience.FREE}>
+        Free Members
+      </SelectItem>
+
+      <SelectItem value={AdAudience.REGULAR}>
+        Regular Members
+      </SelectItem>
+
+      <SelectItem value={AdAudience.VIP}>
+        VIP Members
+      </SelectItem>
+
+    </SelectContent>
+
+  </Select>
+
+</div>
 
 {/* INSTRUCTIONS */}
 

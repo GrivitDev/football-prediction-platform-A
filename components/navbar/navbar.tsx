@@ -2,99 +2,115 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import {
+  motion,
+  useScroll,
+  useMotionValueEvent,
+} from 'framer-motion';
+import {
+  useState,
+} from 'react';
 
 import NavLinks from './NavLinks';
 import ThemeSwitcher from './ThemeSwitcher';
 import UserMenu from './UserMenu';
 import MobileMenu from './MobileMenu';
+import {
+  useNavbar,
+} from './NavbarContext';
+
+
 
 export default function Navbar() {
-  return (
-    <header
-      className="
-        sticky
-        top-0
-        z-50
-      "
-    >
-      {/* subtle ambient background */}
-      <div
+  const { scrollY } = useScroll();
+
+const {
+  visible,
+  setVisible,
+} = useNavbar();
+
+  const [lastScroll, setLastScroll] =
+    useState(0);
+
+  useMotionValueEvent(
+    scrollY,
+    'change',
+    (latest) => {
+      if (latest < 30) {
+        setVisible(true);
+        setLastScroll(latest);
+        return;
+      }
+
+      if (latest > lastScroll) {
+        setVisible(false);
+      } else {
+        setVisible(true);
+      }
+
+      setLastScroll(latest);
+    },
+  );
+
+return (
+    <>
+      <motion.header
+        initial={{ y: 0 }}
+        animate={{
+          y: visible ? 0 : -120,
+        }}
+        transition={{
+          duration: 0.28,
+          ease: 'easeOut',
+        }}
         className="
-          pointer-events-none
-          absolute
-          inset-0
-          -z-10
-          overflow-hidden
+          fixed
+          inset-x-0
+          top-0
+          z-50
+          px-3
+          pt-3
+          sm:px-5
         "
       >
         <div
           className="
-            absolute
-            left-1/2
-            top-0
-            h-[260px]
-            w-[700px]
-            -translate-x-1/2
-            rounded-full
-            bg-gradient-to-r
-            from-indigo-500/10
-            via-sky-500/10
-            to-emerald-500/10
-            blur-3xl
-          "
-        />
-      </div>
-
-
-      <div
-        className="
-          mx-auto
-          mt-3
-          max-w-7xl
-          px-4
-          sm:px-6
-        "
-      >
-
-        {/* gradient border frame */}
-        <div
-          className="
-            rounded-2xl
-            bg-gradient-to-r
-            from-indigo-400/30
-            via-sky-400/20
-            to-emerald-400/30
-            p-[1px]
+            mx-auto
+            max-w-7xl
           "
         >
-
-          {/* navbar body */}
           <div
-            className="
-              flex
-              h-16
-              items-center
-              justify-between
-              rounded-2xl
-              border
-              border-border/50
-              bg-background/80
-              px-4
-              backdrop-blur-xl
-              sm:px-6
-            "
-          >
+className="
+  flex
+  h-16
+  items-center
+  justify-between
+  rounded-4xl
 
-            {/* LOGO */}
+  border
+  border-emerald-500/80
+
+  bg-background/80
+
+  px-4
+
+  shadow-lg
+  shadow-emerald-500/10
+
+  backdrop-blur-2xl
+  supports-[backdrop-filter]:bg-background/65
+
+  sm:px-6
+"
+          >
+            {/* Logo */}
+
             <Link
               href="/"
               className="
                 flex
                 items-center
                 gap-3
-                transition-opacity
-                duration-200
-                hover:opacity-90
               "
             >
               <div
@@ -107,8 +123,8 @@ export default function Navbar() {
                   overflow-hidden
                   rounded-xl
                   border
-                  border-border/50
-                  bg-background/60
+                  border-border
+                  bg-muted/40
                 "
               >
                 <Image
@@ -116,58 +132,61 @@ export default function Navbar() {
                   alt="PredictPro"
                   width={40}
                   height={40}
-                  className="
-                    object-contain
-                  "
                   priority
                 />
               </div>
 
+              <div className="hidden sm:block">
+                <p
+                  className="
+                    text-lg
+                    font-bold
+                    tracking-tight
+                    text-foreground
+                  "
+                >
+                  PredictPro
+                </p>
 
-              <span
-                className="
-                  hidden
-                  bg-gradient-to-r
-                  from-foreground
-                  via-indigo-500
-                  to-emerald-500
-                  bg-clip-text
-                  text-xl
-                  font-bold
-                  tracking-tight
-                  text-transparent
-                  sm:block
-                "
-              >
-                PredictPro
-              </span>
+                <p
+                  className="
+                    text-xs
+                    text-muted-foreground
+                  "
+                >
+                  Football Predictions
+                </p>
+              </div>
             </Link>
 
+<div
+className="
+  hidden
+  lg:flex
 
-            {/* CENTER NAV */}
-            <div
-              className="
-                hidden
-                md:block
-              "
-            >
-              <div
-                className="
-                  rounded-full
-                  border
-                  border-border/50
-                  bg-muted/30
-                  px-6
-                  py-2
-                  backdrop-blur-md
-                "
-              >
-                <NavLinks />
-              </div>
-            </div>
+  items-center
 
+  rounded-4xl
 
-            {/* RIGHT ACTIONS */}
+  border
+  border-blue-400/70
+
+  bg-gradient-to-r
+  from-blue-500/10
+  via-cyan-500/10
+  to-blue-500/10
+
+  backdrop-blur-xl
+
+  p-1
+
+  shadow-lg
+  shadow-blue-500/15
+"
+>
+  <NavLinks />
+</div>
+
             <div
               className="
                 flex
@@ -178,32 +197,31 @@ export default function Navbar() {
               <div
                 className="
                   hidden
+                  lg:flex
                   items-center
                   gap-2
                   rounded-full
                   border
-                  border-border/50
-                  bg-muted/30
-                  px-3
-                  py-2
-                  backdrop-blur-md
-                  md:flex
+                  border-border
+                  bg-muted/40
+                  px-2
+                  py-1
                 "
               >
                 <ThemeSwitcher />
-
                 <UserMenu />
               </div>
 
-
-              <MobileMenu />
+              <div className="lg:hidden">
+                <MobileMenu />
+              </div>
             </div>
-
           </div>
-
         </div>
+      </motion.header>
 
-      </div>
-    </header>
+      {/* Spacer */}
+      <div className="h-20" />
+    </>
   );
 }

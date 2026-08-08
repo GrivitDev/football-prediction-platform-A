@@ -9,8 +9,10 @@ import {
 } from 'lucide-react';
 
 export default function CommunityEmptyState() {
+
   return (
-    <motion.div
+
+    <motion.section
       initial={{
         opacity: 0,
         y: 8,
@@ -23,58 +25,103 @@ export default function CommunityEmptyState() {
         duration: 0.25,
       }}
       className="
+        overflow-hidden
         rounded-2xl
         border
         border-border
         bg-card
-        p-6
-        text-center
         shadow-sm
-        sm:p-8
       "
     >
+
       <div
         className="
-          mx-auto
-          mb-4
           flex
-          size-11
+          flex-col
           items-center
           justify-center
-          rounded-full
-          bg-primary/10
-          text-primary
+          px-5
+          py-10
+          text-center
+          sm:px-8
+          sm:py-12
+          md:px-10
+          md:py-14
         "
-        aria-hidden="true"
       >
-        <MessageCircle className="size-5" />
+
+        {/* Icon */}
+
+        <div
+          className="
+            flex
+            h-14
+            w-14
+            items-center
+            justify-center
+            rounded-full
+            bg-primary/10
+            text-primary
+            ring-1
+            ring-primary/10
+            sm:h-16
+            sm:w-16
+          "
+          aria-hidden="true"
+        >
+
+          <MessageCircle
+            className="
+              h-7
+              w-7
+              sm:h-8
+              sm:w-8
+            "
+          />
+
+        </div>
+
+        {/* Heading */}
+
+        <h2
+          className="
+            mt-5
+            max-w-xs
+            text-xl
+            font-semibold
+            leading-tight
+            tracking-tight
+            text-foreground
+            sm:max-w-md
+            sm:text-2xl
+          "
+        >
+          No football conversations yet
+        </h2>
+
+        {/* Description */}
+
+        <p
+          className="
+            mt-3
+            max-w-sm
+            text-sm
+            leading-7
+            text-muted-foreground
+            sm:max-w-md
+            sm:text-base
+          "
+        >
+          Be the first fan to share your thoughts,
+          start a discussion, upload media, and
+          kick off the conversation with the
+          community.
+        </p>
+
       </div>
 
-      <h3
-        className="
-          text-lg
-          font-semibold
-          tracking-tight
-          text-foreground
-          sm:text-xl
-        "
-      >
-        No football conversations yet
-      </h3>
+    </motion.section>
 
-      <p
-        className="
-          mx-auto
-          mt-2
-          max-w-sm
-          text-sm
-          leading-6
-          text-muted-foreground
-        "
-      >
-        Be the first fan to share your thoughts
-        and start the conversation.
-      </p>
-    </motion.div>
   );
+
 }

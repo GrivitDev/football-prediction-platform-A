@@ -16,6 +16,10 @@ import {
   TopPredictionsCard,
   PromosCard,
 } from '@/components/dashboard';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
+import { DashboardAds } from '@/components/ads/ExtAds/positions/DashboardAds';
 
 
 
@@ -402,8 +406,17 @@ export default function DashboardPage() {
 
       </DashboardSection>
 
+      <DashboardAds />
 
+      <InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.BOTTOM}
+/>
 
+<InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.POPUP}
+/>
     </div>
 
   );

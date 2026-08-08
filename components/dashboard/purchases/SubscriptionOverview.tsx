@@ -205,8 +205,8 @@ export default function SubscriptionOverview({
           absolute
           -right-32
           -top-32
-          h-72
-          w-72
+          h-22
+          w-22
           rounded-full
           bg-primary/20
           blur-3xl

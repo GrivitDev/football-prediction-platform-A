@@ -7,6 +7,9 @@ import { AuthProvider } from '@/providers/auth-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { SEO } from '@/config/seo';
 import { Toaster } from 'react-hot-toast';
+import { cn } from '@/lib/utils';
+
+
 
 export const metadata: Metadata = {
   metadataBase: new URL(SEO.url),
@@ -151,6 +154,7 @@ export const viewport: Viewport = {
   ],
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -162,7 +166,10 @@ export default function RootLayout({
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-<body className="min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300 ">
+<body className={cn(
+  "min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300, "
+  )}
+  >
         <QueryProvider>
           <AuthProvider>
             <ThemeProvider>

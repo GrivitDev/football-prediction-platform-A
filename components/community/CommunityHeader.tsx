@@ -32,6 +32,13 @@ import CommunitySearch from './CommunitySearch';
 import CommunityActions from './CommunityActions';
 import CommunityGuidelinesDialog from './CommunityGuidelinesDialog';
 
+import { cn } from '@/lib/utils';
+
+import {
+  useNavbar,
+} from '../navbar/NavbarContext';
+
+
 interface CommunityHeaderProps {
   search: string;
   onSearch: (
@@ -57,28 +64,34 @@ export default function CommunityHeader({
     setGuidelinesOpen,
   ] = useState(false);
 
+  const { visible } =
+  useNavbar();
   return (
     <>
-      <header
-        className="
-          sticky
-          top-0
-          z-50
-          border-b
-          border-border/60
-          bg-background/95
-          backdrop-blur-sm
-        "
-      >
-        <div
-          className="
-            mx-auto
-            max-w-7xl
-            px-4
-            sm:px-6
-            lg:px-8
-          "
-        >
+<header
+  className={cn(
+    `
+      fixed
+      left-0
+      right-0
+      z-40
+      transition-all
+      duration-300
+    `,
+    visible
+      ? 'top-18'
+      : 'top-0',
+  )}
+>
+<div
+  className="
+    mx-auto
+    max-w-8xl
+    px-8
+    sm:px-8
+  "
+>
+
           <AnimatePresence
             mode="wait"
           >
@@ -165,28 +178,14 @@ export default function CommunityHeader({
                     min-w-0
                     shrink-0
                     items-center
-                    gap-2.5
-                    sm:gap-3
+                    px-6
                   "
                 >
-                  <Image
-                    src="/logo1.png"
-                    alt="HonestPredict"
-                    width={40}
-                    height={40}
-                    priority
-                    className="
-                      size-9
-                      shrink-0
-                      rounded-full
-                      sm:size-10
-                    "
-                  />
 
                   <h1
                     className="
                       truncate
-                      text-sm
+                      text-l
                       font-semibold
                       tracking-tight
                       text-foreground
@@ -306,6 +305,7 @@ export default function CommunityHeader({
             )}
           </AnimatePresence>
         </div>
+
       </header>
 
       {/* GUIDELINES DIALOG */}

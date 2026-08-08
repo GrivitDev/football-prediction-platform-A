@@ -2,6 +2,7 @@ import { AdPage,} from '@/constants/ads/ad-page';
 import { AdDevice,} from '@/constants/ads/ad-device';
 import { AdTrigger,} from '@/constants/ads/ad-trigger';
 import { AdPosition,} from '@/constants/ads/ad-position';
+import { AdAudience } from '@/constants/ads/ad-audience';
 
 
 
@@ -62,7 +63,9 @@ export interface AdminAd {
   description?:string;
 
   instructions:string[];
-
+  
+  audience: AdAudience;
+  
   image:AdImage;
 
   actions:AdAction[];
@@ -107,6 +110,8 @@ export interface CreateAdPayload {
 
   image:AdImage;
 
+  audience: AdAudience;
+
   actions:AdAction[];
 
   displays:AdDisplay[];
@@ -139,3 +144,5 @@ export interface AdAnalytics {
   ctr:number;
 
 }
+
+export { AdPage, AdPosition };

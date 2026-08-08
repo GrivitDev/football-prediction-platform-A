@@ -80,7 +80,7 @@ export default function CommunityActions({
           />
 
           <span>
-            Start a discussion
+            Start Argument
           </span>
         </DropdownMenuItem>
 
@@ -103,7 +103,7 @@ export default function CommunityActions({
           />
 
           <span>
-            Share match media
+            Share FootBall Moments 
           </span>
         </DropdownMenuItem>
       </DropdownMenuContent>

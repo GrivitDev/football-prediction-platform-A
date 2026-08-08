@@ -872,7 +872,7 @@ export default function PaymentCallbackPage() {
           </Link>
 
           <Link
-            href="/support"
+            href="/Contact"
             className="
               flex
               w-full

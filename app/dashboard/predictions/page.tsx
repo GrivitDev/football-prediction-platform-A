@@ -15,6 +15,10 @@ import PredictionCard from '@/components/predictions/PredictionCard';
 import PredictionTable from '@/components/predictions/PredictionTable';
 
 import PredictionPagination from '@/components/predictions/PredictionPagination';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
+import { PredictionsAds } from '@/components/ads/ExtAds/positions/PredictionsAds';
 
 
 
@@ -903,11 +907,19 @@ export default function PredictionsPage(){
 
         )
       }
+<PredictionsAds />
 
+      <InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.BOTTOM}
+/>
 
-
-
+<InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.POPUP}
+/>
     </div>
+    
 
   );
 

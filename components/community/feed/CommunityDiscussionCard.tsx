@@ -16,7 +16,6 @@ interface Props {
   post: CommunityPost;
 
   onReact: (
-    id: string,
     reaction: string,
   ) => void;
 
@@ -39,6 +38,7 @@ export default function CommunityDiscussionCard({
   loadReplies,
   createReply,
 }: Props) {
+
   const displayName =
     post.fullName?.trim() ||
     post.username;
@@ -46,9 +46,11 @@ export default function CommunityDiscussionCard({
   const initial =
     displayName
       ?.charAt(0)
-      .toUpperCase() || '?';
+      .toUpperCase() ??
+    '?';
 
   return (
+
     <motion.article
       initial={{
         opacity: 0,
@@ -62,125 +64,151 @@ export default function CommunityDiscussionCard({
         duration: 0.25,
       }}
       className="
+        overflow-hidden
         rounded-2xl
         border
         border-border
         bg-card
-        p-4
         shadow-sm
-        transition-colors
-        hover:border-primary/20
-        sm:p-5
+        transition-all
+        duration-200
+        md:hover:border-primary/20
+        md:hover:shadow-md
       "
     >
-      {/* USER */}
 
       <div
         className="
-          flex
-          items-center
-          gap-3
+          p-4
+          sm:p-5
         "
       >
+
+        {/* Header */}
+
         <div
           className="
             flex
-            size-10
-            shrink-0
-            items-center
-            justify-center
-            rounded-full
-            bg-primary/10
-            text-sm
-            font-semibold
-            text-primary
-            sm:size-11
+            items-start
+            gap-3
           "
-          aria-hidden="true"
         >
-          {initial}
+
+          <div
+            className="
+              flex
+              h-10
+              w-10
+              shrink-0
+              items-center
+              justify-center
+              rounded-full
+              bg-primary/10
+              text-sm
+              font-semibold
+              text-primary
+              ring-1
+              ring-primary/10
+              sm:h-11
+              sm:w-11
+            "
+            aria-hidden="true"
+          >
+            {initial}
+          </div>
+
+          <div
+            className="
+              min-w-0
+              flex-1
+            "
+          >
+
+            <p
+              className="
+                truncate
+                text-sm
+                font-semibold
+                text-foreground
+              "
+            >
+              {displayName}
+            </p>
+
+            <p
+              className="
+                truncate
+                text-xs
+                text-muted-foreground
+              "
+            >
+              @{post.username}
+            </p>
+
+          </div>
+
         </div>
+
+        {/* Title */}
+
+        {
+          post.title?.trim() && (
+
+            <h2
+              className="
+                mt-5
+                break-words
+                text-xl
+                font-semibold
+                leading-tight
+                tracking-tight
+                text-foreground
+                sm:text-2xl
+              "
+            >
+              {post.title}
+            </h2>
+
+          )
+        }
+
+        {/* Message */}
 
         <div
           className="
-            min-w-0
+            mt-3
           "
         >
-          <p
-            className="
-              truncate
-              text-sm
-              font-semibold
-              text-foreground
-            "
-          >
-            {displayName}
-          </p>
 
           <p
             className="
-              truncate
-              text-xs
-              text-muted-foreground
+              whitespace-pre-wrap
+              break-words
+              text-sm
+              leading-7
+              text-foreground
+              sm:text-base
             "
           >
-            @{post.username}
+            {post.message}
           </p>
+
         </div>
+
       </div>
 
-      {/* TITLE */}
-
-      {post.title?.trim() && (
-        <h3
-          className="
-            mt-5
-            text-lg
-            font-semibold
-            leading-snug
-            tracking-tight
-            text-foreground
-            sm:text-xl
-          "
-        >
-          {post.title}
-        </h3>
-      )}
-
-      {/* MESSAGE */}
-
-      <p
-        className="
-          mt-3
-          whitespace-pre-wrap
-          text-sm
-          leading-6
-          text-muted-foreground
-          sm:text-base
-        "
-      >
-        {post.message}
-      </p>
-
-      {/* REACTIONS */}
-
-      <CommunityReactionBar
-        reactions={post.reactions}
-        onReact={(reaction) =>
-          onReact(
-            post._id,
-            reaction,
-          )
-        }
-      />
-
-      {/* REPLIES */}
+<CommunityReactionBar
+  reactions={post.reactions}
+  onReact={onReact}
+/>
 
       <ReplySection
         replyCount={
           post.replyCount
         }
-        replies={replies}
+        replies={
+          replies
+        }
         loading={
           repliesLoading
         }
@@ -191,6 +219,9 @@ export default function CommunityDiscussionCard({
           createReply
         }
       />
+
     </motion.article>
+
   );
+
 }

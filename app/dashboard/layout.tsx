@@ -4,6 +4,10 @@ import { useState } from 'react';
 
 import DashboardSidebar from '@/components/dashboard/dashboard-sidebar';
 import DashboardHeader from '@/components/dashboard/dashboard-header';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
+import { ExternalAds } from '@/components/ads/ExtAds/ExternalAds';
 
 export default function DashboardLayout({
   children,
@@ -73,13 +77,16 @@ export default function DashboardLayout({
               lg:p-8
             "
           >
-
+<ExternalAds />
             {children}
 
           </div>
 
         </div>
-
+      <InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.FOOTER}
+/>
       </section>
 
 

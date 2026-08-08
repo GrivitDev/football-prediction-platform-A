@@ -97,10 +97,10 @@ export function PageHero({
           flex
           flex-col
           gap-7
-          px-5
-          py-8
-          sm:px-8
-          sm:py-10
+          px-2
+          py-4
+          sm:px-4
+          sm:py-5
           lg:flex-row
           lg:items-center
           lg:justify-between
@@ -121,7 +121,7 @@ export function PageHero({
               font-black
               tracking-tight
               sm:text-3xl
-              lg:text-4xl
+              lg:text-3xl
             "
           >
             {title}
@@ -131,9 +131,8 @@ export function PageHero({
 
           <p
             className="
-              mt-3
               max-w-2xl
-              text-sm
+              text-s
               leading-relaxed
               text-muted-foreground
               sm:text-base

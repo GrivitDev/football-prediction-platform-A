@@ -7,6 +7,10 @@ import {
   Sparkles,
   Clock4,
 } from 'lucide-react';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
+import { ContentAds } from '@/components/ads/ExtAds/positions/ContentAds';
 
 export default function ArticlesPage() {
   return (
@@ -217,7 +221,6 @@ export default function ArticlesPage() {
 
 
 
-
               {/* Heading */}
 
               <h1 className="
@@ -274,8 +277,17 @@ export default function ArticlesPage() {
 
               </p>
 
+<InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.POPUP}
+/>
 
 
+<ContentAds />
+        <InternalAds
+          page={AdPage.HOME}
+          position={AdPosition.HERO}
+        />
 
               {/* Feature cards */}
 

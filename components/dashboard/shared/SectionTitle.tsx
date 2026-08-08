@@ -30,8 +30,8 @@ export function SectionTitle({
         `
           flex
           flex-col
-          gap-4
-          sm:gap-5
+          gap-2
+          sm:gap-2
           md:flex-row
           md:items-end
           md:justify-between
@@ -56,7 +56,6 @@ export function SectionTitle({
 
             <div
               className="
-                mt-0.5
                 flex
                 h-9
                 w-9

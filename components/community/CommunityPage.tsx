@@ -513,6 +513,7 @@ export default function CommunityPage() {
               py-6
               sm:px-6
               lg:px-8
+              mt-8
             "
           >
 

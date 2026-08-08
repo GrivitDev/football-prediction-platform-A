@@ -19,6 +19,10 @@ import {
 
 import LegalPreview from '@/components/LegalPreview';
 import AboutHero from '@/components/AboutHero';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
+import { AboutAds } from '@/components/ads/ExtAds/positions/AboutAds';
 
 
 
@@ -105,6 +109,12 @@ export default function AboutPage() {
 
 <AboutHero />
 
+
+        <InternalAds
+          page={AdPage.HOME}
+          position={AdPosition.HERO}
+        />
+
         {/* COMMUNITY */}
 
         <section className="mt-8 px-8">
@@ -169,6 +179,15 @@ export default function AboutPage() {
 
         </section>
 
+<AboutAds />
+                    <InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.INLINE}
+/>
+<InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.POPUP}
+/>
 <section className=" px-8">
 
       <LegalPreview/> 

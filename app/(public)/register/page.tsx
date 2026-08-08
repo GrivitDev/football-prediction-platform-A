@@ -21,6 +21,9 @@ import {
   ShieldCheck,
   ArrowRight,
 } from 'lucide-react';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -314,7 +317,10 @@ const response = await registerUser({
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background" />
 
       </div>
-
+<InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.POPUP}
+/>
       <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6">
 
         {/* LEFT SIDE */}

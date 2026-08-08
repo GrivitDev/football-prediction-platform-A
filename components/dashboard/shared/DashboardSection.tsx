@@ -16,9 +16,9 @@ export function DashboardSection({
       className={`
         relative
         w-full
-        space-y-5
-        sm:space-y-6
-        lg:space-y-8
+        space-y-2
+        sm:space-y-3
+        lg:space-y-4
         ${className}
       `}
     >

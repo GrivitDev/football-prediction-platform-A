@@ -34,6 +34,10 @@ import LeagueTable from '@/components/livescore/LeagueTable';
 import LivescoreFilters
 from '@/components/livescore/LivescoreFilters';
 import LeagueHeader from '@/components/livescore/LeagueHeader';
+import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { AdPage } from '@/constants/ads/ad-page';
+import { AdPosition } from '@/constants/ads/ad-position';
+import { LiveScoreAds } from '@/components/ads/ExtAds/positions/LiveScoreAds';
 
 
 
@@ -554,14 +558,19 @@ if(loading){
             py-5
           "
         >
+<InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.POPUP}
+/>
 
+<LiveScoreAds />
 
         <div
           className="
             mx-auto
             w-full
             max-w-5xl
-            space-y-3
+            space-y-2
             px-3
             sm:px-4
           "
@@ -575,52 +584,24 @@ if(loading){
     flex
     items-center
     gap-4
-    py-2
+    px-12
   "
 >
 
-  {/* LOGO */}
-
-  <Image
-    src="/logo1.png" // update to your logo
-    alt="Honest Predict"
-    width={72}
-    height={72}
-    className="
-      h-16
-      w-16
-      shrink-0
-      object-contain
-      sm:h-20
-      sm:w-20
-    "
-  />
 
 
   {/* TEXT */}
 
   <div>
 
-    <p
-      className="
-        text-sm
-        font-semibold
-        uppercase
-        tracking-[0.25em]
-        text-primary
-      "
-    >
-      Honest Predict
-    </p>
-
 
     <h1
       className="
-        text-3xl
+        text-2xl
         font-black
         leading-none
         tracking-tight
-        sm:text-5xl
+        sm:text-2xl
       "
     >
       Live Scores
@@ -629,7 +610,6 @@ if(loading){
 
     <p
       className="
-        mt-2
         max-w-lg
         text-sm
         text-muted-foreground
@@ -728,7 +708,10 @@ if(loading){
                       )
                     }
                   />
-
+            <InternalAds
+  page={AdPage.HOME}
+  position={AdPosition.INLINE}
+/>
                   <TodayMatches
                     matches={filteredMatches}
                   />
@@ -740,7 +723,10 @@ if(loading){
                   <Results
                     results={filteredResults}
                   />
-
+        <InternalAds
+          page={AdPage.HOME}
+          position={AdPosition.HERO}
+        />
                   <LeagueTable
                     table={filteredTable}
                   />

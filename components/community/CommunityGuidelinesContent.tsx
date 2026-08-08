@@ -15,48 +15,48 @@ const allowedRules = [
     icon: MessageCircle,
     title: 'Match Discussions',
     description:
-      'Share thoughts about upcoming matches and football events.',
+      'Share thoughts about upcoming matches, fixtures, tournaments, and football events.',
   },
   {
     icon: Target,
     title: 'Prediction Opinions',
     description:
-      'Explain your match predictions and the reasoning behind them.',
+      'Explain your predictions, strategies, and football insights respectfully.',
   },
   {
     icon: Trophy,
     title: 'Team Analysis',
     description:
-      'Discuss tactics, players, form, and team performance.',
+      'Discuss tactics, player performances, transfers, and club form.',
   },
   {
     icon: Users,
     title: 'Football Experiences',
     description:
-      'Share your football journey and experiences with other fans.',
+      'Share stories, memorable moments, and experiences with fellow supporters.',
   },
 ];
 
 const blockedRules = [
   {
-    title: 'Insults or Harassment',
+    title: 'Insults & Harassment',
     description:
-      'Treat every member of the community with respect.',
+      'Respect every member. Personal attacks and abusive language are not allowed.',
   },
   {
     title: 'Hate Speech',
     description:
-      'Discrimination or hateful content of any kind is not allowed.',
+      'Discrimination, racism, or hateful content will be removed immediately.',
   },
   {
-    title: 'Spam Content',
+    title: 'Spam & Self Promotion',
     description:
-      'Avoid repeated posts, unwanted promotions, or unrelated content.',
+      'Avoid repetitive posts, unrelated advertising, or excessive promotion.',
   },
   {
     title: 'Betting Scams',
     description:
-      'Do not share misleading betting offers or fraudulent schemes.',
+      'Never share fake betting tips, fraudulent offers, or misleading promotions.',
   },
 ];
 
@@ -67,41 +67,37 @@ export default function CommunityGuidelinesContent() {
         px-4
         py-8
         sm:px-6
-        sm:py-10
+        sm:py-12
+        lg:px-8
       "
     >
-      {/* HEADER */}
+      {/* Hero */}
 
       <div
         className="
           mx-auto
-          max-w-2xl
+          max-w-3xl
           text-center
         "
       >
         <div
           className="
-            mx-auto
-            flex
-            w-fit
+            inline-flex
             items-center
             gap-2
             rounded-full
             border
-            border-border
-            bg-muted/50
-            px-3
-            py-1.5
+            border-primary/20
+            bg-primary/10
+            px-4
+            py-2
             text-xs
-            font-medium
-            text-muted-foreground
+            font-semibold
+            text-primary
           "
         >
           <ShieldAlert
-            className="
-              size-4
-              text-primary
-            "
+            className="size-4"
             aria-hidden="true"
           />
 
@@ -110,93 +106,96 @@ export default function CommunityGuidelinesContent() {
 
         <h2
           className="
-            mt-5
-            text-2xl
+            mt-6
+            text-3xl
             font-bold
             tracking-tight
             text-foreground
-            sm:text-3xl
+            sm:text-4xl
           "
         >
           Respect the game.
           <span
             className="
+              mt-2
               block
               text-primary
             "
           >
-            Respect the community.
+            Respect one another.
           </span>
         </h2>
 
         <p
           className="
             mx-auto
-            mt-4
-            max-w-xl
+            mt-5
+            max-w-2xl
             text-sm
-            leading-6
+            leading-7
             text-muted-foreground
             sm:text-base
           "
         >
-          Help us keep the PredictPro community
-          competitive, welcoming, and enjoyable
-          for every football fan.
+          The PredictPro community is built for passionate football fans.
+          Keep conversations friendly, insightful, and enjoyable for everyone.
         </p>
       </div>
 
-      {/* GUIDELINES */}
+      {/* Cards */}
 
       <div
         className="
-          mt-8
+          mx-auto
+          mt-10
           grid
-          gap-5
+          max-w-6xl
+          gap-6
           lg:grid-cols-2
         "
       >
-        {/* ALLOWED */}
+        {/* Allowed */}
 
         <section
           className="
-            rounded-2xl
+            rounded-3xl
             border
             border-border
             bg-card
-            p-5
-            sm:p-6
+            p-6
+            shadow-sm
+            transition-all
+            duration-300
+            hover:shadow-lg
           "
         >
           <div
             className="
-              mb-5
+              mb-6
               flex
               items-center
-              gap-3
+              gap-4
             "
           >
             <div
               className="
                 flex
-                size-9
+                size-12
                 items-center
                 justify-center
-                rounded-lg
-                bg-primary/10
-                text-primary
+                rounded-2xl
+                bg-green-500/10
+                text-green-600
+                dark:text-green-400
               "
             >
-              <CheckCircle2
-                className="size-5"
-                aria-hidden="true"
-              />
+              <CheckCircle2 className="size-6" />
             </div>
 
             <div>
               <h3
                 className="
-                  text-base
+                  text-lg
                   font-semibold
                 "
               >
@@ -205,20 +204,18 @@ export default function CommunityGuidelinesContent() {
 
               <p
                 className="
-                  mt-0.5
-                  text-xs
+                  text-sm
                   text-muted-foreground
                 "
               >
-                Football content we encourage
+                Positive football conversations
               </p>
             </div>
           </div>
 
           <div
             className="
-              divide-y
-              divide-border
+              space-y-4
             "
           >
             {allowedRules.map((rule) => {
@@ -229,27 +226,43 @@ export default function CommunityGuidelinesContent() {
                   key={rule.title}
                   className="
                     flex
-                    gap-3
-                    py-4
-                    first:pt-0
-                    last:pb-0
+                    gap-4
+                    rounded-2xl
+                    border
+                    border-border
+                    bg-muted/30
+                    p-4
+                    transition-all
+                    duration-300
+                    hover:border-primary/30
+                    hover:bg-primary/5
                   "
                 >
-                  <Icon
+                  <div
                     className="
-                      mt-0.5
-                      size-4
+                      flex
+                      size-10
                       shrink-0
-                      text-primary
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-primary/10
                     "
-                    aria-hidden="true"
-                  />
+                  >
+                    <Icon
+                      className="
+                        size-5
+                        text-primary
+                      "
+                    />
+                  </div>
 
                   <div>
                     <h4
                       className="
                         text-sm
                         font-semibold
+                        text-foreground
                       "
                     >
                       {rule.title}
@@ -259,7 +272,7 @@ export default function CommunityGuidelinesContent() {
                       className="
                         mt-1
                         text-sm
-                        leading-5
+                        leading-6
                         text-muted-foreground
                       "
                     >
@@ -272,84 +285,89 @@ export default function CommunityGuidelinesContent() {
           </div>
         </section>
 
-        {/* NOT ALLOWED */}
+        {/* Blocked */}
 
         <section
           className="
-            rounded-2xl
+            rounded-3xl
             border
             border-border
             bg-card
-            p-5
-            sm:p-6
+            p-6
+            shadow-sm
+            transition-all
+            duration-300
+            hover:shadow-lg
           "
         >
           <div
             className="
-              mb-5
+              mb-6
               flex
               items-center
-              gap-3
+              gap-4
             "
           >
             <div
               className="
                 flex
-                size-9
+                size-12
                 items-center
                 justify-center
-                rounded-lg
+                rounded-2xl
                 bg-destructive/10
                 text-destructive
               "
             >
-              <XCircle
-                className="size-5"
-                aria-hidden="true"
-              />
+              <XCircle className="size-6" />
             </div>
 
             <div>
               <h3
                 className="
-                  text-base
+                  text-lg
                   font-semibold
                 "
               >
-                What we don&apos;t allow
+                What we don't allow
               </h3>
 
               <p
                 className="
-                  mt-0.5
-                  text-xs
+                  text-sm
                   text-muted-foreground
                 "
               >
-                Content that harms the community
+                Help keep the community safe
               </p>
             </div>
           </div>
 
           <div
             className="
-              divide-y
-              divide-border
+              space-y-4
             "
           >
             {blockedRules.map((rule) => (
               <div
                 key={rule.title}
                 className="
-                  py-4
-                  first:pt-0
-                  last:pb-0
+                  rounded-2xl
+                  border
+                  border-border
+                  bg-muted/30
+                  p-4
+                  transition-all
+                  duration-300
+                  hover:border-destructive/30
+                  hover:bg-destructive/5
                 "
               >
                 <h4
                   className="
                     text-sm
                     font-semibold
+                    text-foreground
                   "
                 >
                   {rule.title}
@@ -357,9 +375,9 @@ export default function CommunityGuidelinesContent() {
 
                 <p
                   className="
-                    mt-1
+                    mt-2
                     text-sm
-                    leading-5
+                    leading-6
                     text-muted-foreground
                   "
                 >
@@ -369,6 +387,34 @@ export default function CommunityGuidelinesContent() {
             ))}
           </div>
         </section>
+      </div>
+
+      {/* Footer */}
+
+      <div
+        className="
+          mx-auto
+          mt-10
+          max-w-3xl
+          rounded-2xl
+          border
+          border-primary/20
+          bg-primary/5
+          p-5
+          text-center
+        "
+      >
+        <p
+          className="
+            text-sm
+            leading-6
+            text-muted-foreground
+          "
+        >
+          By participating in the community, you agree to follow these
+          guidelines. Posts or comments that violate them may be removed,
+          and repeated violations can result in account restrictions.
+        </p>
       </div>
     </section>
   );

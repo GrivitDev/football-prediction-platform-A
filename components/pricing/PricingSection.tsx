@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 
 import PricingCard from './PricingCard';
-import PaymentModal from './PaymentModal';
 
 import { getPlanConfig } from '@/lib/plan-config';
 

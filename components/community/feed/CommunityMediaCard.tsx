@@ -9,6 +9,7 @@ import type {
   CommunityReply,
 } from '@/services/community.service';
 
+import AutoPlayVideo from './AutoPlayVideo';
 import ReplySection from '../replies/ReplySection';
 import CommunityReactionBar from '../reactions/CommunityReactionBar';
 
@@ -16,7 +17,6 @@ interface Props {
   post: CommunityPost;
 
   onReact: (
-    id: string,
     reaction: string,
   ) => void;
 
@@ -48,7 +48,6 @@ export default function CommunityMediaCard({
       post.media?.url,
     );
 
-
   return (
 
     <motion.article
@@ -70,6 +69,7 @@ export default function CommunityMediaCard({
         border-border
         bg-card
         shadow-sm
+        transition-colors
       "
     >
 
@@ -79,6 +79,8 @@ export default function CommunityMediaCard({
           <div
             className="
               overflow-hidden
+              border-b
+              border-border
               bg-muted
             "
           >
@@ -88,44 +90,53 @@ export default function CommunityMediaCard({
 
                 ? (
 
-                  <video
+                  <AutoPlayVideo
                     src={
+                      post.media!.url
+                    }
+                    poster={
                       post.media?.url
                     }
-                    controls
-                    playsInline
-                    preload="metadata"
-                    className="
-                      block
-                      max-h-[600px]
-                      w-full
-                      object-contain
-                    "
                   />
 
                 )
 
                 : (
 
-                  <img
-                    src={
-                      post.media?.url
-                    }
-                    alt="
-                      Media shared by the community
-                    "
-                    loading="lazy"
-                    decoding="async"
+                  <div
                     className="
-                      block
-                      max-h-[600px]
-                      w-full
-                      object-contain
-                      transition-transform
-                      duration-300
-                      hover:scale-[1.01]
+                      flex
+                      justify-center
+                      bg-muted
                     "
-                  />
+                  >
+
+                    <img
+                      src={
+                        post.media!.url
+                      }
+                      alt="
+                        Community media
+                      "
+                      loading="lazy"
+                      decoding="async"
+                      draggable={
+                        false
+                      }
+                      className="
+                        block
+                        h-auto
+                        max-h-[75vh]
+                        w-full
+                        object-contain
+                        bg-muted
+                        transition-transform
+                        duration-300
+                        md:hover:scale-[1.01]
+                      "
+                    />
+
+                  </div>
 
                 )
             }
@@ -135,10 +146,9 @@ export default function CommunityMediaCard({
         )
       }
 
-
       <div
         className="
-          space-y-3
+          space-y-4
           p-4
           sm:p-5
         "
@@ -150,8 +160,9 @@ export default function CommunityMediaCard({
             <p
               className="
                 whitespace-pre-wrap
+                break-words
                 text-sm
-                leading-6
+                leading-7
                 text-foreground
                 sm:text-base
               "
@@ -162,33 +173,35 @@ export default function CommunityMediaCard({
           )
         }
 
-
-        <p
+        <div
           className="
-            text-xs
-            font-medium
-            text-muted-foreground
+            flex
+            items-center
+            justify-between
+            gap-3
           "
         >
-          @{post.username}
-        </p>
+
+          <p
+            className="
+              truncate
+              text-xs
+              font-medium
+              text-muted-foreground
+              sm:text-sm
+            "
+          >
+            @{post.username}
+          </p>
+
+        </div>
 
       </div>
 
-
-      <CommunityReactionBar
-        reactions={
-          post.reactions
-        }
-        onReact={
-          (reaction) =>
-            onReact(
-              post._id,
-              reaction,
-            )
-        }
-      />
-
+<CommunityReactionBar
+  reactions={post.reactions}
+  onReact={onReact}
+/>
 
       <ReplySection
         replyCount={

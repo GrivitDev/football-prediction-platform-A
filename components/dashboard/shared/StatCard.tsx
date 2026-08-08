@@ -68,10 +68,10 @@ export function StatCard({
         className="
           pointer-events-none
           absolute
-          -right-16
-          -top-16
-          h-40
-          w-40
+          -right-8
+          -top-8
+          h-20
+          w-20
           rounded-full
           bg-primary/20
           blur-3xl
@@ -101,28 +101,26 @@ export function StatCard({
         className="
           relative
           z-10
-          p-5
-          sm:p-6
+          p-2
+          sm:p-2
         "
       >
 
 
-        <div
-          className="
-            flex
-            flex-col
-            gap-5
-            sm:flex-row
-            sm:items-start
-            sm:justify-between
-          "
-        >
+<div
+  className="
+    flex
+    items-start
+    justify-between
+    gap-3
+  "
+>
 
 
           <div
             className="
               min-w-0
-              space-y-2
+              space-y-1
             "
           >
 
@@ -200,16 +198,13 @@ export function StatCard({
             className="
               relative
               flex
+              flex-row
               h-12
               w-12
               shrink-0
               items-center
               justify-center
-              self-end
               rounded-2xl
-              border
-              border-primary/20
-              bg-gradient-to-br
               from-primary/20
               via-primary/10
               to-transparent
