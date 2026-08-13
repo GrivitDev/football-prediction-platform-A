@@ -284,17 +284,9 @@ export default function PredictionsPreview() {
 
 
   const handlePredictionClick =
-    (
-      prediction: PredictionDetails,
-    ) => {
-
-      const predictionId =
-        prediction.id ??
-        prediction.matchId;
-
-
+    () => {
       if (
-        !predictionId
+        authLoading
       ) {
 
         return;
@@ -302,11 +294,25 @@ export default function PredictionsPreview() {
       }
 
 
+      if (
+        user
+      ) {
+
+        router.push(
+          '/dashboard/predictions',
+        );
+
+        return;
+
+      }
+
+
       router.push(
-        `/dashboard/predictions`,
+        '/login?redirect=/dashboard/predictions',
       );
 
     };
+
 
 
 
@@ -830,13 +836,7 @@ export default function PredictionsPreview() {
                         prediction
                       }
 
-                      onClick={() => {
-
-                        handlePredictionClick(
-                          prediction,
-                        );
-
-                      }}
+                      onClick={handlePredictionClick}
 
                     />
 
