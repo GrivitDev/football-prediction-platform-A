@@ -303,7 +303,7 @@ export default function PredictionsPreview() {
 
 
       router.push(
-        `/predictions/${predictionId}`,
+        `/dashboard/predictions`,
       );
 
     };
