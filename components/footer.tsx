@@ -60,19 +60,19 @@ const legal = [
 const socials = [
   {
     icon: FaXTwitter,
-    href: '#',
+    href: process.env.NEXT_PUBLIC_TWITTER || '#',
   },
   {
     icon: FaFacebookF,
-    href: '#',
+    href: process.env.NEXT_PUBLIC_FACEBOOK || '#',
   },
   {
     icon: FaInstagram,
-    href: '#',
+    href: process.env.NEXT_PUBLIC_INSTAGRAM || '#',
   },
   {
     icon: FaTelegram,
-    href: '#',
+    href: process.env.NEXT_PUBLIC_YOUTUBE || '#',
   },
 ];
 
