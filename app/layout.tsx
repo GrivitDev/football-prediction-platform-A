@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/providers/theme-provider';
 import { SEO } from '@/config/seo';
 import { Toaster } from 'react-hot-toast';
 import { cn } from '@/lib/utils';
+import Script from 'next/script';
 
 
 
@@ -170,6 +171,12 @@ export default function RootLayout({
   "min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300, "
   )}
   >
+
+              <Script async 
+                  src={'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}'}
+                  crossOrigin="anonymous"
+                  strategy="afterInteractive" 
+          />
         <QueryProvider>
           <AuthProvider>
             <ThemeProvider>
