@@ -12,30 +12,31 @@ import {
 import api from '@/lib/axios';
 
 import type { PlanConfig } from '@/types/plan-config';
+import type { PaymentCurrency } from '@/services/payment-gateway.service';
 
 import PaymentProofUpload from './PaymentProofUpload';
 
 
 
 interface PaymentModalProps {
-
   type:
     | 'subscription'
     | 'vip_upgrade'
     | 'prediction';
 
-  target:string;
+  target: string;
 
-  amount:number;
+  amount: number;
 
-  config:PlanConfig;
+  currency: PaymentCurrency;
 
-  title?:string;
+  config: PlanConfig;
 
-  description?:string;
+  title?: string;
 
-  onClose:()=>void;
+  description?: string;
 
+  onClose: () => void;
 }
 
 
@@ -44,11 +45,12 @@ export default function PaymentModal({
   type,
   target,
   amount,
+  currency,
   config,
   title,
   description,
   onClose,
-}:PaymentModalProps){
+}: PaymentModalProps) {
 
 
   const [transferReference,setTransferReference] =
@@ -79,7 +81,10 @@ export default function PaymentModal({
     useState(false);
 
 
-
+const bankDetails =
+  currency === 'USD'
+    ? config.bankDetailsUSD
+    : config.bankDetails;
 
   async function submitPayment(){
 
@@ -119,28 +124,28 @@ export default function PaymentModal({
 
 
 
-      await api.post(
-        '/payments',
-        {
+await api.post(
+  '/payments',
+  {
+    type,
 
-          type,
+    target,
 
-          target,
+    currency,
 
-          transferReference:
-            transferReference.trim(),
+    transferReference:
+      transferReference.trim(),
 
-          proofMessage:
-            proofMessage.trim(),
+    proofMessage:
+      proofMessage.trim(),
 
-          proofImageUrl:
-            proof.url,
+    proofImageUrl:
+      proof.url,
 
-          proofPublicId:
-            proof.publicId,
-
-        },
-      );
+    proofPublicId:
+      proof.publicId,
+  },
+);
 
 
 
@@ -462,16 +467,9 @@ export default function PaymentModal({
                 "
               >
 
-                <p
-                  className="
-                    text-sm
-                    text-muted-foreground
-                  "
-                >
-
-                  Amount to pay
-
-                </p>
+                  <p className="text-sm text-muted-foreground">
+                    Amount to pay ({currency})
+                  </p>
 
 
 
@@ -484,7 +482,10 @@ export default function PaymentModal({
                   "
                 >
 
-                  ₦{amount.toLocaleString()}
+                  {currency === 'USD'
+                    ? `$${amount.toLocaleString()}`
+                    : `₦${amount.toLocaleString()}`
+                  }
 
                 </p>
 
@@ -553,52 +554,33 @@ export default function PaymentModal({
                 >
 
                   <p>
-
                     Bank:
                     {' '}
-                    {config.bankDetails.bankName}
-
+                    {bankDetails.bankName}
                   </p>
 
-
-
                   <p>
-
                     Account Name:
                     {' '}
-                    {config.bankDetails.accountName}
-
+                    {bankDetails.accountName}
                   </p>
-
-
 
                   <p>
-
                     Account Number:
                     {' '}
-                    {config.bankDetails.accountNumber}
-
+                    {bankDetails.accountNumber}
                   </p>
 
-
-
-
-                  {
-                    config.bankDetails.instructions && (
-
-                      <p
-                        className="
-                          pt-3
-                          text-muted-foreground
-                        "
-                      >
-
-                        {config.bankDetails.instructions}
-
-                      </p>
-
-                    )
-                  }
+                  {bankDetails.instructions && (
+                    <p
+                      className="
+                        pt-3
+                        text-muted-foreground
+                      "
+                    >
+                      {bankDetails.instructions}
+                    </p>
+                  )}
 
 
                 </div>

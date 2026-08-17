@@ -10,6 +10,7 @@ import {
 
 import type { PlanConfig } from '@/types/plan-config';
 import type { UpgradePriceResponse } from '@/services/subscription.service';
+import type { PaymentCurrency } from '@/services/payment-gateway.service';
 
 type CurrentPlan =
   | 'free'
@@ -20,11 +21,16 @@ type UpgradeTarget =
   | 'regular'
   | 'vip';
 
+
+
 interface UpgradeCardProps {
   currentPlan: CurrentPlan;
   config: PlanConfig;
+  currency: PaymentCurrency;
+
   upgradePrice?: UpgradePriceResponse | null;
   upgradeLoading?: boolean;
+
   onUpgrade: (
     target: UpgradeTarget,
   ) => void;
@@ -42,6 +48,7 @@ interface PlanCard {
 export default function UpgradeCard({
   currentPlan,
   config,
+  currency,
   upgradePrice,
   upgradeLoading = false,
   onUpgrade,
@@ -50,10 +57,27 @@ export default function UpgradeCard({
   // AVAILABLE PLANS
   // ==========================================
 
+  const currencySymbol =
+  currency === 'USD'
+    ? '$'
+    : '₦';
+
+const formatMoney = (
+  value: number,
+  fractionDigits = currency === 'USD' ? 2 : 0,
+) =>
+  `${currencySymbol}${value.toLocaleString('en-GB', {
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
+  })}`;
+
   const regularPlan: PlanCard = {
     id: 'regular',
     name: config.planLabels.regular,
-    price: config.regularPrice,
+    price:
+  currency === 'USD'
+    ? config.regularPriceUSD
+    : config.regularPrice,
     description:
       'For users who want more winning opportunities every day.',
     popular: true,
@@ -70,11 +94,12 @@ export default function UpgradeCard({
 
     // Regular users see the calculated upgrade price.
     // Free users see the normal VIP subscription price.
-    price:
-      currentPlan === 'regular' &&
-      upgradePrice
-        ? upgradePrice.amount
-        : config.vipPrice,
+price:
+  currentPlan === 'regular' && upgradePrice
+    ? upgradePrice.amount
+    : currency === 'USD'
+      ? config.vipPriceUSD
+      : config.vipPrice,
 
     description:
       'The complete Honest Predict experience with every premium benefit.',
@@ -224,10 +249,7 @@ export default function UpgradeCard({
                   <div className="flex items-end gap-2">
 
                     <span className="text-3xl font-black">
-                      ₦
-                      {plan.price.toLocaleString(
-                        'en-GB',
-                      )}
+                        {formatMoney(plan.price)}
                     </span>
 
                     <span className="mb-1 text-sm text-muted-foreground">
@@ -273,10 +295,7 @@ export default function UpgradeCard({
                           </span>
 
                           <span className="font-medium">
-                            ₦
-                            {upgradePrice.regularPrice.toLocaleString(
-                              'en-GB',
-                            )}
+                            {formatMoney(upgradePrice.regularPrice)}
                           </span>
                         </div>
 
@@ -288,10 +307,7 @@ export default function UpgradeCard({
                           </span>
 
                           <span className="font-medium">
-                            ₦
-                            {upgradePrice.vipPrice.toLocaleString(
-                              'en-GB',
-                            )}
+                            {formatMoney(upgradePrice.vipPrice)}
                           </span>
                         </div>
 
@@ -318,14 +334,7 @@ export default function UpgradeCard({
                           </span>
 
                           <span className="font-medium">
-                            ₦
-                            {upgradePrice.upgradeDailyPrice.toLocaleString(
-                              'en-GB',
-                              {
-                                maximumFractionDigits: 2,
-                              },
-                            )}
-                            /day
+                            {formatMoney(upgradePrice.upgradeDailyPrice, 2)}/day
                           </span>
                         </div>
 
@@ -337,10 +346,7 @@ export default function UpgradeCard({
                           </span>
 
                           <span className="font-medium">
-                            ₦
-                            {upgradePrice.upgradeCost.toLocaleString(
-                              'en-GB',
-                            )}
+                            {formatMoney(upgradePrice.upgradeCost)}
                           </span>
                         </div>
 
@@ -355,10 +361,7 @@ export default function UpgradeCard({
                             </span>
 
                             <span className="text-xl font-black text-primary">
-                              ₦
-                              {upgradePrice.amount.toLocaleString(
-                                'en-GB',
-                              )}
+                              {formatMoney(upgradePrice.amount)}
                             </span>
 
                           </div>

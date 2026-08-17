@@ -8,87 +8,74 @@ import {
   Trophy,
 } from 'lucide-react';
 
+import type { PaymentCurrency } from '@/services/payment-gateway.service';
 
 interface PricingPlan {
+  id: 'free' | 'regular' | 'vip';
 
-  id:'free' | 'regular' | 'vip';
+  name: string;
 
-  name:string;
+  price: number;
 
-  price:number;
+  description: string;
 
-  description:string;
+  features: string[];
 
-  features:string[];
-
-  popular?:boolean;
-
+  popular?: boolean;
 }
-
 
 interface PricingCardProps {
+  plan: PricingPlan;
 
-  plan:PricingPlan;
+  currency: PaymentCurrency;
 
-  onSelect:(
-    id:'free' | 'regular' | 'vip'
-  )=>void;
+  subscriptionDurationDays: number;
 
+  onSelect: (
+    id: 'free' | 'regular' | 'vip'
+  ) => void;
 }
-
-
 
 export default function PricingCard({
   plan,
+  currency,
+  subscriptionDurationDays,
   onSelect,
-}:PricingCardProps){
-
-
-  const handleSelectPlan=()=>{
-
-    if(plan.id==='free'){
-
-      window.location.href='/register';
+}: PricingCardProps) {
+  const handleSelectPlan = () => {
+    if (plan.id === 'free') {
+      window.location.href = '/register';
 
       return;
-
     }
 
     onSelect(plan.id);
-
   };
 
-
-  const icons={
-
-    free:ShieldCheck,
-
-    regular:Trophy,
-
-    vip:Crown,
-
+  const icons = {
+    free: ShieldCheck,
+    regular: Trophy,
+    vip: Crown,
   };
 
-
-  const cardStyles={
-
-    free:`
+  const cardStyles = {
+    free: `
       border-border
       hover:border-primary/40
     `,
 
-    regular:`
-    border-blue-500
-    bg-gradient-to-br
-    from-blue-500/10
-    via-blue-500/5
-    to-background
-    shadow-xl
-    shadow-blue-500/20
-    lg:scale-105
+    regular: `
+      border-blue-500
+      bg-gradient-to-br
+      from-blue-500/10
+      via-blue-500/5
+      to-background
+      shadow-xl
+      shadow-blue-500/20
+      lg:scale-105
     `,
 
-    vip:`
+    vip: `
       border-yellow-500/30
       bg-gradient-to-b
       from-yellow-500/10
@@ -97,48 +84,43 @@ export default function PricingCard({
       shadow-xl
       shadow-yellow-500/15
     `,
-
   };
 
-
-  const iconStyles={
-
-    free:`
+  const iconStyles = {
+    free: `
       bg-muted
       text-primary
     `,
 
-    regular:`
-    bg-blue-500/15
-    text-blue-500
-    ring-2
-    ring-blue-500/20
+    regular: `
+      bg-blue-500/15
+      text-blue-500
+      ring-2
+      ring-blue-500/20
     `,
 
-    vip:`
+    vip: `
       bg-yellow-500/15
       text-yellow-500
     `,
-
   };
 
+  const buttonText = {
+    free: 'Create Free Account',
 
-  const buttonText={
+    regular: 'Subscribe Now',
 
-    free:'Create Free Account',
-
-    regular:'Subscribe Now',
-
-    vip:'Become VIP Member',
-
+    vip: 'Become VIP Member',
   };
 
+  const Icon = icons[plan.id];
 
-  const Icon=icons[plan.id];
-
+  const currencySymbol =
+    currency === 'USD'
+      ? '$'
+      : '₦';
 
   return (
-
     <div
       className={`
         relative
@@ -152,68 +134,54 @@ export default function PricingCard({
         ${cardStyles[plan.id]}
       `}
     >
+      {plan.id === 'vip' && (
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-0
+            bg-gradient-to-br
+            from-yellow-500/5
+            via-transparent
+            to-yellow-300/10
+          "
+        />
+      )}
 
+      {plan.popular && (
+        <div
+          className="
+            absolute
+            left-1/2
+            top-0
+            flex
+            -translate-x-1/2
+            -translate-y-1/2
+            items-center
+            gap-2
+            rounded-full
+            bg-blue-600
+            px-5
+            py-2
+            text-xs
+            font-bold
+            tracking-wider
+            text-white
+            shadow-xl
+            shadow-blue-500/30
+          "
+        >
+          <Sparkles size={14} />
 
-      {
-        plan.id==='vip' && (
-
-          <div
-            className="
-              pointer-events-none
-              absolute
-              inset-0
-              bg-gradient-to-br
-              from-yellow-500/5
-              via-transparent
-              to-yellow-300/10
-            "
-          />
-
-        )
-      }
-
-
-      {
-        plan.popular && (
-
-                <div
-                className="
-                    absolute
-                    left-1/2
-                    top-0
-                    flex
-                    -translate-x-1/2
-                    -translate-y-1/2
-                    items-center
-                    gap-2
-                    rounded-full
-                    bg-blue-600
-                    px-5
-                    py-2
-                    text-xs
-                    font-bold
-                    tracking-wider
-                    text-white
-                    shadow-xl
-                    shadow-blue-500/30
-                "
-                >
-
-                <Sparkles size={14}/>
-
-                MOST POPULAR
-
-                </div>
-
-        )
-      }
-
+          MOST POPULAR
+        </div>
+      )}
 
       <div className="relative">
 
+        {/* Plan Header */}
 
         <div className="flex items-center gap-4">
-
 
           <div
             className={`
@@ -226,126 +194,86 @@ export default function PricingCard({
               ${iconStyles[plan.id]}
             `}
           >
-
-            <Icon size={30}/>
-
+            <Icon size={30} />
           </div>
-
 
           <div>
 
             <h2 className="text-2xl font-black">
-
               {plan.name}
-
             </h2>
 
             <p className="mt-1 text-sm text-muted-foreground">
-
               {plan.description}
-
             </p>
 
           </div>
 
-
         </div>
 
-
-
+        {/* Price */}
 
         <div className="mt-8">
 
+          {plan.price === 0 ? (
+            <div>
+              <span className="text-5xl font-black">
+                {currencySymbol}0
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-end gap-2">
 
-          {
-            plan.price===0 ? (
+              <span className="text-5xl font-black">
+                {currencySymbol}
+                {plan.price.toLocaleString()}
+              </span>
 
-              <div>
+              <span className="mb-2 text-muted-foreground">
+                /{subscriptionDurationDays} Days
+              </span>
 
-                <span className="text-5xl font-black">
-
-                  ₦0
-
-                </span>
-
-              </div>
-
-            ):(
-
-              <div className="flex items-end gap-2">
-
-                <span className="text-5xl font-black">
-
-                  ₦{plan.price.toLocaleString()}
-
-                </span>
-
-                <span className="mb-2 text-muted-foreground">
-
-                  /30 Days
-
-                </span>
-
-              </div>
-
-            )
-          }
-
+            </div>
+          )}
 
         </div>
 
-
-
+        {/* Features */}
 
         <div className="mt-10">
 
-
           <ul className="space-y-4">
 
-
-            {
-              plan.features.map(feature=>(
-
-                <li
-                  key={feature}
-                  className="flex items-start gap-3"
+            {plan.features.map((feature) => (
+              <li
+                key={feature}
+                className="flex items-start gap-3"
+              >
+                <div
+                  className="
+                    mt-0.5
+                    rounded-full
+                    bg-green-500/10
+                    p-1
+                  "
                 >
+                  <Check
+                    size={14}
+                    className="text-green-500"
+                  />
+                </div>
 
-                  <div
-                    className="
-                      mt-0.5
-                      rounded-full
-                      bg-green-500/10
-                      p-1
-                    "
-                  >
-
-                    <Check
-                      size={14}
-                      className="text-green-500"
-                    />
-
-                  </div>
-
-                  <span className="text-sm leading-6">
-
-                    {feature}
-
-                  </span>
-
-                </li>
-
-              ))
-            }
-
+                <span className="text-sm leading-6">
+                  {feature}
+                </span>
+              </li>
+            ))}
 
           </ul>
 
-
         </div>
 
-
-
+        {/* Action */}
 
         <button
           onClick={handleSelectPlan}
@@ -362,13 +290,13 @@ export default function PricingCard({
             duration-300
 
             ${
-              plan.id==='vip'
-                ?`
+              plan.id === 'vip'
+                ? `
                   bg-yellow-500
                   text-black
                   hover:bg-yellow-400
                 `
-                :`
+                : `
                   bg-primary
                   text-primary-foreground
                   hover:opacity-90
@@ -376,17 +304,10 @@ export default function PricingCard({
             }
           `}
         >
-
           {buttonText[plan.id]}
-
         </button>
 
-
       </div>
-
-
     </div>
-
   );
-
 }

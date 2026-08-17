@@ -14,6 +14,8 @@ import PaymentModal from '@/components/pricing/PaymentModal';
 import { usePurchases } from '@/hooks/usePurchases';
 import { usePlanConfig } from '@/hooks/usePlanConfig';
 
+import type { PaymentCurrency } from '@/services/payment-gateway.service';
+
 
 
 export default function PurchasesPage(){
@@ -39,7 +41,7 @@ export default function PurchasesPage(){
     >(null);
 
 
-
+const currency: PaymentCurrency = 'NGN';
 
 
   return (
@@ -130,6 +132,8 @@ export default function PurchasesPage(){
             }
 
             config={config}
+
+            currency={currency}
 
             title={
               `Upgrade to ${

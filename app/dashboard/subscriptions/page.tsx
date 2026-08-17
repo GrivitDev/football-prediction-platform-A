@@ -21,6 +21,7 @@ import {
 import { InternalAds } from '@/components/ads/IntAds/InternalAds';
 import { AdPage } from '@/constants/ads/ad-page';
 import { AdPosition } from '@/constants/ads/ad-position';
+import { PaymentCurrency } from '@/services/payment-gateway.service';
 
 export default function PurchasesPage() {
   const {
@@ -55,13 +56,13 @@ export default function PurchasesPage() {
   const [upgradeLoading, setUpgradeLoading] =
     useState(false);
 
+const currency: PaymentCurrency = 'NGN';
   // =====================================================
   // LOAD VIP UPGRADE ANALYSIS
   // =====================================================
 
   useEffect(() => {
     if (plan !== 'regular') {
-      setUpgradePrice(null);
       return;
     }
 
@@ -155,6 +156,7 @@ export default function PurchasesPage() {
           <UpgradeSection
             plan={plan}
             config={config}
+            currency={currency}
             upgradePrice={upgradePrice}
             upgradeLoading={upgradeLoading}
             onUpgrade={async (target) => {
@@ -213,21 +215,22 @@ export default function PurchasesPage() {
       ===================================================== */}
 
       {selectedPlan && config && (
-        <GatewayModal
-          type="subscription"
-          target={selectedPlan}
-          amount={
-            selectedPlan === 'regular'
-              ? config.regularPrice
-              : config.vipPrice
-          }
-          config={config}
-          title={`Complete ${selectedPlan.toUpperCase()} Subscription`}
-          description="Choose your preferred payment gateway to securely complete your subscription."
-          onClose={() => {
-            setSelectedPlan(null);
-          }}
-        />
+          <GatewayModal
+            type="subscription"
+            target={selectedPlan}
+            amount={
+              selectedPlan === 'regular'
+                ? config.regularPrice
+                : config.vipPrice
+            }
+            currency={currency}
+            config={config}
+            title={`Complete ${selectedPlan.toUpperCase()} Subscription`}
+            description="Choose your preferred payment gateway to securely complete your subscription."
+            onClose={() => {
+              setSelectedPlan(null);
+            }}
+          />
       )}
 
       {/* =====================================================
@@ -239,6 +242,7 @@ export default function PurchasesPage() {
           type="vip_upgrade"
           target="vip"
           amount={upgradePrice.amount}
+          currency={currency}
           config={config}
           title="Upgrade to VIP"
           description="Complete payment to upgrade your membership."

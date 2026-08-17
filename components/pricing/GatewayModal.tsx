@@ -15,6 +15,7 @@ import {
 
 import paymentGatewayService, {
   type PaymentGateway,
+  type PaymentCurrency,
 } from '@/services/payment-gateway.service';
 
 import type { PlanConfig } from '@/types/plan-config';
@@ -31,6 +32,8 @@ interface GatewayModalProps {
 
   amount: number;
 
+  currency: PaymentCurrency;
+
   config: PlanConfig;
 
   title?: string;
@@ -44,6 +47,7 @@ export default function GatewayModal({
   type,
   target,
   amount,
+  currency,
   config,
   title,
   description,
@@ -70,12 +74,13 @@ export default function GatewayModal({
 
       setLoadingGateway(gateway);
 
-      const data =
-        await paymentGatewayService.initializePayment({
-          gateway,
-          type,
-          target,
-        });
+const data =
+  await paymentGatewayService.initializePayment({
+    gateway,
+    type,
+    target,
+    currency,
+  });
 
       // Redirect user to Paystack or OPay.
       // The gateway will redirect the user back
@@ -107,6 +112,7 @@ export default function GatewayModal({
         type={type}
         target={target}
         amount={amount}
+        currency={currency}
         config={config}
         title={title}
         description={description}
@@ -271,16 +277,17 @@ export default function GatewayModal({
               Amount
             </p>
 
-            <h3
-              className="
-                mt-2
-                text-4xl
-                font-black
-                sm:text-5xl
-              "
-            >
-              ₦{amount.toLocaleString()}
-            </h3>
+              <h3
+                className="
+                  mt-2
+                  text-3xl
+                  font-black
+                  sm:text-4xl
+                "
+              >
+                {currency === 'NGN' ? '₦' : '$'}
+                {amount.toLocaleString()}
+              </h3>
 
             {type !== 'prediction' && (
               <p
