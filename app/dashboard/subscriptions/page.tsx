@@ -22,6 +22,7 @@ import { InternalAds } from '@/components/ads/IntAds/InternalAds';
 import { AdPage } from '@/constants/ads/ad-page';
 import { AdPosition } from '@/constants/ads/ad-position';
 import { PaymentCurrency } from '@/services/payment-gateway.service';
+import { useAuth } from '@/providers/auth-provider';
 
 export default function PurchasesPage() {
   const {
@@ -56,7 +57,10 @@ export default function PurchasesPage() {
   const [upgradeLoading, setUpgradeLoading] =
     useState(false);
 
-const currency: PaymentCurrency = 'NGN';
+    const { user } = useAuth();
+
+    const currency: PaymentCurrency =
+      user?.currency ?? 'USD';
   // =====================================================
   // LOAD VIP UPGRADE ANALYSIS
   // =====================================================
@@ -215,22 +219,26 @@ const currency: PaymentCurrency = 'NGN';
       ===================================================== */}
 
       {selectedPlan && config && (
-          <GatewayModal
-            type="subscription"
-            target={selectedPlan}
-            amount={
-              selectedPlan === 'regular'
-                ? config.regularPrice
+        <GatewayModal
+          type="subscription"
+          target={selectedPlan}
+          amount={
+            selectedPlan === 'regular'
+              ? currency === 'USD'
+                ? config.regularPriceUSD
+                : config.regularPrice
+              : currency === 'USD'
+                ? config.vipPriceUSD
                 : config.vipPrice
-            }
-            currency={currency}
-            config={config}
-            title={`Complete ${selectedPlan.toUpperCase()} Subscription`}
-            description="Choose your preferred payment gateway to securely complete your subscription."
-            onClose={() => {
-              setSelectedPlan(null);
-            }}
-          />
+          }
+          currency={currency}
+          config={config}
+          title={`Complete ${selectedPlan.toUpperCase()} Subscription`}
+          description="Choose your preferred payment gateway to securely complete your subscription."
+          onClose={() => {
+            setSelectedPlan(null);
+          }}
+        />
       )}
 
       {/* =====================================================

@@ -37,8 +37,8 @@ export default function PricingSection() {
   const [selectedPlan, setSelectedPlan] =
     useState<SelectedPlan>(null);
 
-  const [currency, setCurrency] =
-    useState<PaymentCurrency>('NGN');
+const [currency, setCurrency] =
+  useState<PaymentCurrency>('USD');
 
   useEffect(() => {
     async function loadPlans() {
@@ -59,10 +59,17 @@ export default function PricingSection() {
     loadPlans();
   }, []);
 
-  const currencySymbol =
-    currency === 'USD'
-      ? '$'
-      : '₦';
+  useEffect(() => {
+  if (!user) {
+    // Guests always see USD
+    setCurrency('USD');
+    return;
+  }
+
+  // Logged-in users use their saved currency
+  setCurrency(user.currency);
+}, [user]);
+
 
   const prices = useMemo(() => {
     if (!config) {
@@ -354,82 +361,26 @@ export default function PricingSection() {
 
         </div>
 
-        {/* Currency Selector */}
-
-        <div className="mb-10 flex justify-center">
-
-          <div
-            className="
-              inline-flex
-              rounded-2xl
-              border
-              bg-card
-              p-1
-              shadow-sm
-            "
-          >
-
-            <button
-              type="button"
-              onClick={() => {
-                setCurrency('NGN');
-                setSelectedPlan(null);
-              }}
-              className={`
-                rounded-xl
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                transition
-                ${
-                  currency === 'NGN'
-                    ? `
-                      bg-primary
-                      text-primary-foreground
-                    `
-                    : `
-                      text-muted-foreground
-                      hover:bg-muted
-                    `
-                }
-              `}
-            >
-              ₦ NGN
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setCurrency('USD');
-                setSelectedPlan(null);
-              }}
-              className={`
-                rounded-xl
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                transition
-                ${
-                  currency === 'USD'
-                    ? `
-                      bg-primary
-                      text-primary-foreground
-                    `
-                    : `
-                      text-muted-foreground
-                      hover:bg-muted
-                    `
-                }
-              `}
-            >
-              $ USD
-            </button>
-
-          </div>
-
-        </div>
+  <div className="mb-12 flex justify-center">
+  <div
+    className="
+      rounded-full
+      border
+      bg-card
+      px-4
+      py-2
+      text-sm
+      text-muted-foreground
+    "
+  >
+    Prices shown in{' '}
+    <span className="font-semibold">
+      {currency === 'NGN'
+        ? 'Nigerian Naira (₦)'
+        : 'US Dollars ($)'}
+    </span>
+  </div>
+</div>
 
         {/* Pricing */}
 
