@@ -1,9 +1,5 @@
 'use client';
 
-import {
-  motion,
-} from 'framer-motion';
-
 interface HeroStatsProps {
   stats: {
     value: string;
@@ -15,18 +11,7 @@ export default function HeroStats({
   stats,
 }: HeroStatsProps) {
   return (
-    <motion.div
-      initial={{
-        opacity: 0,
-        y: 20,
-      }}
-      animate={{
-        opacity: 1,
-        y: 0,
-      }}
-      transition={{
-        delay: 0.4,
-      }}
+    <div
       className="
         mt-8
         grid
@@ -61,9 +46,7 @@ export default function HeroStats({
                 dark:text-white
               "
             >
-              {
-                item.value
-              }
+              {item.value}
             </p>
 
             <p
@@ -75,13 +58,11 @@ export default function HeroStats({
                 dark:text-white/60
               "
             >
-              {
-                item.label
-              }
+              {item.label}
             </p>
           </div>
         ),
       )}
-    </motion.div>
+    </div>
   );
 }

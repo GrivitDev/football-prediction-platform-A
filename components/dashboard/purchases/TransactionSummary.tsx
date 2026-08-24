@@ -10,16 +10,48 @@ import {
   StatCard,
 } from '@/components/dashboard/shared/StatCard';
 
+import {
+  useAuth,
+} from '@/providers/auth-provider';
+
+
+// ============================================================
+// TYPES
+// ============================================================
 
 interface Props {
   payments: any[];
 }
 
 
+// ============================================================
+// COMPONENT
+// ============================================================
+
 export default function TransactionSummary({
   payments = [],
 }: Props) {
 
+  // ==========================================================
+  // AUTH
+  // ==========================================================
+
+  const {
+    user,
+  } = useAuth();
+
+
+  // ==========================================================
+  // USER CURRENCY
+  // ==========================================================
+
+  const currency =
+    user?.currency ?? 'NGN';
+
+
+  // ==========================================================
+  // TOTAL
+  // ==========================================================
 
   const total =
     payments.reduce(
@@ -36,6 +68,10 @@ export default function TransactionSummary({
     );
 
 
+  // ==========================================================
+  // PAYMENT COUNTS
+  // ==========================================================
+
   const approved =
     payments.filter(
       (payment) =>
@@ -50,6 +86,26 @@ export default function TransactionSummary({
     ).length;
 
 
+  // ==========================================================
+  // FORMAT CURRENCY
+  // ==========================================================
+
+  const formattedTotal =
+    new Intl.NumberFormat(
+      currency === 'USD'
+        ? 'en-US'
+        : 'en-NG',
+      {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: 0,
+      },
+    ).format(total);
+
+
+  // ==========================================================
+  // CARDS
+  // ==========================================================
 
   const cards = [
 
@@ -58,20 +114,13 @@ export default function TransactionSummary({
         'Total Spent',
 
       value:
-        new Intl.NumberFormat(
-          'en-NG',
-          {
-            style: 'currency',
-            currency: 'NGN',
-            maximumFractionDigits: 0,
-          },
-        ).format(total),
+        formattedTotal,
 
       icon:
         Wallet,
 
       description:
-        'Lifetime payments',
+        `Lifetime payments in ${currency}`,
 
       className:
         `
@@ -143,6 +192,9 @@ export default function TransactionSummary({
   ];
 
 
+  // ==========================================================
+  // RENDER
+  // ==========================================================
 
   return (
 
@@ -154,6 +206,8 @@ export default function TransactionSummary({
         md:grid-cols-3
       "
     >
+
+      {/* Decorative Glow */}
 
       <div
         className="
@@ -170,12 +224,16 @@ export default function TransactionSummary({
       />
 
 
+      {/* Cards */}
+
       {
         cards.map(
           (card) => (
 
             <div
-              key={card.title}
+              key={
+                card.title
+              }
               className={`
                 group
                 relative
@@ -190,6 +248,8 @@ export default function TransactionSummary({
                 hover:shadow-xl
               `}
             >
+
+              {/* Hover Shine */}
 
               <div
                 className="
@@ -209,7 +269,13 @@ export default function TransactionSummary({
               />
 
 
-              <div className="relative">
+              {/* Stat */}
+
+              <div
+                className="
+                  relative
+                "
+              >
 
                 <StatCard
 
@@ -233,13 +299,11 @@ export default function TransactionSummary({
 
               </div>
 
-
             </div>
 
           ),
         )
       }
-
 
     </div>
 

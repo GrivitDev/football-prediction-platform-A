@@ -15,6 +15,14 @@ import {
   EmptyState,
 } from '@/components/dashboard/shared/EmptyState';
 
+import {
+  useAuth,
+} from '@/providers/auth-provider';
+
+
+// ============================================================
+// TYPES
+// ============================================================
 
 interface Props {
   loading: boolean;
@@ -22,12 +30,35 @@ interface Props {
 }
 
 
+// ============================================================
+// COMPONENT
+// ============================================================
 
 export default function TransactionTable({
   loading,
   payments,
 }: Props) {
 
+  // ==========================================================
+  // AUTH
+  // ==========================================================
+
+  const {
+    user,
+  } = useAuth();
+
+
+  // ==========================================================
+  // CURRENCY
+  // ==========================================================
+
+  const currency =
+    user?.currency ?? 'NGN';
+
+
+  // ==========================================================
+  // LOADING
+  // ==========================================================
 
   if (loading) {
 
@@ -36,6 +67,9 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // EMPTY
+  // ==========================================================
 
   if (!payments.length) {
 
@@ -54,6 +88,9 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // PAYMENT TYPE
+  // ==========================================================
 
   function getType(
     payment: any,
@@ -78,6 +115,9 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // PAYMENT ITEM
+  // ==========================================================
 
   function getItem(
     payment: any,
@@ -110,16 +150,21 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // FORMAT AMOUNT
+  // ==========================================================
 
   function formatAmount(
-    amount:number,
+    amount: number,
   ) {
 
     return new Intl.NumberFormat(
-      'en-GB',
+      currency === 'USD'
+        ? 'en-US'
+        : 'en-NG',
       {
         style: 'currency',
-        currency: 'NGN',
+        currency,
         maximumFractionDigits: 0,
       },
     ).format(amount);
@@ -127,9 +172,12 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // FORMAT DATE
+  // ==========================================================
 
   function formatDate(
-    date:string,
+    date: string,
   ) {
 
     return new Date(
@@ -146,9 +194,12 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // ICON
+  // ==========================================================
 
   function getIcon(
-    type:string,
+    type: string,
   ) {
 
     if (
@@ -174,6 +225,9 @@ export default function TransactionTable({
   }
 
 
+  // ==========================================================
+  // RENDER
+  // ==========================================================
 
   return (
 
@@ -183,8 +237,9 @@ export default function TransactionTable({
       "
     >
 
-
+      {/* ================================================== */}
       {/* DESKTOP */}
+      {/* ================================================== */}
 
       <div
         className="
@@ -205,6 +260,8 @@ export default function TransactionTable({
             text-sm
           "
         >
+
+          {/* HEADER */}
 
           <thead>
 
@@ -249,6 +306,8 @@ export default function TransactionTable({
           </thead>
 
 
+          {/* BODY */}
+
           <tbody>
 
             {
@@ -256,13 +315,17 @@ export default function TransactionTable({
                 (payment) => (
 
                   <tr
-                    key={payment._id}
+                    key={
+                      payment._id
+                    }
                     className="
                       border-b
                       transition-all
                       hover:bg-muted/20
                     "
                   >
+
+                    {/* TYPE */}
 
                     <td
                       className="
@@ -272,10 +335,16 @@ export default function TransactionTable({
                       "
                     >
 
-                      {getType(payment)}
+                      {
+                        getType(
+                          payment,
+                        )
+                      }
 
                     </td>
 
+
+                    {/* ITEM */}
 
                     <td
                       className="
@@ -285,10 +354,16 @@ export default function TransactionTable({
                       "
                     >
 
-                      {getItem(payment)}
+                      {
+                        getItem(
+                          payment,
+                        )
+                      }
 
                     </td>
 
+
+                    {/* AMOUNT */}
 
                     <td
                       className="
@@ -300,12 +375,16 @@ export default function TransactionTable({
 
                       {
                         formatAmount(
-                          payment.amount || 0,
+                          Number(
+                            payment.amount || 0,
+                          ),
                         )
                       }
 
                     </td>
 
+
+                    {/* STATUS */}
 
                     <td
                       className="
@@ -323,6 +402,8 @@ export default function TransactionTable({
                     </td>
 
 
+                    {/* DATE */}
+
                     <td
                       className="
                         px-6
@@ -339,7 +420,6 @@ export default function TransactionTable({
 
                     </td>
 
-
                   </tr>
 
                 ),
@@ -348,16 +428,14 @@ export default function TransactionTable({
 
           </tbody>
 
-
         </table>
 
       </div>
 
 
-
-
-
+      {/* ================================================== */}
       {/* MOBILE */}
+      {/* ================================================== */}
 
       <div
         className="
@@ -372,17 +450,22 @@ export default function TransactionTable({
 
               const Icon =
                 getIcon(
-                  getType(payment),
+                  getType(
+                    payment,
+                  ),
                 );
 
 
               return (
 
                 <div
-                  key={payment._id}
+                  key={
+                    payment._id
+                  }
                   className="
                     group
                     relative
+                    mb-8
                     overflow-hidden
                     rounded-3xl
                     border
@@ -396,9 +479,10 @@ export default function TransactionTable({
                     duration-300
                     hover:-translate-y-1
                     hover:shadow-xl
-                    mb-8
                   "
                 >
+
+                  {/* DECORATIVE GLOW */}
 
                   <div
                     className="
@@ -421,6 +505,8 @@ export default function TransactionTable({
                     "
                   >
 
+                    {/* TYPE + STATUS */}
+
                     <div
                       className="
                         flex
@@ -436,6 +522,8 @@ export default function TransactionTable({
                           gap-3
                         "
                       >
+
+                        {/* ICON */}
 
                         <div
                           className="
@@ -460,6 +548,8 @@ export default function TransactionTable({
                         </div>
 
 
+                        {/* DETAILS */}
+
                         <div>
 
                           <p
@@ -468,9 +558,14 @@ export default function TransactionTable({
                             "
                           >
 
-                            {getType(payment)}
+                            {
+                              getType(
+                                payment,
+                              )
+                            }
 
                           </p>
+
 
                           <p
                             className="
@@ -479,7 +574,11 @@ export default function TransactionTable({
                             "
                           >
 
-                            {getItem(payment)}
+                            {
+                              getItem(
+                                payment,
+                              )
+                            }
 
                           </p>
 
@@ -488,16 +587,18 @@ export default function TransactionTable({
                       </div>
 
 
+                      {/* STATUS */}
+
                       <StatusBadge
                         status={
                           payment.status
                         }
                       />
 
-
                     </div>
 
 
+                    {/* AMOUNT + DATE */}
 
                     <div
                       className="
@@ -506,6 +607,8 @@ export default function TransactionTable({
                         justify-between
                       "
                     >
+
+                      {/* AMOUNT */}
 
                       <div>
 
@@ -531,7 +634,10 @@ export default function TransactionTable({
 
                           {
                             formatAmount(
-                              payment.amount || 0,
+                              Number(
+                                payment.amount ||
+                                0,
+                              ),
                             )
                           }
 
@@ -539,6 +645,8 @@ export default function TransactionTable({
 
                       </div>
 
+
+                      {/* DATE */}
 
                       <div
                         className="
@@ -575,12 +683,9 @@ export default function TransactionTable({
 
                       </div>
 
-
                     </div>
 
-
                   </div>
-
 
                 </div>
 
@@ -591,7 +696,6 @@ export default function TransactionTable({
         }
 
       </div>
-
 
     </div>
 

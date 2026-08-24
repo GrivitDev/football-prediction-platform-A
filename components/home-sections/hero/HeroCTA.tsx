@@ -3,10 +3,6 @@
 import Link from 'next/link';
 
 import {
-  motion,
-} from 'framer-motion';
-
-import {
   ArrowRight,
 } from 'lucide-react';
 
@@ -46,13 +42,7 @@ export default function HeroCTA({
         gap-3
       "
     >
-      <motion.div
-        whileHover={{
-          scale: 1.06,
-        }}
-        whileTap={{
-          scale: 0.96,
-        }}
+      <div
         className="
           group
           relative
@@ -75,31 +65,6 @@ export default function HeroCTA({
           dark:hover:shadow-primary/40
         "
       >
-        {/* Animated glow */}
-
-        <motion.div
-          animate={{
-            x: [
-              '-120%',
-              '120%',
-            ],
-          }}
-          transition={{
-            duration: 3,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-          className="
-            absolute
-            inset-0
-            bg-gradient-to-r
-            from-transparent
-            via-white/30
-            to-transparent
-            dark:via-white/25
-          "
-        />
-
         <span
           className="
             relative
@@ -120,7 +85,7 @@ export default function HeroCTA({
             "
           />
         </span>
-      </motion.div>
+      </div>
     </Link>
   );
 }

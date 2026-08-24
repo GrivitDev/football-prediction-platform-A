@@ -1,9 +1,5 @@
 'use client';
 
-import {
-  motion,
-} from 'framer-motion';
-
 interface HeroIndicatorsProps {
   total: number;
 
@@ -42,40 +38,24 @@ export default function HeroIndicators({
     >
       {Array.from({
         length: total,
-      }).map(
-        (
-          _,
-          index,
-        ) => (
-          <motion.div
-            key={
-              index
+      }).map((_, index) => (
+        <div
+          key={index}
+          className={`
+            h-2
+            rounded-full
+            bg-slate-800
+
+            dark:bg-white
+
+            ${
+              active === index
+                ? 'w-[42px] opacity-100'
+                : 'w-2 opacity-40'
             }
-            initial={false}
-            animate={{
-              width:
-                active === index
-                  ? 42
-                  : 8,
-
-              opacity:
-                active === index
-                  ? 1
-                  : 0.4,
-            }}
-            transition={{
-              duration: 0.35,
-            }}
-            className="
-              h-2
-              rounded-full
-              bg-slate-800
-
-              dark:bg-white
-            "
-          />
-        ),
-      )}
+          `}
+        />
+      ))}
     </div>
   );
 }

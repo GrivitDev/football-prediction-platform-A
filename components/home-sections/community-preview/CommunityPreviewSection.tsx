@@ -28,8 +28,6 @@ import {
 import CommunityPreviewCard from './CommunityPreviewCard';
 
 import CommunityPreviewSkeleton from './CommunityPreviewSkeleton';
-import ParticleField from '../features/ParticleField';
-
 
 export default function CommunityPreviewSection() {
 
@@ -167,7 +165,6 @@ export default function CommunityPreviewSection() {
         "
 
       />
-<ParticleField />
 
       <div
 

@@ -1,7 +1,5 @@
 'use client';
 
-import ParticleField from './features/ParticleField';
-
 export default function ArticlesPreview() {
   return (
     <section
@@ -49,7 +47,6 @@ export default function ArticlesPreview() {
             duration-500
           "
         >
-          <ParticleField />
         </div>
 
         {/* Central primary glow */}

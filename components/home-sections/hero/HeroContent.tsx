@@ -1,9 +1,5 @@
 'use client';
 
-import {
-  motion,
-} from 'framer-motion';
-
 import HeroCTA from './HeroCTA';
 
 import type {
@@ -33,18 +29,7 @@ export default function HeroContent({
     >
       {/* Badge */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.6,
-        }}
+      <div
         className="
           w-fit
           rounded-full
@@ -66,23 +51,11 @@ export default function HeroContent({
         "
       >
         {slide.badge}
-      </motion.div>
+      </div>
 
       {/* Title */}
 
-      <motion.h1
-        initial={{
-          opacity: 0,
-          y: -25,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.8,
-          delay: 0.1,
-        }}
+      <h1
         className="
           max-w-2xl
           text-xl
@@ -99,23 +72,11 @@ export default function HeroContent({
         "
       >
         {slide.title}
-      </motion.h1>
+      </h1>
 
       {/* Subtitle */}
 
-      <motion.p
-        initial={{
-          opacity: 0,
-          y: -20,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-        }}
-        transition={{
-          duration: 0.8,
-          delay: 0.2,
-        }}
+      <p
         className="
           max-w-xl
           text-sm
@@ -130,38 +91,20 @@ export default function HeroContent({
         "
       >
         {slide.subtitle}
-      </motion.p>
+      </p>
 
       {/* Button */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-          y: -15,
-          scale: 0.95,
-        }}
-        animate={{
-          opacity: 1,
-          y: 0,
-          scale: 1,
-        }}
-        transition={{
-          duration: 0.7,
-          delay: 0.3,
-        }}
+      <div
         className="
           pt-2
         "
       >
         <HeroCTA
-          button={
-            slide.button
-          }
-          isLoggedIn={
-            isLoggedIn
-          }
+          button={slide.button}
+          isLoggedIn={isLoggedIn}
         />
-      </motion.div>
+      </div>
     </div>
   );
 }

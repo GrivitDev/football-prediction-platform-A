@@ -41,7 +41,6 @@ export default function HeroCarousel({
       "
     >
       {/* Embla viewport */}
-
       <div
         ref={emblaRef}
         className="
@@ -51,7 +50,6 @@ export default function HeroCarousel({
         "
       >
         {/* Slides container */}
-
         <div
           className="
             flex
@@ -59,46 +57,31 @@ export default function HeroCarousel({
             touch-pan-y
           "
         >
-          {slides.map(
-            (
-              slide,
-            ) => (
-              <div
-                key={
-                  slide.id
-                }
-                className="
-                  relative
-                  h-full
-                  min-w-full
-                  flex-[0_0_100%]
-                  bg-white
-                  dark:bg-slate-950
-                "
-              >
-                <HeroSlideComponent
-                  slide={
-                    slide
-                  }
-                  isLoggedIn={
-                    isLoggedIn
-                  }
-                />
-              </div>
-            ),
-          )}
+          {slides.map((slide) => (
+            <div
+              key={slide.id}
+              className="
+                relative
+                h-full
+                min-w-full
+                flex-[0_0_100%]
+                bg-white
+                dark:bg-slate-950
+              "
+            >
+              <HeroSlideComponent
+                slide={slide}
+                isLoggedIn={isLoggedIn}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Indicators */}
-
       <HeroIndicators
-        total={
-          slides.length
-        }
-        active={
-          selectedIndex
-        }
+        total={slides.length}
+        active={selectedIndex}
       />
     </div>
   );

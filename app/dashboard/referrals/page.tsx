@@ -28,12 +28,12 @@ import {
 
 import {
   AvailableCampaigns,
-} from '@/components/dashboard/referrals/AvailableCampaigns';
+} from '@/components/dashboard/referrals/AvailableCampaigns copy';
 
 
 import {
   ActiveCampaigns,
-} from '@/components/dashboard/referrals/ActiveCampaigns';
+} from '@/components/dashboard/referrals/ActiveCampaigns copy';
 
 
 import {

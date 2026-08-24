@@ -2,10 +2,6 @@
 
 import Image from 'next/image';
 
-import {
-  motion,
-} from 'framer-motion';
-
 import type {
   HeroPlayer,
 } from './hero.types';
@@ -32,26 +28,10 @@ export default function HeroPlayers({
           player,
           index,
         ) => (
-          <motion.div
+          <div
             key={
               player.id
             }
-            initial={{
-              opacity: 0,
-              y: 80,
-              scale: 0.9,
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: 1,
-            }}
-            transition={{
-              duration:
-                0.9 + index * 0.15,
-              ease:
-                'easeOut',
-            }}
             className={`
               absolute
               ${player.className ?? ''}
@@ -59,27 +39,7 @@ export default function HeroPlayers({
           >
             {/* Player aura */}
 
-            <motion.div
-              animate={{
-                scale: [
-                  1,
-                  1.15,
-                  1,
-                ],
-
-                opacity: [
-                  0.25,
-                  0.5,
-                  0.25,
-                ],
-              }}
-              transition={{
-                duration: 4,
-                repeat:
-                  Infinity,
-                ease:
-                  'easeInOut',
-              }}
+            <div
               className="
                 absolute
                 inset-10
@@ -91,33 +51,9 @@ export default function HeroPlayers({
               "
             />
 
-            {/* Floating player */}
+            {/* Player */}
 
-            <motion.div
-              animate={{
-                y: [
-                  0,
-                  -12,
-                  0,
-                ],
-
-                rotate: [
-                  0,
-                  index % 2 === 0
-                    ? 1
-                    : -1,
-                  0,
-                ],
-              }}
-              transition={{
-                duration:
-                  5 + index,
-                repeat:
-                  Infinity,
-                ease:
-                  'easeInOut',
-              }}
-            >
+            <div>
               <Image
                 src={
                   player.image
@@ -144,8 +80,8 @@ export default function HeroPlayers({
                   dark:drop-shadow-[0_30px_60px_rgba(0,0,0,0.55)]
                 "
               />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         ),
       )}
     </div>

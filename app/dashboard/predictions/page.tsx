@@ -5,31 +5,46 @@ import {
   useMemo,
   useState,
 } from 'react';
+
 import Image from 'next/image';
+
 import api from '@/lib/axios';
 
 import PredictionModal from '@/components/predictions/PredictionModal';
-
 import PredictionCard from '@/components/predictions/PredictionCard';
-
 import PredictionTable from '@/components/predictions/PredictionTable';
-
 import PredictionPagination from '@/components/predictions/PredictionPagination';
+import PredictionFilters from '@/components/predictions/PredictionFilters';
+
 import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+
 import { AdPage } from '@/constants/ads/ad-page';
 import { AdPosition } from '@/constants/ads/ad-position';
+
 import { PredictionsAds } from '@/components/ads/ExtAds/positions/PredictionsAds';
 
 
+// ============================================================
+// CONSTANTS
+// ============================================================
 
-export default function PredictionsPage(){
+const ITEMS_PER_PAGE = 10;
 
+
+// ============================================================
+// PAGE
+// ============================================================
+
+export default function PredictionsPage() {
+
+  // ==========================================================
+  // DATA
+  // ==========================================================
 
   const [
     predictions,
     setPredictions,
   ] = useState<any[]>([]);
-
 
 
   const [
@@ -38,24 +53,20 @@ export default function PredictionsPage(){
   ] = useState<any | null>(null);
 
 
-
-
   const [
     loading,
     setLoading,
   ] = useState(true);
 
 
-
-
+  // ==========================================================
   // FILTERS
-
+  // ==========================================================
 
   const [
     search,
     setSearch,
   ] = useState('');
-
 
 
   const [
@@ -64,12 +75,10 @@ export default function PredictionsPage(){
   ] = useState('all');
 
 
-
   const [
     minConfidence,
     setMinConfidence,
   ] = useState(0);
-
 
 
   const [
@@ -78,11 +87,21 @@ export default function PredictionsPage(){
   ] = useState('all');
 
 
+  const [
+    customFrom,
+    setCustomFrom,
+  ] = useState('');
 
 
+  const [
+    customTo,
+    setCustomTo,
+  ] = useState('');
 
+
+  // ==========================================================
   // PAGINATION
-
+  // ==========================================================
 
   const [
     page,
@@ -90,267 +109,722 @@ export default function PredictionsPage(){
   ] = useState(1);
 
 
+  // ==========================================================
+  // FETCH PREDICTIONS
+  // ==========================================================
 
-  const ITEMS_PER_PAGE = 10;
+  useEffect(() => {
 
-
-
-
-
-  useEffect(()=>{
-
-
-    const fetchPredictions = async()=>{
+    let cancelled = false;
 
 
-      try{
+    const fetchPredictions = async () => {
 
+      try {
 
         const res =
           await api.get('/predictions');
 
 
-        setPredictions(
-          res.data
-        );
+        if (!cancelled) {
 
+          setPredictions(
+            Array.isArray(res.data)
+              ? res.data
+              : []
+          );
+
+        }
+
+      } catch (error) {
+
+        if (!cancelled) {
+
+          console.error(
+            'Failed to fetch predictions:',
+            error
+          );
+
+          setPredictions([]);
+
+        }
+
+      } finally {
+
+        if (!cancelled) {
+
+          setLoading(false);
+
+        }
 
       }
-
-      finally{
-
-        setLoading(false);
-
-      }
-
 
     };
-
 
 
     fetchPredictions();
 
 
+    return () => {
 
-  },[]);
+      cancelled = true;
 
+    };
 
-
-
-
-
-
+  }, []);
 
 
-  const filtered =
-    useMemo(()=>{
+  // ==========================================================
+  // LEAGUES
+  // ==========================================================
+
+  const leagues = useMemo(() => {
+
+    return Array.from(
+      new Set(
+        predictions
+          .map(
+            (prediction) =>
+              prediction.leagueCode
+          )
+          .filter(Boolean)
+      )
+    ).sort();
+
+  }, [
+    predictions,
+  ]);
 
 
-      const now =
-        Date.now();
+  // ==========================================================
+  // FILTER + SORT
+  // ==========================================================
+
+  const filtered = useMemo(() => {
+
+    // ========================================================
+    // CURRENT DATE
+    // ========================================================
+
+    const now = new Date();
 
 
+    // ========================================================
+    // TODAY
+    // ========================================================
 
-      return predictions
+    const today = new Date(
+      now
+    );
 
-        .filter((prediction)=>{
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    );
 
 
-          const matchTime =
-            new Date(
-              prediction.matchDate
-            ).getTime();
+    const todayTime =
+      today.getTime();
 
 
+    // ========================================================
+    // TOMORROW
+    // ========================================================
+
+    const tomorrow = new Date(
+      today
+    );
+
+    tomorrow.setDate(
+      tomorrow.getDate() + 1
+    );
 
 
-          if(
-            league !== 'all' &&
-            prediction.leagueCode !== league
-          ){
+    const tomorrowTime =
+      tomorrow.getTime();
+
+
+    // ========================================================
+    // DAY AFTER TOMORROW
+    // ========================================================
+
+    const dayAfterTomorrow =
+      new Date(
+        tomorrow
+      );
+
+    dayAfterTomorrow.setDate(
+      dayAfterTomorrow.getDate() + 1
+    );
+
+
+    const dayAfterTomorrowTime =
+      dayAfterTomorrow.getTime();
+
+
+    // ========================================================
+    // THIS WEEK
+    // ========================================================
+
+    /*
+     * Week starts on Monday.
+     */
+
+    const weekStart =
+      new Date(
+        today
+      );
+
+
+    const dayOfWeek =
+      weekStart.getDay();
+
+
+    const daysFromMonday =
+      dayOfWeek === 0
+        ? 6
+        : dayOfWeek - 1;
+
+
+    weekStart.setDate(
+      weekStart.getDate() -
+      daysFromMonday
+    );
+
+
+    const weekStartTime =
+      weekStart.getTime();
+
+
+    const weekEnd =
+      new Date(
+        weekStart
+      );
+
+
+    weekEnd.setDate(
+      weekEnd.getDate() + 7
+    );
+
+
+    const weekEndTime =
+      weekEnd.getTime();
+
+
+    // ========================================================
+    // THIS MONTH
+    // ========================================================
+
+    const monthStart =
+      new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+
+
+    monthStart.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const monthStartTime =
+      monthStart.getTime();
+
+
+    const monthEnd =
+      new Date(
+        today.getFullYear(),
+        today.getMonth() + 1,
+        1
+      );
+
+
+    monthEnd.setHours(
+      0,
+      0,
+      0,
+      0
+    );
+
+
+    const monthEndTime =
+      monthEnd.getTime();
+
+
+    // ========================================================
+    // CUSTOM DATE RANGE
+    // ========================================================
+
+    let customFromTime:
+      number | null = null;
+
+
+    let customToTime:
+      number | null = null;
+
+
+    if (
+      dateFilter === 'custom'
+    ) {
+
+      if (customFrom) {
+
+        const from =
+          new Date(
+            `${customFrom}T00:00:00`
+          );
+
+
+        if (
+          !Number.isNaN(
+            from.getTime()
+          )
+        ) {
+
+          customFromTime =
+            from.getTime();
+
+        }
+
+      }
+
+
+      if (customTo) {
+
+        const to =
+          new Date(
+            `${customTo}T23:59:59.999`
+          );
+
+
+        if (
+          !Number.isNaN(
+            to.getTime()
+          )
+        ) {
+
+          customToTime =
+            to.getTime();
+
+        }
+
+      }
+
+    }
+
+
+    // ========================================================
+    // SEARCH
+    // ========================================================
+
+    const searchTerm =
+      search
+        .trim()
+        .toLowerCase();
+
+
+    // ========================================================
+    // FILTER
+    // ========================================================
+
+    return predictions
+
+      .filter((prediction) => {
+
+        // ----------------------------------------------------
+        // LEAGUE
+        // ----------------------------------------------------
+
+        if (
+          league !== 'all' &&
+          prediction.leagueCode !== league
+        ) {
+
+          return false;
+
+        }
+
+
+        // ----------------------------------------------------
+        // SEARCH
+        // ----------------------------------------------------
+
+        if (searchTerm) {
+
+          const homeTeam =
+            String(
+              prediction.homeTeam ?? ''
+            ).toLowerCase();
+
+
+          const awayTeam =
+            String(
+              prediction.awayTeam ?? ''
+            ).toLowerCase();
+
+
+          const matchesSearch =
+            homeTeam.includes(
+              searchTerm
+            ) ||
+            awayTeam.includes(
+              searchTerm
+            );
+
+
+          if (!matchesSearch) {
+
+            return false;
+
+          }
+
+        }
+
+
+        // ----------------------------------------------------
+        // CONFIDENCE
+        // ----------------------------------------------------
+
+        const confidence =
+          Number(
+            prediction.confidence ?? 0
+          );
+
+
+        if (
+          confidence < minConfidence
+        ) {
+
+          return false;
+
+        }
+
+
+        // ----------------------------------------------------
+        // MATCH DATE
+        // ----------------------------------------------------
+
+        const matchDate =
+          new Date(
+            prediction.matchDate
+          );
+
+
+        const matchTime =
+          matchDate.getTime();
+
+
+        if (
+          Number.isNaN(
+            matchTime
+          )
+        ) {
+
+          return false;
+
+        }
+
+
+        // ----------------------------------------------------
+        // TODAY
+        // ----------------------------------------------------
+
+        if (
+          dateFilter === 'today'
+        ) {
+
+          if (
+            matchTime < todayTime ||
+            matchTime >= tomorrowTime
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        // ----------------------------------------------------
+        // TOMORROW
+        // ----------------------------------------------------
+
+        if (
+          dateFilter === 'tomorrow'
+        ) {
+
+          if (
+            matchTime < tomorrowTime ||
+            matchTime >= dayAfterTomorrowTime
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        // ----------------------------------------------------
+        // THIS WEEK
+        // ----------------------------------------------------
+
+        if (
+          dateFilter === 'week'
+        ) {
+
+          if (
+            matchTime < weekStartTime ||
+            matchTime >= weekEndTime
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        // ----------------------------------------------------
+        // THIS MONTH
+        // ----------------------------------------------------
+
+        if (
+          dateFilter === 'month'
+        ) {
+
+          if (
+            matchTime < monthStartTime ||
+            matchTime >= monthEndTime
+          ) {
+
+            return false;
+
+          }
+
+        }
+
+
+        // ----------------------------------------------------
+        // CUSTOM
+        // ----------------------------------------------------
+
+        if (
+          dateFilter === 'custom'
+        ) {
+
+          /*
+           * If FROM exists, matches must be
+           * on or after FROM.
+           */
+
+          if (
+            customFromTime !== null &&
+            matchTime < customFromTime
+          ) {
 
             return false;
 
           }
 
 
+          /*
+           * If TO exists, matches must be
+           * on or before TO.
+           */
 
-
-          if(
-            search &&
-            !(
-              prediction.homeTeam
-                .toLowerCase()
-                .includes(
-                  search.toLowerCase()
-                )
-              ||
-
-              prediction.awayTeam
-                .toLowerCase()
-                .includes(
-                  search.toLowerCase()
-                )
-            )
-          ){
+          if (
+            customToTime !== null &&
+            matchTime > customToTime
+          ) {
 
             return false;
 
           }
 
+        }
 
 
+        return true;
+
+      })
 
 
-          if(
-            prediction.confidence <
-            minConfidence
-          ){
+      // ======================================================
+      // SORT
+      // ======================================================
 
-            return false;
+      .sort((a, b) => {
+
+        const aDate =
+          new Date(
+            a.matchDate
+          );
+
+
+        const bDate =
+          new Date(
+            b.matchDate
+          );
+
+
+        const aTime =
+          aDate.getTime();
+
+
+        const bTime =
+          bDate.getTime();
+
+
+        // ----------------------------------------------------
+        // NORMALIZED DAYS
+        // ----------------------------------------------------
+
+        aDate.setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
+
+        bDate.setHours(
+          0,
+          0,
+          0,
+          0
+        );
+
+
+        const aDay =
+          aDate.getTime();
+
+
+        const bDay =
+          bDate.getTime();
+
+
+        // ----------------------------------------------------
+        // TODAY FIRST
+        // ----------------------------------------------------
+
+        const aIsToday =
+          aDay === todayTime;
+
+
+        const bIsToday =
+          bDay === todayTime;
+
+
+        if (
+          aIsToday !== bIsToday
+        ) {
+
+          return aIsToday
+            ? -1
+            : 1;
+
+        }
+
+
+        // ----------------------------------------------------
+        // UPCOMING VS PAST
+        // ----------------------------------------------------
+
+        const aUpcoming =
+          aDay > todayTime;
+
+
+        const bUpcoming =
+          bDay > todayTime;
+
+
+        if (
+          aUpcoming !== bUpcoming
+        ) {
+
+          return aUpcoming
+            ? -1
+            : 1;
+
+        }
+
+
+        // ----------------------------------------------------
+        // UPCOMING
+        // ----------------------------------------------------
+
+        if (aUpcoming) {
+
+          if (
+            aDay === bDay
+          ) {
+
+            return aTime - bTime;
 
           }
 
 
+          return aDay - bDay;
+
+        }
 
 
+        // ----------------------------------------------------
+        // PAST
+        // ----------------------------------------------------
+
+        if (
+          aDay === bDay
+        ) {
+
+          return bTime - aTime;
+
+        }
 
 
-          if(
-            dateFilter === 'upcoming' &&
-            matchTime < now
-          ){
+        return bDay - aDay;
 
-            return false;
+      });
 
-          }
-
-
-
-
-
-          if(
-            dateFilter === 'past' &&
-            matchTime > now
-          ){
-
-            return false;
-
-          }
-
-
-
-
-
-          return true;
-
-
-        })
-
-
-        .sort((a,b)=>{
-
-
-          const aTime =
-            new Date(
-              a.matchDate
-            ).getTime();
-
-
-
-          const bTime =
-            new Date(
-              b.matchDate
-            ).getTime();
-
-
-
-          const aPast =
-            aTime < now;
-
-
-
-          const bPast =
-            bTime < now;
-
-
-
-
-          if(
-            aPast !== bPast
-          ){
-
-            return aPast ? 1 : -1;
-
-          }
-
-
-
-          return aTime - bTime;
-
-
-        });
-
-
-
-    },[
-      predictions,
-      search,
-      league,
-      minConfidence,
-      dateFilter,
-    ]);
-
-
-
-
-
-
-
-  useEffect(()=>{
-
-    const timeout = setTimeout(()=>{
-      setPage(1);
-    }, 0);
-
-    return () => clearTimeout(timeout);
-
-  },[
+  }, [
+    predictions,
     search,
     league,
     minConfidence,
     dateFilter,
+    customFrom,
+    customTo,
   ]);
 
 
+  // ==========================================================
+  // RESET PAGINATION WHEN FILTERS CHANGE
+  // ==========================================================
+
+  useEffect(() => {
+
+    setPage(1);
+
+  }, [
+    search,
+    league,
+    minConfidence,
+    dateFilter,
+    customFrom,
+    customTo,
+  ]);
 
 
-
-
-
-  const leagues =
-    useMemo(()=>{
-
-
-      return Array.from(
-        new Set(
-          predictions.map(
-            (p)=>
-              p.leagueCode
-          )
-        )
-      );
-
-
-    },[
-      predictions
-    ]);
-
-
-
-
-
-
+  // ==========================================================
+  // PAGINATION
+  // ==========================================================
 
   const totalPages =
     Math.ceil(
@@ -359,28 +833,38 @@ export default function PredictionsPage(){
     );
 
 
+  useEffect(() => {
 
+    if (
+      totalPages > 0 &&
+      page > totalPages
+    ) {
 
+      setPage(
+        totalPages
+      );
+
+    }
+
+  }, [
+    page,
+    totalPages,
+  ]);
 
 
   const paginated =
     filtered.slice(
-
       (page - 1) *
-      ITEMS_PER_PAGE,
+        ITEMS_PER_PAGE,
 
       page *
-      ITEMS_PER_PAGE
-
+        ITEMS_PER_PAGE
     );
 
 
-
-
-
-
-
-
+  // ==========================================================
+  // RENDER
+  // ==========================================================
 
   return (
 
@@ -390,329 +874,175 @@ export default function PredictionsPage(){
       "
     >
 
-
-
-
-
-
+      {/* ================================================== */}
       {/* HEADER */}
-
-<div
-  className="
-    relative
-    overflow-hidden
-    rounded-3xl
-    border
-    border-border
-    bg-card
-    p-3
-    sm:p-4
-  "
->
-
-<div
-  className="
-    relative
-    space-y-5
-  "
->
-
-  <div
-    className="
-      flex
-      items-center
-      gap-1
-      -mb-3
-    "
-  >
-
-    <Image
-
-      src="/logo.png"
-
-      alt="HonestPredict"
-
-      width={64}
-
-      height={64}
-
-      className="
-        h-14
-        w-14
-        object-contain
-        shrink-0
-      "
-
-    />
-
-
-
-    <span
-      className="
-        text-lg
-        font-black
-        uppercase
-        tracking-[0.3em]
-        text-primary
-      "
-    >
-
-      HonestPredict
-
-    </span>
-
-  </div>
-
-
-
-  <div>
-
-    <h1
-      className="
-        text-2xl
-        font-black
-        tracking-tight
-      "
-    >
-
-      Prediction Hub
-
-    </h1>
-
-
-
-    <p
-      className="
-        max-w-3xl
-        text-sm
-        leading-7
-        text-muted-foreground
-        sm:text-base
-      "
-    >
-
-      Professional football predictions with detailed match analysis & confidence ratings.
-
-    </p>
-
-  </div>
-
-</div>
-
-</div>
-
-
-
-
-
-
-
-
-
-      {/* FILTERS */}
-
-
+      {/* ================================================== */}
 
       <div
-
         className="
-          grid
-          grid-cols-1
-          sm:grid-cols-2
-          lg:grid-cols-4
-          gap-3
+          relative
+          overflow-hidden
           rounded-3xl
           border
           border-border
-          bg-card/70
-          backdrop-blur-xl
-          p-4
+          bg-card
+          p-3
+          sm:p-4
         "
-
       >
 
-
-
-        <input
-
-          value={search}
-
-          onChange={(e)=>
-            setSearch(
-              e.target.value
-            )
-          }
-
-          placeholder="
-            Search teams...
-          "
-
+        <div
           className="
-            rounded-xl
-            border
-            border-border
-            bg-background
-            px-4
-            py-3
-            outline-none
+            relative
+            space-y-5
           "
-
-        />
-
-
-
-
-
-
-
-        <select
-
-          value={league}
-
-          onChange={(e)=>
-            setLeague(
-              e.target.value
-            )
-          }
-
-          className="
-            rounded-xl
-            border
-            border-border
-            bg-background
-            px-4
-            py-3
-          "
-
         >
 
-          <option value="all">
-            All Leagues
-          </option>
+          {/* BRAND */}
+
+          <div
+            className="
+              flex
+              items-center
+              gap-1
+              -mb-3
+            "
+          >
+
+            <Image
+              src="/logo.png"
+              alt="HonestPredict"
+              width={64}
+              height={64}
+              className="
+                h-14
+                w-14
+                shrink-0
+                object-contain
+              "
+            />
 
 
-          {
-            leagues.map((item)=>(
+            <span
+              className="
+                text-lg
+                font-black
+                uppercase
+                tracking-[0.3em]
+                text-primary
+              "
+            >
+              HonestPredict
+            </span>
 
-              <option
-                key={item}
-                value={item}
-              >
-
-                {item}
-
-              </option>
-
-            ))
-          }
-
-
-        </select>
+          </div>
 
 
+          {/* TITLE */}
+
+          <div>
+
+            <h1
+              className="
+                text-2xl
+                font-black
+                tracking-tight
+              "
+            >
+              Prediction Hub
+            </h1>
 
 
+            <p
+              className="
+                max-w-3xl
+                text-sm
+                leading-7
+                text-muted-foreground
+                sm:text-base
+              "
+            >
+              Professional football predictions with detailed
+              match analysis & confidence ratings.
+            </p>
 
+          </div>
 
-
-
-        <select
-
-          value={minConfidence}
-
-          onChange={(e)=>
-            setMinConfidence(
-              Number(
-                e.target.value
-              )
-            )
-          }
-
-          className="
-            rounded-xl
-            border
-            border-border
-            bg-background
-            px-4
-            py-3
-          "
-
-        >
-
-          <option value={0}>
-            All Confidence
-          </option>
-
-          <option value={50}>
-            50%+
-          </option>
-
-          <option value={70}>
-            70%+
-          </option>
-
-          <option value={80}>
-            80%+
-          </option>
-
-
-        </select>
-
-
-
-
-
-
-
-
-        <select
-
-          value={dateFilter}
-
-          onChange={(e)=>
-            setDateFilter(
-              e.target.value
-            )
-          }
-
-          className="
-            rounded-xl
-            border
-            border-border
-            bg-background
-            px-4
-            py-3
-          "
-
-        >
-
-          <option value="all">
-            All Matches
-          </option>
-
-          <option value="upcoming">
-            Upcoming
-          </option>
-
-          <option value="past">
-            Past
-          </option>
-
-
-        </select>
-
-
-
+        </div>
 
       </div>
 
 
+      {/* ================================================== */}
+      {/* FILTERS */}
+      {/* ================================================== */}
+
+      <PredictionFilters
+
+        search={
+          search
+        }
+
+        setSearch={
+          setSearch
+        }
 
 
+        league={
+          league
+        }
+
+        setLeague={
+          setLeague
+        }
 
 
+        minConfidence={
+          minConfidence
+        }
+
+        setMinConfidence={
+          setMinConfidence
+        }
 
 
+        dateFilter={
+          dateFilter
+        }
+
+        setDateFilter={
+          setDateFilter
+        }
+
+
+        customFrom={
+          customFrom
+        }
+
+        setCustomFrom={
+          setCustomFrom
+        }
+
+
+        customTo={
+          customTo
+        }
+
+        setCustomTo={
+          setCustomTo
+        }
+
+
+        leagues={
+          leagues
+        }
+
+      />
+
+
+      {/* ================================================== */}
+      {/* LOADING */}
+      {/* ================================================== */}
 
       {
         loading && (
@@ -721,26 +1051,22 @@ export default function PredictionsPage(){
             className="
               rounded-3xl
               border
+              border-border
               p-10
               text-center
               text-muted-foreground
             "
           >
-
             Loading predictions...
-
           </div>
 
         )
       }
 
 
-
-
-
-
-
-
+      {/* ================================================== */}
+      {/* EMPTY STATE */}
+      {/* ================================================== */}
 
       {
         !loading &&
@@ -750,6 +1076,7 @@ export default function PredictionsPage(){
             className="
               rounded-3xl
               border
+              border-border
               p-10
               text-center
             "
@@ -760,24 +1087,19 @@ export default function PredictionsPage(){
                 font-semibold
               "
             >
-
               No predictions found
-
             </h3>
 
 
             <p
               className="
+                mt-2
                 text-sm
                 text-muted-foreground
-                mt-2
               "
             >
-
               Try changing your filters.
-
             </p>
-
 
           </div>
 
@@ -785,12 +1107,9 @@ export default function PredictionsPage(){
       }
 
 
-
-
-
-
-
-
+      {/* ================================================== */}
+      {/* PREDICTIONS */}
+      {/* ================================================== */}
 
       {
         !loading &&
@@ -801,50 +1120,40 @@ export default function PredictionsPage(){
             {/* DESKTOP */}
 
             <PredictionTable
-
               predictions={
                 paginated
               }
-
               onSelect={
                 setSelected
               }
-
             />
-
-
-
 
 
             {/* MOBILE */}
 
             <div
               className="
-                lg:hidden
                 space-y-4
+                lg:hidden
               "
             >
 
               {
                 paginated.map(
-                  (prediction)=>(
+                  (prediction) => (
 
                     <PredictionCard
-
                       key={
                         prediction._id
                       }
-
                       prediction={
                         prediction
                       }
-
-                      onClick={()=>
+                      onClick={() =>
                         setSelected(
                           prediction
                         )
                       }
-
                     />
 
                   )
@@ -853,73 +1162,90 @@ export default function PredictionsPage(){
 
             </div>
 
-
           </>
 
         )
       }
 
 
+      {/* ================================================== */}
+      {/* PAGINATION */}
+      {/* ================================================== */}
+
+      {
+        totalPages > 1 && (
+
+          <PredictionPagination
+            page={
+              page
+            }
+            totalPages={
+              totalPages
+            }
+            onChange={
+              setPage
+            }
+          />
+
+        )
+      }
 
 
-
-
-
-
-
-      <PredictionPagination
-
-        page={
-          page
-        }
-
-        totalPages={
-          totalPages
-        }
-
-        onChange={
-          setPage
-        }
-
-      />
-
-
-
-
-
-
-
+      {/* ================================================== */}
+      {/* MODAL */}
+      {/* ================================================== */}
 
       {
         selected && (
 
           <PredictionModal
-
             prediction={
               selected
             }
-
-            onClose={()=>
+            onClose={() =>
               setSelected(null)
             }
-
           />
 
         )
       }
-<PredictionsAds />
+
+
+      {/* ================================================== */}
+      {/* EXTERNAL ADS */}
+      {/* ================================================== */}
+
+      <PredictionsAds />
+
+
+      {/* ================================================== */}
+      {/* INTERNAL BOTTOM AD */}
+      {/* ================================================== */}
 
       <InternalAds
-  page={AdPage.HOME}
-  position={AdPosition.BOTTOM}
-/>
+        page={
+          AdPage.HOME
+        }
+        position={
+          AdPosition.BOTTOM
+        }
+      />
 
-<InternalAds
-  page={AdPage.HOME}
-  position={AdPosition.POPUP}
-/>
+
+      {/* ================================================== */}
+      {/* INTERNAL POPUP AD */}
+      {/* ================================================== */}
+
+      <InternalAds
+        page={
+          AdPage.HOME
+        }
+        position={
+          AdPosition.POPUP
+        }
+      />
+
     </div>
-    
 
   );
 

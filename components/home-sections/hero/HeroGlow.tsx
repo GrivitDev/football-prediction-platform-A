@@ -1,9 +1,5 @@
 'use client';
 
-import {
-  motion,
-} from 'framer-motion';
-
 interface HeroGlowProps {
   type:
     | 'green'
@@ -34,25 +30,7 @@ export default function HeroGlow({
   type,
 }: HeroGlowProps) {
   return (
-    <motion.div
-      animate={{
-        scale: [
-          1,
-          1.2,
-          1,
-        ],
-
-        opacity: [
-          0.3,
-          0.55,
-          0.3,
-        ],
-      }}
-      transition={{
-        duration: 6,
-        repeat: Infinity,
-        ease: 'easeInOut',
-      }}
+    <div
       className={`
         absolute
         left-1/2

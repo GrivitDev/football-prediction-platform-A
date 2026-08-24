@@ -73,94 +73,6 @@ export const heroSlides: HeroSlide[] = [
   },
 
   {
-    id: 'free',
-
-    badge: 'FREE MEMBERSHIP',
-
-    title: 'Join For Free.',
-
-    subtitle:
-      'Create your account and start enjoying free daily football predictions.',
-
-    background: '/hero/stadium-2.webp',
-
-    overlay: 'blue',
-
-    players: [
-      {
-        id: '1',
-        image: '/players/player-4.png',
-        alt: 'Player',
-        width: 620,
-        height: 620,
-        priority: true,
-        className:
-          'bottom-0 top-3 right-[22%] w-[40%] lg:w-[40%]',
-      },
-
-      {
-        id: '2',
-        image: '/players/player-5.png',
-        alt: 'Player',
-        width: 390,
-        height: 390,
-        className:
-          'bottom-0 left-[78%] w-[18%]',
-      },
-    ],
-
-    button: {
-      label: 'Create Free Account',
-
-      href: '/register',
-    },
-  },
-
-  {
-    id: 'regular',
-
-    badge: 'REGULAR MEMBERSHIP',
-
-    title: 'Unlock More Winning Opportunities.',
-
-    subtitle:
-      'Access more prediction markets, better releases and exclusive paid predictions.',
-
-    background: '/hero/stadium-3.webp',
-
-    overlay: 'purple',
-
-    players: [
-      {
-        id: '1',
-        image: '/players/player-6.png',
-        alt: 'Player',
-        width: 850,
-        height: 850,
-        priority: true,
-        className:
-          'bottom-0 right-[20%] w-[42%]',
-      },
-
-      {
-        id: '2',
-        image: '/players/player-7.png',
-        alt: 'Player',
-        width: 380,
-        height: 380,
-        className:
-          'bottom-0 left-[84%] w-[16%]',
-      },
-    ],
-
-    button: {
-      label: 'Become Regular',
-
-      href: '/pricing',
-    },
-  },
-
-  {
     id: 'vip',
 
     badge: 'VIP MEMBERSHIP',
@@ -198,7 +110,7 @@ export const heroSlides: HeroSlide[] = [
     ],
 
     button: {
-      label: 'Go VIP',
+      label: 'Become A VIP',
 
       href: '/pricing',
     },

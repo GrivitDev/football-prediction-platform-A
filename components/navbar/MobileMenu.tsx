@@ -63,11 +63,6 @@ export default function MobileMenu() {
       icon: Home,
     },
     {
-      name: 'Live Scores',
-      href: '/livescore',
-      icon: Trophy,
-    },
-    {
       name: 'Community',
       href: '/community',
       icon: Handshake,

@@ -1,9 +1,5 @@
 'use client';
 
-import {
-  motion,
-} from 'framer-motion';
-
 import HeroBackground from './HeroBackground';
 
 import HeroPlayers from './HeroPlayers';
@@ -11,8 +7,6 @@ import HeroPlayers from './HeroPlayers';
 import HeroContent from './HeroContent';
 
 import HeroGlow from './HeroGlow';
-
-import HeroParticles from './HeroParticles';
 
 import HeroStats from './HeroStats';
 
@@ -68,10 +62,6 @@ export default function HeroSlideComponent({
         }
       />
 
-      {/* Moving particles */}
-
-      <HeroParticles />
-
       {/* Football players */}
 
       <div
@@ -92,17 +82,7 @@ export default function HeroSlideComponent({
 
       {/* Main content */}
 
-      <motion.div
-        initial={{
-          opacity: 0,
-        }}
-        animate={{
-          opacity: 1,
-        }}
-        transition={{
-          duration: 0.8,
-          ease: 'easeOut',
-        }}
+      <div
         className="
           relative
           z-30
@@ -176,7 +156,7 @@ export default function HeroSlideComponent({
             />
           )}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
