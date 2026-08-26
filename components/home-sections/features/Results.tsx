@@ -158,19 +158,9 @@ export default function Results({
               sm:text-lg
             "
           >
-            Recent Results
+            Recent Match Results
           </h2>
 
-
-          <p
-            className="
-              text-[11px]
-              text-muted-foreground
-              sm:text-xs
-            "
-          >
-            Completed matches
-          </p>
 
         </div>
 

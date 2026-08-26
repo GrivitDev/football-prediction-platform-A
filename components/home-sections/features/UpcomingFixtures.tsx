@@ -118,7 +118,7 @@ export default function UpcomingFixtures({
               sm:text-lg
             "
           >
-            Upcoming Fixtures
+            Upcoming Matches
           </h2>
 
 

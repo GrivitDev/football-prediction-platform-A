@@ -8,7 +8,6 @@ import HeroContent from './HeroContent';
 
 import HeroGlow from './HeroGlow';
 
-import HeroStats from './HeroStats';
 
 import type {
   HeroSlide,

@@ -556,7 +556,7 @@ export default function LiveMatches({
                 sm:text-base
               "
             >
-              Live Now
+              Live Matches
             </h2>
 
 
