@@ -16,16 +16,6 @@ export const heroSlides: HeroSlide[] = [
     overlay: 'green',
 
     players: [
-      {
-        id: '1',
-        image: '/players/player-1.png',
-        alt: 'Player',
-        width: 650,
-        height: 650,
-        priority: true,
-        className:
-          'bottom-0 top-0 right-[4%] w-[32%] lg:w-[32%]',
-      },
 
       {
         id: '2',
@@ -53,23 +43,6 @@ export const heroSlides: HeroSlide[] = [
 
       href: '/register',
     },
-
-    stats: [
-      {
-        value: '1000+',
-        label: 'Predictions',
-      },
-
-      {
-        value: '150+',
-        label: 'Matches Weekly',
-      },
-
-      {
-        value: '24/7',
-        label: 'Updates',
-      },
-    ],
   },
 
   {

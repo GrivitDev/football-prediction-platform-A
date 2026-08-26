@@ -147,14 +147,6 @@ export default function HeroSlideComponent({
               isLoggedIn
             }
           />
-
-          {slide.stats && (
-            <HeroStats
-              stats={
-                slide.stats
-              }
-            />
-          )}
         </div>
       </div>
     </section>

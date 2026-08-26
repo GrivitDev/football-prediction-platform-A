@@ -999,14 +999,14 @@ export default function PredictionsPreview({
               "
             >
 
-              Tips For{' '}
+              Today&apos;s {' '}
 
               <span
                 className="
                   text-primary
                 "
               >
-                Today
+                Predictions
               </span>
 
             </h2>

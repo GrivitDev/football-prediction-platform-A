@@ -769,19 +769,6 @@ export default function HomePage() {
         )}
 
 
-        {/* ==================================================
-            LIVE MATCHES
-        ================================================== */}
-
-        {(
-          sectionView === 'all' ||
-          sectionView === 'live'
-        ) && (
-          <LiveMatches
-            matches={filteredLiveMatches}
-          />
-        )}
-
 
         {/* ==================================================
             HERO AD
@@ -828,6 +815,19 @@ export default function HomePage() {
 
 
 
+        {/* ==================================================
+            LIVE MATCHES
+        ================================================== */}
+
+        {(
+          sectionView === 'all' ||
+          sectionView === 'live'
+        ) && (
+          <LiveMatches
+            matches={filteredLiveMatches}
+          />
+        )}
+
 
         {/* ==================================================
             LEAGUE / COMPETITION DATA
@@ -836,33 +836,6 @@ export default function HomePage() {
         {selectedLeagueCode && (
           <>
 
-            {/* ================================================
-                LEAGUE SELECTOR
-            ================================================ */}
-
-            <LeagueSelector
-              leagues={leagues}
-              selectedLeague={
-                selectedLeagueCode
-              }
-              onLeagueChange={
-                handleLeagueChange
-              }
-            />
-
-
-            {/* ================================================
-                TODAY'S FIXTURES
-            ================================================ */}
-
-            {(
-              sectionView === 'all' ||
-              sectionView === 'today'
-            ) && (
-              <TodayMatches
-                matches={filteredMatches}
-              />
-            )}
 
 
             {/* ================================================

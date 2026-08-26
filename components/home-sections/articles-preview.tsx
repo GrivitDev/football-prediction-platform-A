@@ -122,38 +122,6 @@ export default function ArticlesPreview() {
           ARTICLES
         </div>
 
-        {/* Main heading */}
-
-        <h2
-          className="
-            mt-6
-            text-4xl
-            font-black
-            tracking-tight
-            text-foreground
-            transition-colors
-            duration-500
-
-            md:text-6xl
-          "
-        >
-          Professional Football Insights
-        </h2>
-
-        {/* Description */}
-
-        <p
-          className="
-            mt-6
-            max-w-2xl
-            text-muted-foreground
-            transition-colors
-            duration-500
-          "
-        >
-          Deep analysis, betting strategies, match breakdowns,
-          and winning predictions — built for serious bettors.
-        </p>
 
         {/* Holographic card */}
 

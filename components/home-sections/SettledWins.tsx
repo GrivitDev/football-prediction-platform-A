@@ -438,37 +438,14 @@ const loadWins =
                 sm:text-xl
               "
             >
-              Our
+              Proven
               {' '}
               <span className="text-primary">
                 Wins
               </span>
             </h2>
 
-            <span
-              className="
-                hidden
-                text-[10px]
-                font-semibold
-                text-muted-foreground
-                sm:inline
-              "
-            >
-              · Proven Results
-            </span>
-
           </div>
-
-          <p
-            className="
-              mt-0.5
-              text-[10px]
-              text-muted-foreground
-              sm:text-xs
-            "
-          >
-            Recently settled predictions that landed.
-          </p>
 
         </div>
 
