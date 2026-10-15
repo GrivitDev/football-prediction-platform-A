@@ -64,13 +64,13 @@ export default function VerifyEmailClient() {
     <main
       className="
         relative
-        min-h-screen
+        min-h-0
         overflow-hidden
         bg-background
-        py-8
-        sm:py-10
-        lg:py-12
+        py-2
         text-foreground
+        lg:min-h-screen
+        lg:py-6
       "
     >
       {/* BACKGROUND */}
@@ -159,17 +159,19 @@ export default function VerifyEmailClient() {
           z-10
           mx-auto
           flex
-          min-h-screen
+          min-h-0
           max-w-7xl
           flex-col
           items-center
-          justify-center
-          gap-10
+          gap-3
           px-4
-          sm:px-6
+          py-1
+          lg:min-h-screen
+          lg:justify-center
+          lg:gap-8
           lg:flex-row
           lg:items-center
-          lg:gap-16
+          lg:py-0
         "
       >
         {/* LEFT BRAND AREA */}
@@ -193,7 +195,7 @@ export default function VerifyEmailClient() {
           >
             <div
               className="
-                mb-5
+                mb-3
                 flex
                 justify-center
                 lg:justify-start
@@ -219,12 +221,12 @@ export default function VerifyEmailClient() {
             <h1
               className="
                 mt-6
-                text-3xl
+                text-xl
                 font-black
                 leading-tight
-                sm:text-4xl
-                lg:mt-8
-                lg:text-5xl
+                sm:text-2xl
+                lg:mt-4
+                lg:text-3xl
               "
             >
               Verify
@@ -238,10 +240,10 @@ export default function VerifyEmailClient() {
                   via-primary
                   to-cyan-500
                   bg-clip-text
-                  text-4xl
+                  text-2xl
                   text-transparent
-                  sm:text-5xl
-                  lg:text-6xl
+                  sm:text-3xl
+                  lg:text-3xl
                 "
               >
                 Your Account.
@@ -254,8 +256,8 @@ export default function VerifyEmailClient() {
                 text-base
                 leading-7
                 text-muted-foreground
-                sm:text-lg
-                sm:leading-8
+                sm:text-base
+                sm:leading-6
               "
             >
               Confirm your email address to
@@ -266,22 +268,22 @@ export default function VerifyEmailClient() {
 
             <div
               className="
-                mt-10
+                mt-5
                 grid
                 grid-cols-1
                 gap-4
                 sm:grid-cols-3
-                sm:gap-5
-                lg:mt-12
+                sm:gap-3
+                lg:mt-6
               "
             >
               <div
                 className="
-                  rounded-2xl
+                  rounded-xl
                   border
                   border-border
                   bg-card/70
-                  p-5
+                  p-3
                   shadow-lg
                   backdrop-blur-xl
                 "
@@ -297,7 +299,7 @@ export default function VerifyEmailClient() {
 
                 <h3
                   className="
-                    text-lg
+                    text-base
                     font-bold
                     sm:text-xl
                   "
@@ -317,11 +319,11 @@ export default function VerifyEmailClient() {
 
               <div
                 className="
-                  rounded-2xl
+                  rounded-xl
                   border
                   border-border
                   bg-card/70
-                  p-5
+                  p-3
                   shadow-lg
                   backdrop-blur-xl
                 "
@@ -337,7 +339,7 @@ export default function VerifyEmailClient() {
 
                 <h3
                   className="
-                    text-lg
+                    text-base
                     font-bold
                     sm:text-xl
                   "
@@ -357,11 +359,11 @@ export default function VerifyEmailClient() {
 
               <div
                 className="
-                  rounded-2xl
+                  rounded-xl
                   border
                   border-border
                   bg-card/70
-                  p-5
+                  p-3
                   shadow-lg
                   backdrop-blur-xl
                 "
@@ -377,7 +379,7 @@ export default function VerifyEmailClient() {
 
                 <h3
                   className="
-                    text-lg
+                    text-base
                     font-bold
                     sm:text-xl
                   "

@@ -183,7 +183,7 @@ export default function LoginPage() {
 
   return (
 
-    <main className="relative min-h-screen overflow-hidden bg-background pt-12 pb-12 text-foreground">
+    <main className="relative min-h-0 overflow-hidden bg-background py-2 text-foreground lg:min-h-screen lg:py-6">
 
 
       <div className="absolute inset-0 overflow-hidden">
@@ -208,7 +208,7 @@ export default function LoginPage() {
   position={AdPosition.POPUP}
 />
 
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6">
+      <div className="relative z-10 mx-auto flex min-h-0 max-w-7xl items-start px-4 py-2 lg:min-h-screen lg:items-center lg:py-0">
 
 
 
@@ -221,7 +221,7 @@ export default function LoginPage() {
           <div className="max-w-xl">
 
 
-            <div className="mb-4 flex justify-center">
+            <div className="mb-2 flex justify-center">
 
           <Image
             src="/images/ball2.png"
@@ -236,13 +236,13 @@ export default function LoginPage() {
 
 
 
-            <h1 className="mt-8 text-4xl font-black leading-tight">
+            <h1 className="mt-4 text-2xl font-black leading-tight">
 
               Welcome
 
               <br />
 
-              <span className="bg-gradient-to-r from-primary via-primary to-cyan-500 bg-clip-text text-6xl text-transparent">
+              <span className="bg-gradient-to-r from-primary via-primary to-cyan-500 bg-clip-text text-3xl text-transparent">
 
                 Back.
 
@@ -252,7 +252,7 @@ export default function LoginPage() {
 
 
 
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+            <p className="mt-6 text-base leading-6 text-muted-foreground">
 
               Access expert predictions, live fixtures,
               VIP tips, analytics and everything you need
@@ -263,14 +263,14 @@ export default function LoginPage() {
 
 
 
-            <div className="mt-12 grid grid-cols-3 gap-5">
+            <div className="mt-6 grid grid-cols-3 gap-3">
 
 
-              <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur-xl">
+              <div className="rounded-xl border border-border bg-card/70 p-3 shadow-lg backdrop-blur-xl">
 
                 <Trophy className="mb-3 h-7 w-7 text-yellow-500" />
 
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-lg font-bold">
                   150+
                 </h3>
 
@@ -282,11 +282,11 @@ export default function LoginPage() {
 
 
 
-              <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur-xl">
+              <div className="rounded-xl border border-border bg-card/70 p-3 shadow-lg backdrop-blur-xl">
 
                 <TrendingUp className="mb-3 h-7 w-7 text-primary" />
 
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-lg font-bold">
                   89%
                 </h3>
 
@@ -299,11 +299,11 @@ export default function LoginPage() {
 
 
 
-              <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur-xl">
+              <div className="rounded-xl border border-border bg-card/70 p-3 shadow-lg backdrop-blur-xl">
 
                 <ShieldCheck className="mb-3 h-7 w-7 text-cyan-500" />
 
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-lg font-bold">
                   24/7
                 </h3>
 
@@ -333,29 +333,12 @@ export default function LoginPage() {
 
           <form
             onSubmit={handleLogin}
-            className="w-full max-w-md rounded-3xl border border-border bg-card/70 p-10 shadow-2xl backdrop-blur-2xl"
+            className="w-full max-w-md rounded-2xl border border-border bg-card/70 p-5 shadow-2xl backdrop-blur-2xl"
           >
 
 
-            <div className="mb-8 text-center">
-
-
-              <div className="mb-5 flex justify-center">
-
-                <Image
-                  src="/logo1.png"
-                  alt="Logo"
-                  width={80}
-                  height={80}
-                  className="h-20 w-20 object-contain"
-                  priority
-                />
-
-              </div>
-
-
-
-              <h2 className="text-4xl font-black">
+            <div className="mb-4 text-center">
+<h2 className="text-2xl font-black">
                 Login
               </h2>
 
@@ -372,7 +355,7 @@ export default function LoginPage() {
             {/* EMAIL */}
 
 
-            <div className="mb-5">
+            <div className="mb-3">
 
               <div className="relative">
 
@@ -384,7 +367,7 @@ export default function LoginPage() {
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                  className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
                 />
 
               </div>
@@ -406,7 +389,7 @@ export default function LoginPage() {
             {/* PASSWORD */}
 
 
-            <div className="mb-4">
+            <div className="mb-2">
 
 
               <div className="relative">
@@ -421,7 +404,7 @@ export default function LoginPage() {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-14 outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+                  className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-14 outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
                 />
 
 
@@ -458,7 +441,7 @@ export default function LoginPage() {
 
 
 
-            <div className="mb-8 flex items-center justify-between">
+            <div className="mb-4 flex items-center justify-between">
 
 
               <label className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -493,7 +476,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary text-lg font-bold text-primary-foreground transition hover:scale-[1.02] disabled:opacity-60"
+              className="flex h-11 w-full items-center justify-center gap-3 rounded-xl bg-primary text-base font-bold text-primary-foreground disabled:opacity-60"
             >
 
 
@@ -522,7 +505,7 @@ export default function LoginPage() {
 
 
 
-            <p className="mt-8 text-center text-sm text-muted-foreground">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
 
               Don't have an account?{' '}
 

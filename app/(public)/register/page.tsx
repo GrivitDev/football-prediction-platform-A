@@ -302,7 +302,7 @@ const response = await registerUser({
       : 'Strong';
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-background pt-12 pb-12 text-foreground">
+    <main className="relative min-h-0 overflow-hidden bg-background py-2 text-foreground lg:min-h-screen lg:py-6">
 
       {/* Background */}
 
@@ -321,7 +321,7 @@ const response = await registerUser({
   page={AdPage.HOME}
   position={AdPosition.POPUP}
 />
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6">
+      <div className="relative z-10 mx-auto flex min-h-0 max-w-7xl items-start px-4 py-2 lg:min-h-screen lg:items-center lg:py-0">
 
         {/* LEFT SIDE */}
 
@@ -329,7 +329,7 @@ const response = await registerUser({
 
           <div className="max-w-xl">
 
-            <div className="mb-4 flex justify-center">
+            <div className="mb-2 flex justify-center">
               <Image
                 src="/images/ball1.png"
                 alt="Premium Football Predictions"
@@ -340,24 +340,24 @@ const response = await registerUser({
               />
             </div>
 
-            <h1 className="mt-8 text-4xl font-black leading-tight">
+            <h1 className="mt-4 text-2xl font-black leading-tight">
               Join
               <br />
-              <span className="bg-gradient-to-r from-primary via-primary to-cyan-500 bg-clip-text text-6xl text-transparent">
+              <span className="bg-gradient-to-r from-primary via-primary to-cyan-500 bg-clip-text text-3xl text-transparent">
                 The Winning Team.
               </span>
             </h1>
 
-            <p className="mt-6 text-lg leading-8 text-muted-foreground">
+            <p className="mt-6 text-base leading-6 text-muted-foreground">
               Create your account to unlock expert predictions,
               VIP tips, match analytics and live football updates.
             </p>
 
-            <div className="mt-12 grid grid-cols-3 gap-5">
+            <div className="mt-6 grid grid-cols-3 gap-3">
 
-              <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur-xl">
+              <div className="rounded-xl border border-border bg-card/70 p-3 shadow-lg backdrop-blur-xl">
                 <Trophy className="mb-3 h-7 w-7 text-yellow-500" />
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-lg font-bold">
                   150+
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -365,9 +365,9 @@ const response = await registerUser({
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur-xl">
+              <div className="rounded-xl border border-border bg-card/70 p-3 shadow-lg backdrop-blur-xl">
                 <TrendingUp className="mb-3 h-7 w-7 text-primary" />
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-lg font-bold">
                   89%
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -375,9 +375,9 @@ const response = await registerUser({
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border bg-card/70 p-5 shadow-lg backdrop-blur-xl">
+              <div className="rounded-xl border border-border bg-card/70 p-3 shadow-lg backdrop-blur-xl">
                 <ShieldCheck className="mb-3 h-7 w-7 text-cyan-500" />
-                <h3 className="text-2xl font-bold">
+                <h3 className="text-lg font-bold">
                   24/7
                 </h3>
                 <p className="text-sm text-muted-foreground">
@@ -397,23 +397,11 @@ const response = await registerUser({
 
           <form
             onSubmit={handleRegister}
-            className="w-full max-w-md rounded-3xl border border-border bg-card/70 p-10 shadow-2xl backdrop-blur-2xl"
+            className="w-full max-w-md rounded-2xl border border-border bg-card/70 p-5 shadow-2xl backdrop-blur-2xl"
           >
 
-            <div className="mb-8 text-center">
-
-              <div className="mb-5 flex justify-center">
-                <Image
-                  src="/logo1.png"
-                  alt="Logo"
-                  width={80}
-                  height={80}
-                  className="h-20 w-20 object-contain"
-                  priority
-                />
-              </div>
-
-              <h2 className="text-4xl font-black">
+            <div className="mb-4 text-center">
+<h2 className="text-2xl font-black">
                 Create Account
               </h2>
 
@@ -425,7 +413,7 @@ const response = await registerUser({
 
             {/* FULL NAME */}
 
-            <div className="relative mb-5">
+            <div className="relative mb-3">
               <User className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
 
               <input
@@ -433,14 +421,14 @@ const response = await registerUser({
                 placeholder="Full Name"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
-                className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
             </div>
 
             {/* USERNAME */}
 
-            <div className="relative mb-5">
+            <div className="relative mb-3">
               <AtSign className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
 
               <input
@@ -448,14 +436,14 @@ const response = await registerUser({
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
             </div>
 
             {/* PHONE */}
 
-            <div className="relative mb-5">
+            <div className="relative mb-3">
               <Phone className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
 
               <input
@@ -468,14 +456,14 @@ const response = await registerUser({
                       .replace(/[^\d+]/g, '')
                   )
                 }
-                className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
             </div>
 
             {/* EMAIL */}
 
-            <div className="relative mb-5">
+            <div className="relative mb-3">
               <Mail className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
 
               <input
@@ -490,14 +478,14 @@ const response = await registerUser({
                         .toLowerCase()
                     )
                   }
-                className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-4 text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
             </div>
                           {/* REFERRAL CODE */}
 
               {referralCode && (
-                <div className="relative mb-5">
+                <div className="relative mb-3">
 
                   <AtSign className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
 
@@ -506,7 +494,7 @@ const response = await registerUser({
                     value={referralCode}
                     readOnly
                     className="
-                      h-14
+                      h-11
                       w-full
                       rounded-xl
                       border
@@ -539,7 +527,7 @@ const response = await registerUser({
               {/* PROMO CODE */}
 
               {promoCode && (
-                <div className="relative mb-5">
+                <div className="relative mb-3">
 
                   <Trophy className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-cyan-500" />
 
@@ -548,7 +536,7 @@ const response = await registerUser({
                     value={promoCode}
                     readOnly
                     className="
-                      h-14
+                      h-11
                       w-full
                       rounded-xl
                       border
@@ -587,14 +575,14 @@ const response = await registerUser({
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-14 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-14 text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? (
                   <EyeOff size={20} />
@@ -605,7 +593,7 @@ const response = await registerUser({
             </div>
 
             {password && (
-              <div className="mb-5">
+              <div className="mb-3">
 
                 <div className="mb-2 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">
@@ -628,7 +616,7 @@ const response = await registerUser({
                 <div className="h-2 overflow-hidden rounded-full bg-muted">
 
                   <div
-                    className={`h-full rounded-full transition-all duration-300 ${
+                    className={`h-full rounded-full   ${
                       passwordStrength === 'Strong'
                         ? 'w-full bg-green-500'
                         : passwordStrength === 'Medium'
@@ -652,7 +640,7 @@ const response = await registerUser({
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="h-14 w-full rounded-xl border border-input bg-background/80 pl-12 pr-14 text-foreground placeholder:text-muted-foreground outline-none transition-all focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
+                className="h-11 w-full rounded-xl border border-input bg-background/80 pl-12 pr-14 text-foreground placeholder:text-muted-foreground outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30"
                 required
               />
 
@@ -661,7 +649,7 @@ const response = await registerUser({
                 onClick={() =>
                   setShowConfirmPassword(!showConfirmPassword)
                 }
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition hover:text-foreground"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
                 {showConfirmPassword ? (
                   <EyeOff size={20} />
@@ -672,13 +660,13 @@ const response = await registerUser({
             </div>
 
             {confirmPassword && password !== confirmPassword && (
-              <p className="mb-5 text-sm font-medium text-destructive">
+              <p className="mb-3 text-sm font-medium text-destructive">
                 Passwords do not match.
               </p>
             )}
 
             {confirmPassword && password === confirmPassword && (
-              <p className="mb-5 text-sm font-medium text-green-500">
+              <p className="mb-3 text-sm font-medium text-green-500">
                 ✓ Passwords match.
               </p>
             )}
@@ -686,7 +674,7 @@ const response = await registerUser({
 
             {/* PROFILE COMPLETION */}
 
-            <div className="mb-8">
+            <div className="mb-4">
 
               <div className="mb-2 flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">
@@ -701,7 +689,7 @@ const response = await registerUser({
               <div className="h-2 overflow-hidden rounded-full bg-muted">
 
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-300"
+                  className="h-full rounded-full bg-primary"
                   style={{ width: `${progress}%` }}
                 />
 
@@ -711,7 +699,7 @@ const response = await registerUser({
 
             {success ? (
 
-  <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-5 text-center">
+  <div className="rounded-xl border border-green-500/30 bg-green-500/10 p-3 text-center">
 
     <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20 text-green-500">
       ✓
@@ -732,7 +720,7 @@ const response = await registerUser({
   <button
     type="submit"
     disabled={loading || password !== confirmPassword}
-    className="flex h-14 w-full items-center justify-center gap-3 rounded-xl bg-primary text-lg font-bold text-primary-foreground transition-all duration-300 hover:scale-[1.02] hover:opacity-90 disabled:pointer-events-none disabled:opacity-60"
+    className="flex h-11 w-full items-center justify-center gap-3 rounded-xl bg-primary text-base font-bold text-primary-foreground disabled:pointer-events-none disabled:opacity-60"
   >
 
     {loading ? (
@@ -756,11 +744,11 @@ const response = await registerUser({
 
 )}
 
-            <p className="mt-8 text-center text-sm text-muted-foreground">
+            <p className="mt-4 text-center text-sm text-muted-foreground">
               Already have an account?{' '}
               <Link
                 href="/login"
-                className="font-semibold text-primary transition hover:opacity-80"
+                className="font-semibold text-primary"
               >
                 Login
               </Link>
