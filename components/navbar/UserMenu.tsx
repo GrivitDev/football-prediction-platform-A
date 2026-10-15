@@ -14,9 +14,6 @@ import {
   PlusCircle,
   List,
   FileText,
-  Users,
-  Megaphone,
-  TicketPercent,
 } from 'lucide-react';
 
 import {
@@ -97,20 +94,21 @@ export default function UserMenu() {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          align="end"
-          sideOffset={8}
-          className="
-            w-56
-            rounded-2xl
-            border
-            border-border/50
-            bg-background/95
-            p-2
-            shadow-xl
-            backdrop-blur-xl
-          "
-        >
+<DropdownMenuContent
+  align="end"
+  sideOffset={8}
+  className="
+    z-[10000]
+    w-56
+    rounded-2xl
+    border
+    border-border/50
+    bg-background/95
+    p-2
+    shadow-xl
+    backdrop-blur-xl
+  "
+>
           <div
             className="
               mb-2
@@ -211,22 +209,21 @@ export default function UserMenu() {
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent
-          align="end"
-          sideOffset={8}
-          className="
-            max-h-[80vh]
-            w-64
-            overflow-y-auto
-            rounded-2xl
-            border
-            border-border/50
-            bg-background/95
-            p-2
-            shadow-xl
-            backdrop-blur-xl
-          "
-        >
+<DropdownMenuContent
+  align="end"
+  sideOffset={8}
+  className="
+    z-[10000]
+    w-56
+    rounded-2xl
+    border
+    border-border/50
+    bg-background/95
+    p-2
+    shadow-xl
+    backdrop-blur-xl
+  "
+>
           {/* ========================================================
               OVERVIEW
           ======================================================== */}
@@ -506,20 +503,21 @@ export default function UserMenu() {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent
-        align="end"
-        sideOffset={8}
-        className="
-          w-60
-          rounded-2xl
-          border
-          border-border/50
-          bg-background/95
-          p-2
-          shadow-xl
-          backdrop-blur-xl
-        "
-      >
+<DropdownMenuContent
+  align="end"
+  sideOffset={8}
+  className="
+    z-[10000]
+    w-56
+    rounded-2xl
+    border
+    border-border/50
+    bg-background/95
+    p-2
+    shadow-xl
+    backdrop-blur-xl
+  "
+>
         <DropdownMenuItem
           asChild
           className="

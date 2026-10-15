@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import {
@@ -9,13 +10,13 @@ import {
 } from 'react';
 
 import {
-  ArrowUpRight,
-  Newspaper,
-  Play,
-  Search,
-  Video,
-  X,
-} from 'lucide-react';
+  FaArrowUpRightFromSquare,
+  FaMagnifyingGlass,
+  FaNewspaper,
+  FaPlay,
+  FaVideo,
+  FaXmark,
+} from 'react-icons/fa6';
 
 import {
   useSportsCompetitionTeams,
@@ -586,9 +587,9 @@ function FeedCard({
         ) : (
           <div className="absolute inset-0 grid place-items-center bg-muted text-muted-foreground">
             {item.kind === 'VIDEO' ? (
-              <Video className="h-6 w-6 sm:h-8 sm:w-8" />
+              <FaVideo className="h-6 w-6 sm:h-8 sm:w-8" />
             ) : (
-              <Newspaper className="h-6 w-6 sm:h-8 sm:w-8" />
+              <FaNewspaper className="h-6 w-6 sm:h-8 sm:w-8" />
             )}
           </div>
         )}
@@ -606,7 +607,7 @@ function FeedCard({
               className="absolute inset-0 grid place-items-center bg-black/10 transition-colors hover:bg-black/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
             >
               <span className="grid h-9 w-9 place-items-center rounded-full border border-white/70 bg-black/75 text-white shadow-lg transition-transform group-hover:scale-105 sm:h-11 sm:w-11">
-                <Play className="ml-0.5 h-4 w-4 fill-current sm:h-5 sm:w-5" />
+                <FaPlay className="ml-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </span>
               {item.videoDuration ? (
                 <span className="absolute bottom-2 right-2 rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-semibold text-white sm:bottom-3 sm:right-3 sm:px-2 sm:py-1 sm:text-[11px]">
@@ -623,7 +624,7 @@ function FeedCard({
               className="absolute inset-0 grid place-items-center bg-black/10 transition-colors hover:bg-black/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
             >
               <span className="grid h-9 w-9 place-items-center rounded-full bg-black/75 text-white shadow-lg sm:h-11 sm:w-11">
-                <Play className="ml-0.5 h-4 w-4 fill-current sm:h-5 sm:w-5" />
+                <FaPlay className="ml-0.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </span>
             </a>
           ) : null
@@ -672,7 +673,7 @@ function FeedCard({
               className="inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold text-primary hover:underline sm:text-xs"
             >
               {item.kind === 'VIDEO' ? 'Watch' : 'Read story'}
-              <ArrowUpRight className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+              <FaArrowUpRightFromSquare className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
             </a>
           ) : null}
         </div>
@@ -713,7 +714,7 @@ function EmptyState() {
   return (
     <div className="rounded-lg border border-dashed bg-card px-3 py-6 text-center sm:rounded-xl sm:px-4 sm:py-8">
       <div className="mx-auto grid h-8 w-8 place-items-center rounded-full bg-muted text-muted-foreground sm:h-9 sm:w-9">
-        <Newspaper className="h-4 w-4" />
+        <FaNewspaper className="h-4 w-4" />
       </div>
 
       <p className="mt-2 text-xs font-semibold sm:text-sm">
@@ -748,7 +749,7 @@ function FilterBar({
     <section className="overflow-hidden rounded-lg border bg-card shadow-sm sm:rounded-xl">
       <div className="grid grid-cols-2 gap-2 p-2 sm:flex sm:flex-row sm:flex-wrap sm:p-3 lg:flex-nowrap">
         <div className="relative col-span-2 min-w-0 flex-1 sm:col-span-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <FaMagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
 
           <input
             value={search}
@@ -764,7 +765,7 @@ function FilterBar({
               className="absolute right-1.5 top-1/2 grid h-6 w-6 -translate-y-1/2 place-items-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
               aria-label="Clear search"
             >
-              <X className="h-3 w-3" />
+              <FaXmark className="h-3 w-3" />
             </button>
           ) : null}
         </div>
@@ -817,9 +818,11 @@ interface NewsFeedFilters {
 }
 
 function getItemPublishedTime(item: FootballNewsFeedItem): number {
-  const publishedTime = item.publishedAt
-    ? new Date(item.publishedAt).getTime()
-    : Number.NaN;
+  const payload = getObject(item.payload) ?? {};
+  const candidate = item.publishedAt ?? stringValue(
+    item.kind === 'VIDEO' ? payload.originalPublishDate : payload.published,
+  );
+  const publishedTime = candidate ? new Date(candidate).getTime() : Number.NaN;
 
   if (Number.isFinite(publishedTime)) {
     return publishedTime;
@@ -827,6 +830,61 @@ function getItemPublishedTime(item: FootballNewsFeedItem): number {
 
   const fixtureTime = new Date(item.fixtureDate).getTime();
   return Number.isFinite(fixtureTime) ? fixtureTime : 0;
+}
+
+function interleaveNewsAndVideos(
+  items: FootballNewsFeedItem[],
+): FootballNewsFeedItem[] {
+  const byNewest = (left: FootballNewsFeedItem, right: FootballNewsFeedItem) =>
+    getItemPublishedTime(right) - getItemPublishedTime(left);
+
+  const news = items.filter((item) => item.kind !== 'VIDEO').sort(byNewest);
+  const videos = items.filter((item) => item.kind === 'VIDEO').sort(byNewest);
+
+  if (!news.length || !videos.length) {
+    return [...news, ...videos].sort(byNewest);
+  }
+
+  // Use a repeatable random sequence for a given feed so streamed updates do
+  // not reshuffle the cards on every render. Each category stays newest-first.
+  const seedText = [...news, ...videos]
+    .map((item) => `${item.kind}:${getTitleKey(item)}`)
+    .sort()
+    .join('|');
+  let seed = 2166136261;
+  for (let index = 0; index < seedText.length; index += 1) {
+    seed ^= seedText.charCodeAt(index);
+    seed = Math.imul(seed, 16777619);
+  }
+
+  const random = () => {
+    seed += 0x6D2B79F5;
+    let value = seed;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+
+  const mixed: FootballNewsFeedItem[] = [];
+  let newsIndex = 0;
+  let videoIndex = 0;
+
+  while (newsIndex < news.length || videoIndex < videos.length) {
+    const newsRemaining = news.length - newsIndex;
+    const videosRemaining = videos.length - videoIndex;
+
+    if (!newsRemaining) {
+      mixed.push(videos[videoIndex++]);
+    } else if (!videosRemaining) {
+      mixed.push(news[newsIndex++]);
+    } else if (random() < videosRemaining / (newsRemaining + videosRemaining)) {
+      mixed.push(videos[videoIndex++]);
+    } else {
+      mixed.push(news[newsIndex++]);
+    }
+  }
+
+  return mixed;
 }
 
 function getTitleKey(item: FootballNewsFeedItem): string {
@@ -868,18 +926,18 @@ function buildFilteredFeedItems(
       continue;
     }
 
-    const existing = latestByTitle.get(title);
+    // Keep a news article and a video with the same headline as separate feed items.
+    const dedupeKey = `${item.kind}:${title}`;
+    const existing = latestByTitle.get(dedupeKey);
     if (
       !existing ||
       getItemPublishedTime(item) > getItemPublishedTime(existing)
     ) {
-      latestByTitle.set(title, item);
+      latestByTitle.set(dedupeKey, item);
     }
   }
 
-  return [...latestByTitle.values()].sort(
-    (left, right) => getItemPublishedTime(right) - getItemPublishedTime(left),
-  );
+  return interleaveNewsAndVideos([...latestByTitle.values()]);
 }
 
 export default function NewsPage({
@@ -905,6 +963,7 @@ export default function NewsPage({
   const streamRequestIdRef = useRef(0);
   const rawStreamItemsRef = useRef<FootballNewsFeedItem[]>([]);
   const filtersRef = useRef<NewsFeedFilters>(currentFilters);
+  const activeVideoRef = useRef<HTMLElement | null>(null);
 
   filtersRef.current = currentFilters;
 
@@ -1087,6 +1146,21 @@ export default function NewsPage({
     );
   }, [leagueId, teamId]);
 
+  useEffect(() => {
+    if (!playingVideoKey || !activeVideoRef.current) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      activeVideoRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [playingVideoKey]);
+
   const feedItems = streamItems;
 
   const filteredItems = useMemo(() => {
@@ -1120,19 +1194,32 @@ export default function NewsPage({
 
   const hasItems = filteredItems.length > 0;
   const visibleItems = filteredItems.slice(0, visibleCount);
-  const featuredItem = visibleItems[0];
-  const remainingItems = visibleItems.slice(1);
   const getStableCardKey = (item: FootballNewsFeedItem) => {
     const normalized = normalizeItem(item);
     return normalized.key || `${item.kind}:${getTitleKey(item)}`;
   };
+  const activeVideoItem = visibleItems.find(
+    (item) =>
+      item.kind === 'VIDEO' &&
+      getStableCardKey(item) === playingVideoKey,
+  );
+  const orderedVisibleItems = activeVideoItem
+    ? [
+        activeVideoItem,
+        ...visibleItems.filter(
+          (item) => getStableCardKey(item) !== getStableCardKey(activeVideoItem),
+        ),
+      ]
+    : visibleItems;
+  const featuredItem = orderedVisibleItems[0];
+  const remainingItems = orderedVisibleItems.slice(1);
 
   return (
     <main className={['min-h-screen', className ?? ''].join(' ')}>
-      <div className="mx-auto w-full max-w-7xl px-3 py-1 sm:px-3 lg:px-6 lg:py-1">
-        <header className="mb-2 flex flex-col justify-between gap-2 sm:flex-row sm:items-end sm:gap-3">
+      <div className="mx-auto w-full max-w-[1440px] px-2 py-2 sm:px-3 sm:py-3 lg:px-5">
+        <header className="mb-2 flex flex-col justify-between gap-1.5 sm:flex-row sm:items-end sm:gap-3">
           <div>
-            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+            <h1 className="text-lg font-bold tracking-tight sm:text-xl">
               Football News
             </h1>
           </div>
@@ -1151,6 +1238,7 @@ export default function NewsPage({
           setSearch={(value) => {
             setSearch(value);
             setVisibleCount(NEWS_PAGE_SIZE);
+            setPlayingVideoKey(null);
           }}
           leagueId={leagueId}
           setLeagueId={(value) => {
@@ -1184,10 +1272,35 @@ export default function NewsPage({
           ) : (
             <>
               {featuredItem ? (
-                <section aria-label="Top story" className="mb-4 sm:mb-5">
+                <section
+                  ref={activeVideoItem ? activeVideoRef : undefined}
+                  aria-label={activeVideoItem ? 'Now playing' : 'Top story'}
+                  className="mb-4 scroll-mt-20 sm:mb-5"
+                >
                   <div className="mb-2 flex items-center justify-between gap-2 sm:mb-3 sm:gap-3">
-                    <h2 className="text-xs font-bold tracking-tight sm:text-sm">Top story</h2>
-                    <span className="text-[10px] text-muted-foreground sm:text-[11px]">Latest first</span>
+                    <div className="min-w-0">
+                      <h2 className="text-xs font-bold tracking-tight sm:text-sm">
+                        {activeVideoItem ? 'Now playing' : featuredItem.kind === 'VIDEO' ? 'Featured video' : 'Top story'}
+                      </h2>
+                      {activeVideoItem ? (
+                        <p className="mt-0.5 line-clamp-1 text-[10px] text-muted-foreground sm:text-[11px]">
+                          {normalizeItem(featuredItem).title}
+                        </p>
+                      ) : null}
+                    </div>
+                    {activeVideoItem ? (
+                      <button
+                        type="button"
+                        onClick={() => setPlayingVideoKey(null)}
+                        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-md border bg-card px-2.5 text-[11px] font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground sm:h-9 sm:rounded-lg sm:px-3 sm:text-xs"
+                        aria-label="Close video player"
+                      >
+                        <FaXmark className="h-3 w-3" />
+                        Close
+                      </button>
+                    ) : (
+                      <span className="text-[10px] text-muted-foreground sm:text-[11px]">Latest within each type</span>
+                    )}
                   </div>
                   <FeedCard
                     key={getStableCardKey(featuredItem)}
@@ -1248,3 +1361,4 @@ export default function NewsPage({
     </main>
   );
 }
+

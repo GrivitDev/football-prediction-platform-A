@@ -3,6 +3,7 @@
 import {
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 
@@ -590,8 +591,8 @@ function HighlightFilters({
   onClear: () => void;
 }) {
   return (
-    <div className="mb-3">
-      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center">
+    <div className="mb-2.5">
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-1.5 sm:flex sm:items-center sm:gap-2">
         <input
           value={search}
           onChange={(event) =>
@@ -600,7 +601,7 @@ function HighlightFilters({
             )
           }
           placeholder="Search team, league or video..."
-          className="col-span-2 h-9 w-full min-w-0 rounded-md border bg-background px-2.5 text-xs outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring sm:col-span-1 sm:h-8 sm:flex-1"
+          className="col-span-2 h-8 w-full min-w-0 rounded-md border bg-background px-2.5 text-xs outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring sm:col-span-1 sm:h-8 sm:flex-1"
           aria-label="Search highlights"
         />
 
@@ -611,7 +612,7 @@ function HighlightFilters({
               event.target.value as DateFilter,
             )
           }
-          className="h-9 w-full min-w-0 rounded-md border bg-background px-2 text-xs outline-none focus:ring-1 focus:ring-ring sm:h-8 sm:w-[125px] sm:shrink-0"
+          className="h-8 w-full min-w-0 rounded-md border bg-background px-2 text-[11px] outline-none focus:ring-1 focus:ring-ring sm:h-8 sm:w-[125px] sm:shrink-0"
           aria-label="Filter highlights by date"
         >
           <option value="all">
@@ -638,7 +639,7 @@ function HighlightFilters({
         <button
           type="button"
           onClick={onClear}
-          className="h-9 w-full rounded-md border px-2.5 text-xs font-medium hover:bg-muted sm:h-8 sm:w-auto sm:shrink-0"
+          className="h-8 w-full rounded-md border px-2.5 text-[11px] font-medium hover:bg-muted sm:h-8 sm:w-auto sm:shrink-0"
         >
           Clear
         </button>
@@ -676,6 +677,9 @@ export default function HighlightsPage() {
     openHighlightKey,
     setOpenHighlightKey,
   ] = useState<string | null>(null);
+
+  const activeHighlightRef =
+    useRef<HTMLDivElement | null>(null);
 
   const competitionsQuery =
     useSportsCompetitions();
@@ -856,6 +860,45 @@ export default function HighlightsPage() {
       visibleCount,
     );
 
+  const activeHighlight =
+    openHighlightKey
+      ? visibleHighlights.find((highlight) => {
+          const key =
+            getYoutubeVideoId(highlight) ??
+            highlight.fixtureId;
+
+          return key === openHighlightKey;
+        }) ?? null
+      : null;
+
+  const remainingHighlights =
+    activeHighlight
+      ? visibleHighlights.filter((highlight) => {
+          const key =
+            getYoutubeVideoId(highlight) ??
+            highlight.fixtureId;
+
+          return key !== openHighlightKey;
+        })
+      : visibleHighlights;
+
+  useEffect(() => {
+    if (!openHighlightKey) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      activeHighlightRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    });
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, [openHighlightKey]);
+
   const loading =
     highlightsQuery.isLoading;
 
@@ -864,10 +907,18 @@ export default function HighlightsPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto w-full max-w-7xl px-3 py-3 sm:px-4 sm:py-4">
-        <h1 className="mb-2 text-lg font-semibold tracking-tight sm:mb-3 sm:text-xl">
-          Football Highlights
-        </h1>
+      <div className="mx-auto w-full max-w-7xl px-3 py-2.5 sm:px-4 sm:py-3">
+        <div className="mb-2 flex min-w-0 items-center justify-between gap-2">
+          <h1 className="min-w-0 truncate text-base font-semibold tracking-tight sm:text-lg">
+            Football Highlights
+          </h1>
+
+          {!loading && !error ? (
+            <span className="shrink-0 rounded-full border bg-card px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+              {filteredHighlights.length} videos
+            </span>
+          ) : null}
+        </div>
 
         <HighlightFilters
           search={search}
@@ -885,21 +936,15 @@ export default function HighlightsPage() {
           <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4">
             {Array.from({
               length: 8,
-            }).map(
-              (_, index) => (
-                <HighlightSkeleton
-                  key={index}
-                />
-              ),
-            )}
+            }).map((_, index) => (
+              <HighlightSkeleton key={index} />
+            ))}
           </div>
         ) : error ? (
           <div className="rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-2 text-[11px] text-destructive sm:py-2.5 sm:text-xs">
-            Unable to load
-            highlights right now.
+            Unable to load highlights right now.
           </div>
-        ) : filteredHighlights.length ===
-          0 ? (
+        ) : filteredHighlights.length === 0 ? (
           <div className="rounded-lg border bg-card px-3 py-5 text-center sm:py-8">
             <h2 className="text-xs font-semibold sm:text-sm">
               No highlights found
@@ -910,39 +955,63 @@ export default function HighlightsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4">
-            {visibleHighlights.map(
-              (highlight) => {
-                const key =
-                  getYoutubeVideoId(
-                    highlight,
-                  ) ??
-                  highlight.fixtureId;
+          <>
+            {activeHighlight ? (
+              <section
+                ref={activeHighlightRef}
+                aria-label="Now playing"
+                className="mb-3 scroll-mt-32 sm:mb-4"
+              >
+                <HighlightCard
+                  highlight={activeHighlight}
+                  leagueName={getLeagueName(
+                    activeHighlight,
+                    competitionMap,
+                  )}
+                  isOpen
+                  onToggle={() => setOpenHighlightKey(null)}
+                />
+              </section>
+            ) : null}
 
-                return (
-                  <HighlightCard
-                    key={key}
-                    highlight={highlight}
-                    leagueName={getLeagueName(
-                      highlight,
-                      competitionMap,
-                    )}
-                    isOpen={
-                      openHighlightKey === key
-                    }
-                    onToggle={() =>
-                      setOpenHighlightKey(
-                        (current) =>
-                          current === key
-                            ? null
-                            : key,
-                      )
-                    }
-                  />
-                );
-              },
-            )}
-          </div>
+            {remainingHighlights.length > 0 ? (
+              <section aria-label="More football highlights">
+                {activeHighlight ? (
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <h2 className="text-xs font-semibold sm:text-sm">
+                      More highlights
+                    </h2>
+                    <span className="text-[10px] text-muted-foreground">
+                      {remainingHighlights.length} videos
+                    </span>
+                  </div>
+                ) : null}
+
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3 xl:grid-cols-4">
+                  {remainingHighlights.map((highlight) => {
+                    const key =
+                      getYoutubeVideoId(highlight) ??
+                      highlight.fixtureId;
+
+                    return (
+                      <HighlightCard
+                        key={key}
+                        highlight={highlight}
+                        leagueName={getLeagueName(
+                          highlight,
+                          competitionMap,
+                        )}
+                        isOpen={false}
+                        onToggle={() =>
+                          setOpenHighlightKey(key ?? null)
+                        }
+                      />
+                    );
+                  })}
+                </div>
+              </section>
+            ) : null}
+          </>
         )}
       </div>
     </main>

@@ -698,3 +698,22 @@
   margin-bottom:
     0;
 }
+
+/* =============================================================================
+   RADIX DROPDOWN LAYERING
+============================================================================= */
+
+/*
+ * Radix positions dropdown content inside a Popper wrapper.
+ * Ensure the wrapper itself appears above the fixed navbar.
+ */
+[data-radix-popper-content-wrapper] {
+  z-index: 10001 !important;
+}
+
+/* Keep dropdown content above surrounding interface elements. */
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"] {
+  position: relative;
+  z-index: 10002 !important;
+}

@@ -53,26 +53,26 @@ export default function Navbar() {
           fixed
           inset-x-0
           top-0
-          z-[9999]
+          z-50
           px-3
           pt-3
           sm:px-5
         "
       >
         <div className="mx-auto max-w-7xl">
-          <div
-            className="
-              overflow-hidden
-              rounded-3xl
-              border
-              border-emerald-500/35
-              bg-background/90
-              shadow-lg
-              shadow-emerald-950/10
-              backdrop-blur-2xl
-              supports-[backdrop-filter]:bg-background/75
-            "
-          >
+        <div
+          className="
+            overflow-visible
+            rounded-3xl
+            border
+            border-emerald-500/35
+            bg-background/90
+            shadow-lg
+            shadow-emerald-950/10
+            backdrop-blur-2xl
+            supports-[backdrop-filter]:bg-background/75
+          "
+        >
             {/* ======================================================
                 MAIN NAVBAR
             ====================================================== */}

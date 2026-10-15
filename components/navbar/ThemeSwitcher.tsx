@@ -94,20 +94,21 @@ export default function ThemeSwitcher() {
       </DropdownMenuTrigger>
 
 
-      <DropdownMenuContent
-        align="end"
-        sideOffset={8}
-        className="
-          w-56
-          rounded-2xl
-          border
-          border-border/50
-          bg-background/95
-          p-2
-          shadow-xl
-          backdrop-blur-xl
-        "
-      >
+<DropdownMenuContent
+  align="end"
+  sideOffset={8}
+  className="
+    z-[10000]
+    w-56
+    rounded-2xl
+    border
+    border-border/50
+    bg-background/95
+    p-2
+    shadow-xl
+    backdrop-blur-xl
+  "
+>
         <div
           className="
             mb-2
