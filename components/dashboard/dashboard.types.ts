@@ -1,4 +1,5 @@
 export type PredictionItem = {
+  id?: string;
   _id?: string;
 
   homeTeam?: string;
@@ -14,7 +15,9 @@ export type PredictionItem = {
     emblem?: string;
   };
 
+  leagueCode?: string;
   matchDate?: string;
+  kickoffTimestamp?: number;
 
   confidence?: number;
 

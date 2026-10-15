@@ -4,10 +4,26 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const links = [
-  { name: 'Home', href: '/' },
-  { name: 'Community', href: '/community' },
-  { name: 'Articles', href: '/articles' },
-  { name: 'About', href: '/about' },
+  {
+    name: 'Home',
+    href: '/',
+  },
+  {
+    name: 'Predictions',
+    href: '/predictions',
+  },
+  {
+    name: 'Articles',
+    href: '/articles',
+  },
+  {
+    name: 'News',
+    href: '/news',
+  },
+  {
+    name: 'Highlights',
+    href: '/highlights',
+  },
 ];
 
 export default function NavLinks() {
@@ -17,9 +33,12 @@ export default function NavLinks() {
     <nav
       className="
         flex
+        min-w-0
         items-center
-        gap-1
+        justify-center
+        gap-0.5
       "
+      aria-label="Primary navigation"
     >
       {links.map((link) => {
         const active =
@@ -34,34 +53,46 @@ export default function NavLinks() {
             className={`
               group
               relative
-              rounded-full
-              px-4
+              flex
+              items-center
+              justify-center
+              whitespace-nowrap
+              rounded-xl
+              px-3
               py-2
               text-sm
-              font-medium
+              font-semibold
               transition-all
-              duration-300
+              duration-200
+              xl:px-4
 
               ${
                 active
-                  ? 'text-foreground'
+                  ? `
+                    bg-primary/10
+                    text-primary
+                  `
                   : `
                     text-muted-foreground
+                    hover:bg-muted/60
                     hover:text-foreground
                   `
               }
             `}
           >
+            <span className="relative z-10">
+              {link.name}
+            </span>
+
             {active && (
               <span
                 className="
                   absolute
-                  inset-0
+                  inset-x-3
+                  bottom-0.5
+                  h-0.5
                   rounded-full
-                  border
-                  border-primary/20
-                  bg-primary/10
-                  backdrop-blur-md
+                  bg-primary
                 "
               />
             )}
@@ -71,25 +102,17 @@ export default function NavLinks() {
                 className="
                   absolute
                   inset-x-3
-                  bottom-1
-                  h-px
+                  bottom-0.5
+                  h-0.5
                   scale-x-0
-                  bg-primary/50
+                  rounded-full
+                  bg-primary/60
                   transition-transform
-                  duration-300
+                  duration-200
                   group-hover:scale-x-100
                 "
               />
             )}
-
-            <span
-              className="
-                relative
-                z-10
-              "
-            >
-              {link.name}
-            </span>
           </Link>
         );
       })}

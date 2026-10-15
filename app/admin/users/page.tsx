@@ -87,9 +87,9 @@ export default function UsersPage() {
         w-full
         max-w-7xl
         min-w-0
-        space-y-6
-        pb-8
-        sm:space-y-8
+        space-y-3
+        pb-4
+        sm:space-y-4
       "
     >
       {/* Hero */}
@@ -113,9 +113,9 @@ export default function UsersPage() {
           from-primary/[0.11]
           via-card
           to-card
-          p-5
+          p-3
           shadow-sm
-          sm:p-7
+          sm:p-5
         "
       >
         <div
@@ -137,13 +137,13 @@ export default function UsersPage() {
             relative
             flex
             flex-col
-            gap-5
+            gap-3
             lg:flex-row
             lg:items-end
             lg:justify-between
           "
         >
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-3">
             <div
               className="
                 flex
@@ -166,7 +166,7 @@ export default function UsersPage() {
                 className="
                   inline-flex
                   items-center
-                  gap-2
+                  gap-1.5
                   text-xs
                   font-bold
                   uppercase
@@ -180,7 +180,7 @@ export default function UsersPage() {
 
               <h1
                 className="
-                  mt-2
+                  mt-1
                   text-2xl
                   font-black
                   tracking-tight
@@ -192,7 +192,7 @@ export default function UsersPage() {
 
               <p
                 className="
-                  mt-2
+                  mt-1
                   max-w-2xl
                   text-sm
                   leading-6
@@ -211,7 +211,7 @@ export default function UsersPage() {
               flex
               flex-wrap
               items-center
-              gap-3
+              gap-2
             "
           >
             <div
@@ -220,8 +220,8 @@ export default function UsersPage() {
                 border
                 border-border
                 bg-background/70
-                px-4
-                py-3
+                px-3
+                py-2
                 backdrop-blur
               "
             >
@@ -239,13 +239,13 @@ export default function UsersPage() {
                 className="
                   flex
                   items-center
-                  gap-3
+                  gap-2
                   rounded-2xl
                   border
                   border-destructive/25
                   bg-destructive/10
-                  px-4
-                  py-3
+                  px-3
+                  py-2
                   text-sm
                   text-destructive
                 "
@@ -287,23 +287,23 @@ export default function UsersPage() {
           border
           border-border
           bg-card
-          p-4
+          p-3
           shadow-sm
-          sm:p-5
+          sm:p-3
         "
       >
         <div
           className="
-            mb-5
+            mb-3
             flex
             flex-col
-            gap-4
+            gap-3
             sm:flex-row
             sm:items-start
             sm:justify-between
           "
         >
-          <div className="flex items-start gap-3">
+          <div className="flex items-start gap-2">
             <div
               className="
                 flex
@@ -340,11 +340,11 @@ export default function UsersPage() {
                 h-10
                 w-fit
                 items-center
-                gap-2
+                gap-1.5
                 rounded-xl
                 border
                 border-border
-                px-3
+                px-2
                 text-xs
                 font-semibold
                 text-muted-foreground
@@ -362,7 +362,7 @@ export default function UsersPage() {
         <div
           className="
             grid
-            gap-3
+            gap-2
             sm:grid-cols-2
             xl:grid-cols-[minmax(0,1.5fr)_minmax(0,0.75fr)_minmax(0,0.75fr)]
           "
@@ -380,7 +380,7 @@ export default function UsersPage() {
               Search
             </span>
 
-            <div className="relative mt-2">
+            <div className="relative mt-1">
               <Search
                 className="
                   pointer-events-none
@@ -411,7 +411,7 @@ export default function UsersPage() {
                   border-input
                   bg-background
                   pl-10
-                  pr-4
+                  pr-3
                   text-sm
                   outline-none
                   transition
@@ -436,7 +436,7 @@ export default function UsersPage() {
               Status
             </span>
 
-            <div className="relative mt-2">
+            <div className="relative mt-1">
               <Filter
                 className="
                   pointer-events-none
@@ -467,7 +467,7 @@ export default function UsersPage() {
                   border-input
                   bg-background
                   pl-10
-                  pr-4
+                  pr-3
                   text-sm
                   font-medium
                   outline-none
@@ -508,7 +508,7 @@ export default function UsersPage() {
               Role
             </span>
 
-            <div className="relative mt-2">
+            <div className="relative mt-1">
               <ShieldCheck
                 className="
                   pointer-events-none
@@ -539,7 +539,7 @@ export default function UsersPage() {
                   border-input
                   bg-background
                   pl-10
-                  pr-4
+                  pr-3
                   text-sm
                   font-medium
                   outline-none
@@ -595,9 +595,9 @@ export default function UsersPage() {
             justify-between
             border-b
             border-border
-            px-4
-            py-4
-            sm:px-5
+            px-3
+            py-2
+            sm:px-4
           "
         >
           <div>
@@ -618,7 +618,7 @@ export default function UsersPage() {
             className="
               rounded-full
               bg-primary/10
-              px-3
+              px-2
               py-1.5
               text-xs
               font-semibold
@@ -642,12 +642,12 @@ export default function UsersPage() {
         className="
           flex
           flex-col
-          gap-4
+          gap-3
           rounded-2xl
           border
           border-border
           bg-card
-          p-4
+          p-3
           shadow-sm
           sm:flex-row
           sm:items-center
@@ -665,7 +665,7 @@ export default function UsersPage() {
           </span>
         </p>
 
-        <div className="grid grid-cols-2 gap-3 sm:flex">
+        <div className="grid grid-cols-2 gap-2 sm:flex">
           <button
             type="button"
             disabled={page <= 1 || loading}
@@ -679,11 +679,11 @@ export default function UsersPage() {
               h-10
               items-center
               justify-center
-              gap-2
+              gap-1.5
               rounded-xl
               border
               border-border
-              px-4
+              px-3
               text-sm
               font-semibold
               transition
@@ -714,11 +714,11 @@ export default function UsersPage() {
               h-10
               items-center
               justify-center
-              gap-2
+              gap-1.5
               rounded-xl
               border
               border-border
-              px-4
+              px-3
               text-sm
               font-semibold
               transition

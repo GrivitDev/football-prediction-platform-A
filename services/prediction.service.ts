@@ -1,280 +1,167 @@
 import api from '@/lib/axios';
 
-// ========================================
-// SHARED TYPES
-// ========================================
+import type {
+  AdminPrediction,
+  CalculatedPrediction,
+  PredictionCalculationContext,
+  PredictionData,
+  PredictionDetailsBase,
+  PredictionUserResponse,
+  PredictionMarketSelection,
+  PredictionMarketResult,
+  PredictionSelection,
+  PredictionStatus,
+  PredictionOddsSource,
+  PredictionProbabilitySource,
+  PredictionMarketStatus,
+  PredictionSportsDataSnapshot,
+  PredictionPlan,
+  PredictionAccess,
+  SettledWinPrediction,
+} from '@/types/prediction.types';
 
-export type PredictionResult =
-  | 'HOME'
-  | 'DRAW'
-  | 'AWAY';
+export type {
+  AdminPrediction,
+  CalculatedPrediction,
+  GeneralPrediction,
+  LeagueInfo,
+  PredictionAccess,
+  PredictionAccessState,
+  PredictionCalculationContext,
+  PredictionData,
+  PredictionDetailsBase,
+  PredictionFormGame,
+  PredictionMarketResult,
+  PredictionMarketSelection,
+  PredictionMarketStatus,
+  PredictionOddsSource,
+  PredictionPlan,
+  PredictionProbabilitySource,
+  PredictionSelection,
+  PredictionSportsDataSnapshot,
+  PredictionStatus,
+  PredictionTeamSnapshot,
+  PredictionUserResponse,
+  SettledWinPrediction,
+} from '@/types/prediction.types';
 
-export type PredictionStatus =
-  | 'pending'
-  | 'won'
-  | 'lost'
-  | 'void';
-
-export type PredictionPlan =
-  | 'free'
-  | 'regular'
-  | 'vip';
-
-export type PredictionAccessState =
-  | 'subscription'
-  | 'purchased'
-  | 'locked'
-  | 'upgrade_required'
-  | 'login_required';
-
-export interface LeagueInfo {
-  code: string;
-  name: string;
-  country: string;
-  emblem?: string;
-}
-
-export interface PredictionProbability {
-  home: number;
-  draw: number;
-  away: number;
-}
-
-export interface PredictionMarket {
-  market: string;
-  selection?: string;
-}
-
-// ========================================
-// PREDICTION RESPONSE
-// ========================================
-
-export interface PredictionDetails {
-  date?: any;
-  match?: any;
-  venue?: any;
-
-  homeScore?: number;
-  awayScore?: number;
-
-  _id: string;
-  id?: string;
-
+export interface CalculatePredictionPayload {
   matchId: string;
-
-  homeTeam: string;
-  awayTeam: string;
-
-  homeTeamBadge?: string;
-  awayTeamBadge?: string;
-
-  leagueCode: string;
-  league?: LeagueInfo;
-
-  matchDate: string;
-
-  kickoffTimestamp: number;
-
-  status: PredictionStatus;
-
   accessType: PredictionPlan;
-
-  price: number;
-
-  confidence: number;
-
-  access: {
-    allowed: boolean;
-    state: PredictionAccessState;
-    purchased: boolean;
-    plan: PredictionPlan;
-    released: boolean;
-    releaseAt: number;
-    message: string | null;
-  };
-
-  actions?: string[];
-
-  data: {
-    prediction?: PredictionResult;
-
-    probabilities?: PredictionProbability | null;
-
-    markets?: PredictionMarket[] | null;
-  } | null;
+  markets: PredictionMarketSelection[];
 }
 
-// ========================================
-// CREATE
-// ========================================
+export const getPredictionContext = async (
+  matchId: string,
+): Promise<PredictionCalculationContext> => {
+  const res = await api.get<PredictionCalculationContext>(
+    `/predictions/context/${encodeURIComponent(matchId)}`,
+  );
+  return res.data;
+};
+
+export const calculatePrediction = async (
+  payload: CalculatePredictionPayload,
+): Promise<CalculatedPrediction> => {
+  const res = await api.post<CalculatedPrediction>('/predictions/calculate', payload);
+  return res.data;
+};
 
 export interface CreatePredictionPayload {
   matchId: string;
-
-  leagueCode: string;
-
-  league?: {
-    code: string;
-    name: string;
-    country: string;
-    emblem?: string;
-  };
-
-  homeTeam: string;
-
-  awayTeam: string;
-
-  homeTeamBadge?: string;
-
-  awayTeamBadge?: string;
-
-  confidence: number;
-
-  probabilities: {
-    home: number;
-    draw: number;
-    away: number;
-  };
-
-  markets: {
-    market: string;
-    selection?: string;
-  }[];
-
-  accessType:
-    | 'free'
-    | 'regular'
-    | 'vip';
-
-  price: number;
-
-  matchDate: string;
+  accessType: PredictionPlan;
+  markets: PredictionMarketSelection[];
 }
 
 export const createPrediction = async (
   payload: CreatePredictionPayload,
-) => {
-  const res = await api.post(
-    '/predictions',
-    payload,
+): Promise<AdminPrediction> => {
+  const res = await api.post<AdminPrediction>('/predictions', payload);
+  return res.data;
+};
+
+export const getPredictions = async (): Promise<AdminPrediction[]> => {
+  const res = await api.get<AdminPrediction[] | { data?: AdminPrediction[]; predictions?: AdminPrediction[] }>('/predictions');
+  if (Array.isArray(res.data)) return res.data;
+  const payload = res.data as { data?: AdminPrediction[]; predictions?: AdminPrediction[] };
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.predictions)) return payload.predictions;
+  return [];
+};
+
+/**
+ * Returns each user's tier-gated prediction list. The backend redacts prediction
+ * selections/markets for tiers the signed-in user cannot access.
+ */
+export const getPredictionTableRows = async (): Promise<PredictionUserResponse[]> => {
+  const res = await api.get<PredictionUserResponse[] | { data?: PredictionUserResponse[]; predictions?: PredictionUserResponse[] }>(
+    '/predictions/tables',
   );
+  if (Array.isArray(res.data)) return res.data;
+  const payload = res.data as { data?: PredictionUserResponse[]; predictions?: PredictionUserResponse[] };
+  if (Array.isArray(payload.data)) return payload.data;
+  if (Array.isArray(payload.predictions)) return payload.predictions;
+  return [];
+};
 
+export const getSettledWins = async (): Promise<SettledWinPrediction[]> => {
+  const res = await api.get<SettledWinPrediction[] | { data?: SettledWinPrediction[] }>('/predictions/settled-wins');
+  if (Array.isArray(res.data)) return res.data;
+  const payload = res.data as { data?: SettledWinPrediction[] };
+  if (Array.isArray(payload.data)) return payload.data;
+  return [];
+};
+
+export const getPrediction = async (id: string): Promise<AdminPrediction> => {
+  const res = await api.get<AdminPrediction>(`/predictions/${id}`);
   return res.data;
 };
 
-// ========================================
-// GET ALL
-// ADMIN / TABLE VIEW
-// ========================================
+export const getPredictionById = getPrediction;
 
-export const getPredictions = async () => {
-  const res = await api.get('/predictions');
+export interface PredictionDetails extends PredictionDetailsBase {
+  access: PredictionAccess;
+  data: PredictionData | null;
+  actions?: string[];
+}
 
+export const getPredictionAccess = async (id: string): Promise<PredictionDetails> => {
+  const res = await api.get<PredictionDetails>(`/predictions/user/${id}`);
   return res.data;
 };
 
-// ========================================
-// GET SETTLED WINS
-// PUBLIC
-// ========================================
-//
-// Used by the homepage "Our Wins" section.
-//
-// Endpoint:
-// GET /predictions/settled-wins
-//
-// No JWT required.
-// Returns only:
-// - won predictions
-// - settled predictions
-// - non-deleted predictions
-//
-// Includes prediction + probabilities.
-// ========================================
-export const getSettledWins = async (): Promise<
-  PredictionDetails[]
-> => {
-  const res = await api.get('/predictions/settled-wins');
-
-  return Array.isArray(res.data)
-    ? res.data
-    : [];
-};
-
-// ========================================
-// GET ONE
-// ADMIN RAW
-// ========================================
-
-export const getPrediction = async (
-  id: string,
-) => {
-  const res = await api.get(
-    `/predictions/${id}`,
-  );
-
-  return res.data;
-};
-
-// ========================================
-// GET USER ACCESS VIEW
-// ========================================
-
-export const getPredictionAccess = async (
-  id: string,
-): Promise<PredictionDetails> => {
-  const res = await api.get(
-    `/predictions/user/${id}`,
-  );
-
-  return res.data;
-};
-
-// ========================================
-// UPDATE
-// ========================================
+export interface UpdatePredictionPayload {
+  accessType?: PredictionPlan;
+  markets?: PredictionMarketSelection[];
+}
 
 export const updatePrediction = async (
   id: string,
-  payload: any,
-) => {
-  const res = await api.patch(
-    `/predictions/${id}`,
-    payload,
-  );
-
+  payload: UpdatePredictionPayload,
+): Promise<AdminPrediction | null> => {
+  const res = await api.patch<AdminPrediction>(`/predictions/${id}`, payload);
   return res.data;
 };
 
-// ========================================
-// DELETE
-// ========================================
-
-export const deletePrediction = async (
-  id: string,
-) => {
-  const res = await api.delete(
-    `/predictions/${id}`,
-  );
-
+export const deletePrediction = async (id: string): Promise<AdminPrediction | null> => {
+  const res = await api.delete<AdminPrediction | null>(`/predictions/${id}`);
   return res.data;
 };
 
-// ========================================
-// SETTLE
-// ADMIN
-// ========================================
-
-export const settlePrediction = async (
-  id: string,
-  actualResult: PredictionResult | 'VOID',
-) => {
-  const res = await api.post(
-    `/settlement/${id}`,
-    {
-      result: actualResult,
-    },
-  );
-
+export const settlePrediction = async (id: string): Promise<AdminPrediction> => {
+  const res = await api.post<AdminPrediction>(`/settlement/${id}`);
   return res.data;
 };
+
+export const voidPrediction = async (id: string): Promise<AdminPrediction> => {
+  const res = await api.post<AdminPrediction>(`/settlement/${id}/void`);
+  return res.data;
+};
+
+export type PredictionServiceMarket = PredictionMarketResult;
+export type PredictionServiceSelection = PredictionSelection;
+export type PredictionServiceStatus = PredictionStatus;
+export type PredictionServiceOddsSource = PredictionOddsSource;
+export type PredictionServiceProbabilitySource = PredictionProbabilitySource;
+export type PredictionServiceMarketStatus = PredictionMarketStatus;
+export type PredictionServiceSportsSnapshot = PredictionSportsDataSnapshot;

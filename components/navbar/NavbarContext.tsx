@@ -22,13 +22,12 @@ export function NavbarProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [visible, setVisible] =
-    useState(true);
+  const [visible, setVisible] = useState(true);
 
   return (
     <NavbarContext.Provider
       value={{
-        visible,
+        visible: true,
         setVisible,
       }}
     >
@@ -38,7 +37,5 @@ export function NavbarProvider({
 }
 
 export function useNavbar() {
-  return useContext(
-    NavbarContext,
-  );
+  return useContext(NavbarContext);
 }

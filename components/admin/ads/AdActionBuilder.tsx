@@ -1,30 +1,16 @@
 'use client';
-
-
 import {
   useState,
 } from 'react';
-
-
-
 import {
   Input,
 } from '@/components/ui/input';
-
-
-
 import {
   Button,
 } from '@/components/ui/button';
-
-
-
 import {
   Label,
 } from '@/components/ui/label';
-
-
-
 import {
   Select,
   SelectContent,
@@ -32,495 +18,170 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-
-
 import {
   AdAction,
 } from '@/types/ad';
-
-
-
 import {
   AdPage,
 } from '@/constants/ads/ad-page';
-
-
-
 import {
   AD_ROUTES,
 } from '@/constants/ads/ad-routes';
-
-
-
-
-
-
-
 interface Props {
-
-  value:AdAction[];
-
-  onChange:(value:AdAction[])=>void;
-
+  value: AdAction[];
+  onChange: (value: AdAction[]) => void;
 }
-
-
-
-
-
-
-
 export function AdActionBuilder({
-
   value,
-
   onChange,
-
-}:Props){
-
-
-
-
-
-  const [label,setLabel] =
+}: Props) {
+  const [label, setLabel] =
     useState('');
-
-
-
-  const [url,setUrl] =
+  const [url, setUrl] =
     useState('');
-
-
-
-  const [selectedPage,setSelectedPage] =
+  const [selectedPage, setSelectedPage] =
     useState<AdPage>();
-
-
-
-
-
-
-
-
   function handlePageSelect(
-    page:AdPage,
-  ){
-
-
+    page: AdPage,
+  ) {
     setSelectedPage(page);
-
-
-
     setUrl(
       AD_ROUTES[page],
     );
-
-
   }
-
-
-
-
-
-
-
-
-
-
-  function addAction(){
-
-
-
-    if(
+  function addAction() {
+    if (
       !label.trim() ||
       !url.trim()
-    ){
-
+    ) {
       return;
-
     }
-
-
-
-
-
-
     onChange([
-
       ...value,
-
       {
-
-        label:label.trim(),
-
-        url:url.trim(),
-
+        label: label.trim(),
+        url: url.trim(),
       },
-
-
     ]);
-
-
-
-
-
-
-
     setLabel('');
-
     setUrl('');
-
     setSelectedPage(undefined);
-
-
-
   }
-
-
-
-
-
-
-
-
-
   function removeAction(
-    index:number,
-  ){
-
-
+    index: number,
+  ) {
     onChange(
-
       value.filter(
-        (_,i)=>i !== index,
+        (_, i) => i !== index,
       )
-
     );
-
-
   }
-
-
-
-
-
-
-
-
-
   return (
-
-    <div className="space-y-4">
-
-
-
-
-
-      <Label>
+    <div className="space-y-1.5">
+      <Label className="text-xs">
         Actions
       </Label>
-
-
-
-
-
-
-
       <div
         className="
           grid
-          gap-3
+          gap-2
           md:grid-cols-3
         "
       >
-
-
-
-
-
         <Input
-
-
           value={label}
-
-
-          onChange={(e)=>
+          onChange={(e) =>
             setLabel(
               e.target.value,
             )
           }
-
-
           placeholder="Button label"
-
-
-        />
-
-
-
-
-
-
-
-
-
+          className="h-8 text-xs" />
         <Select
-
-
           value={selectedPage}
-
-
-          onValueChange={(value)=>
-
+          onValueChange={(value) =>
             handlePageSelect(
               value as AdPage,
             )
-
           }
-
-
         >
-
-
-          <SelectTrigger>
-
-
+          <SelectTrigger className="h-8 text-xs">
             <SelectValue
-
               placeholder="Select internal page"
-
             />
-
-
           </SelectTrigger>
-
-
-
-
-
-
           <SelectContent>
-
-
-
             {
               Object.values(AdPage).map(
-                (page)=>(
-
+                (page) => (
                   <SelectItem
-
                     key={page}
-
                     value={page}
-
                   >
-
                     {page}
-
                   </SelectItem>
-
-
                 )
               )
             }
-
-
-
           </SelectContent>
-
-
-
-
         </Select>
-
-
-
-
-
-
-
-
-
         <Input
-
-
           value={url}
-
-
-          onChange={(e)=>
-
+          onChange={(e) =>
             setUrl(
               e.target.value,
             )
-
           }
-
-
           placeholder="/payments or https://example.com"
-
-
-        />
-
-
-
-
-
+          className="h-8 text-xs" />
       </div>
-
-
-
-
-
-
-
-
-
       <Button
-
-
         type="button"
-
-
-        onClick={addAction}
-
-
+        onClick={addAction} className="h-8 px-3 text-xs"
       >
-
         Add Action
-
-
       </Button>
-
-
-
-
-
-
-
-
-
-      <div className="space-y-2">
-
-
-
+      <div className="space-y-1.5">
         {
           value.map(
-
-            (action,index)=>(
-
-
+            (action, index) => (
               <div
-
-
                 key={index}
-
-
                 className="
                   flex
                   items-center
                   justify-between
                   rounded-md
                   border
-                  p-3
+                  p-2
                 "
-
-
               >
-
-
-
-
-
                 <div>
-
-
-                  <p>
-
-                    {action.label}
-
-                  </p>
-
-
-
-
+                  <p className="text-xs font-medium">{action.label}</p>
                   <p
                     className="
-                      text-sm
+                      text-xs
                       opacity-70
                     "
                   >
-
                     {action.url}
-
                   </p>
-
-
-
-
                 </div>
-
-
-
-
-
-
-
-
-
                 <Button
-
-
                   type="button"
-
-
                   variant="destructive"
-
-
                   size="sm"
-
-
-                  onClick={()=>
-
+                  onClick={() =>
                     removeAction(index)
-
                   }
-
-
                 >
-
-
                   Remove
-
-
                 </Button>
-
-
-
-
-
               </div>
-
-
-
             )
-
           )
         }
-
-
-
-
-
       </div>
-
-
-
-
-
     </div>
-
-
   );
-
 }

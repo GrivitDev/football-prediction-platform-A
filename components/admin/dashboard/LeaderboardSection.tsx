@@ -1,142 +1,88 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-
+import { useState } from 'react';
 import LeaderboardTable from './LeaderboardTable';
-
-import {
-  AnalyticsLeaderboards,
-} from '@/types/analytics.types';
+import type { AnalyticsLeaderboards } from '@/types/analytics.types';
 
 interface Props {
   leaderboards: AnalyticsLeaderboards;
 }
 
-type LeaderboardType =
-  | 'subscribers'
-  | 'vip'
-  | 'regular'
-  | 'buyers'
-  | 'referrals';
+type LeaderboardType = 'subscribers' | 'vip' | 'regular' | 'premium' | 'buyers' | 'referrals';
+type ExtendedLeaderboards = AnalyticsLeaderboards & {
+  topPremiumSubscribers?: AnalyticsLeaderboards['topSubscribers'];
+};
 
-export default function LeaderboardSection({
-  leaderboards,
-}: Props) {
-  const [
-    activeLeaderboard,
-    setActiveLeaderboard,
-  ] = useState<LeaderboardType>('subscribers');
+export default function LeaderboardSection({ leaderboards }: Props) {
+  const [activeLeaderboard, setActiveLeaderboard] = useState<LeaderboardType>('subscribers');
+  const extended = leaderboards as ExtendedLeaderboards;
+  const hasPremium = Array.isArray(extended.topPremiumSubscribers);
 
-  const tabs = [
-    {
-      label: 'Subscribers',
-      value: 'subscribers',
+  const tabs: ReadonlyArray<{ label: string; value: LeaderboardType }> = [
+    { label: 'Subscribers', value: 'subscribers' },
+    { label: 'VIP', value: 'vip' },
+    { label: 'Regular', value: 'regular' },
+    ...(hasPremium ? [{ label: 'Premium', value: 'premium' as const }] : []),
+    { label: 'Buyers', value: 'buyers' },
+    { label: 'Referrals', value: 'referrals' },
+  ];
+
+  const tableByType = {
+    subscribers: {
+      title: 'Top Subscribers',
+      users: leaderboards.topSubscribers,
+      metric: 'totalSubscriptions' as const,
     },
-    {
-      label: 'VIP',
-      value: 'vip',
+    vip: {
+      title: 'Top VIP Subscribers',
+      users: leaderboards.topVipSubscribers,
+      metric: 'totalVipSubscriptions' as const,
     },
-    {
-      label: 'Regular',
-      value: 'regular',
+    regular: {
+      title: 'Top Regular Subscribers',
+      users: leaderboards.topRegularSubscribers,
+      metric: 'totalRegularSubscriptions' as const,
     },
-    {
-      label: 'Buyers',
-      value: 'buyers',
+    premium: {
+      title: 'Top Premium Subscribers',
+      users: extended.topPremiumSubscribers ?? [],
+      metric: 'totalSubscriptions' as const,
     },
-    {
-      label: 'Referrals',
-      value: 'referrals',
+    buyers: {
+      title: 'Top Prediction Buyers',
+      users: leaderboards.topPredictionBuyers,
+      metric: 'totalPurchases' as const,
     },
-  ] as const;
+    referrals: {
+      title: 'Top Referrers',
+      users: leaderboards.topReferrers,
+      metric: 'successfulReferrals' as const,
+    },
+  };
 
-  const table = useMemo(() => {
-    switch (activeLeaderboard) {
-      case 'vip':
-        return {
-          title: 'Top VIP Subscribers',
-          users: leaderboards.topVipSubscribers,
-          metric: 'totalVipSubscriptions' as const,
-        };
-
-      case 'regular':
-        return {
-          title: 'Top Regular Subscribers',
-          users: leaderboards.topRegularSubscribers,
-          metric: 'totalRegularSubscriptions' as const,
-        };
-
-      case 'buyers':
-        return {
-          title: 'Top Prediction Buyers',
-          users: leaderboards.topPredictionBuyers,
-          metric: 'totalPurchases' as const,
-        };
-
-      case 'referrals':
-        return {
-          title: 'Top Referrers',
-          users: leaderboards.topReferrers,
-          metric: 'successfulReferrals' as const,
-        };
-
-      default:
-        return {
-          title: 'Top Subscribers',
-          users: leaderboards.topSubscribers,
-          metric: 'totalSubscriptions' as const,
-        };
-    }
-  }, [activeLeaderboard, leaderboards]);
+  const table = tableByType[activeLeaderboard];
 
   return (
-    <section className="space-y-1">
+    <section className="space-y-2">
+      <div className="flex w-full flex-wrap gap-1 rounded-lg border bg-muted/30 p-1">
+        {tabs.map(({ label, value }) => (
+          <button
+            key={value}
+            type="button"
+            aria-pressed={activeLeaderboard === value}
+            onClick={() => setActiveLeaderboard(value)}
+            className={`min-w-0 flex-1 rounded-md px-2 py-1 text-[10px] font-medium leading-4 transition-colors ${
+              activeLeaderboard === value
+                ? 'bg-primary text-primary-foreground'
+                : 'text-muted-foreground hover:bg-background hover:text-foreground'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
 
-<div
-  className="
-    flex
-    w-full
-    flex-wrap
-    items-center
-    rounded-lg
-    border
-    bg-muted/50
-    p-1
-    gap-1
-  "
->
-  {tabs.map((tab) => (
-    <button
-      key={tab.value}
-      onClick={() => setActiveLeaderboard(tab.value)}
-      className={`
-        flex-1
-        min-w-[120px]
-        rounded-md
-        px-4
-        py-1
-        text-sm
-        font-medium
-        text-center
-        transition-all
-        duration-200
-        ${
-          activeLeaderboard === tab.value
-            ? 'bg-primary text-primary-foreground shadow-sm'
-            : 'text-muted-foreground hover:bg-background hover:text-foreground'
-        }
-      `}
-    >
-      {tab.label}
-    </button>
-  ))}
-</div>
-
-      <LeaderboardTable
-        title={table.title}
-        users={table.users}
-        metric={table.metric}
-      />
+      <LeaderboardTable title={table.title} users={table.users} metric={table.metric} />
     </section>
   );
 }

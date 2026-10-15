@@ -23,12 +23,10 @@ import { useUserDetails } from '@/hooks/useUserDetails';
 import { useUserActions } from '@/hooks/useUserActions';
 
 import PaymentSummaryCard from '@/components/admin/users/cards/PaymentSummaryCard';
-import PurchaseSummaryCard from '@/components/admin/users/cards/PurchaseSummaryCard';
 import SessionSummaryCard from '@/components/admin/users/cards/SessionSummaryCard';
 import SubscriptionSummaryCard from '@/components/admin/users/cards/SubscriptionSummaryCard';
 
 import PaymentHistoryTable from '@/components/admin/users/tables/PaymentHistoryTable';
-import PurchaseHistoryTable from '@/components/admin/users/tables/PurchaseHistoryTable';
 import SessionHistoryTable from '@/components/admin/users/tables/SessionHistoryTable';
 
 
@@ -45,12 +43,12 @@ function AttentionIndicator({
       <div className="
         inline-flex
         items-center
-        gap-2
+        gap-1.5
         rounded-full
         border
         border-border
         bg-muted/40
-        px-3
+        px-2
         py-1
         text-xs
         text-muted-foreground
@@ -85,10 +83,10 @@ function AttentionIndicator({
       className={`
         inline-flex
         items-center
-        gap-2
+        gap-1.5
         rounded-full
         border
-        px-3
+        px-2
         py-1
         text-xs
         ${styles[level]}
@@ -138,7 +136,7 @@ export default function UserDetailsPage() {
     return (
       <div className="
         flex
-        min-h-[400px]
+        min-h-[312px]
         items-center
         justify-center
         text-muted-foreground
@@ -155,11 +153,11 @@ export default function UserDetailsPage() {
     return (
       <div className="
         flex
-        min-h-[400px]
+        min-h-[312px]
         flex-col
         items-center
         justify-center
-        gap-4
+        gap-3
         text-center
       ">
 
@@ -188,8 +186,8 @@ export default function UserDetailsPage() {
           className="
             rounded-xl
             bg-primary
-            px-5
-            py-2
+            px-4
+            py-1.5
             text-sm
             text-primary-foreground
           "
@@ -214,9 +212,9 @@ export default function UserDetailsPage() {
   return (
 
     <main className="
-      space-y-8
-      p-6
-      md:p-8
+      space-y-4
+      p-4
+      md:p-5
     ">
 
 
@@ -226,7 +224,7 @@ export default function UserDetailsPage() {
         className="
           inline-flex
           items-center
-          gap-2
+          gap-1.5
           text-sm
           text-muted-foreground
           transition
@@ -257,7 +255,7 @@ export default function UserDetailsPage() {
           rounded-3xl
           border
           bg-card/60
-          p-6
+          p-4
           shadow-xl
           backdrop-blur-xl
         "
@@ -279,7 +277,7 @@ export default function UserDetailsPage() {
           flex
           flex-col
           justify-between
-          gap-6
+          gap-3
           lg:flex-row
         ">
 
@@ -290,7 +288,7 @@ export default function UserDetailsPage() {
     flex
     flex-wrap
     items-center
-    gap-3
+    gap-2
   ">
 
     <h1 className="
@@ -312,7 +310,7 @@ export default function UserDetailsPage() {
 
 
   <p className="
-    mt-2
+    mt-1
     text-sm
     text-muted-foreground
   ">
@@ -323,10 +321,10 @@ export default function UserDetailsPage() {
 
 
   <div className="
-    mt-5
+    mt-3
     flex
     flex-wrap
-    gap-3
+    gap-2
   ">
 
 
@@ -335,12 +333,12 @@ export default function UserDetailsPage() {
     <div className="
       flex
       items-center
-      gap-2
+      gap-1.5
       rounded-xl
       border
       bg-muted/40
-      px-4
-      py-2
+      px-3
+      py-1.5
       text-sm
     ">
 
@@ -367,11 +365,11 @@ export default function UserDetailsPage() {
           className="
             flex
             items-center
-            gap-2
+            gap-1.5
             rounded-xl
             bg-green-500/10
-            px-4
-            py-2
+            px-3
+            py-1.5
             text-sm
             text-green-500
             transition
@@ -406,11 +404,11 @@ export default function UserDetailsPage() {
           className="
             flex
             items-center
-            gap-2
+            gap-1.5
             rounded-xl
             bg-emerald-500/10
-            px-4
-            py-2
+            px-3
+            py-1.5
             text-sm
             text-emerald-500
             transition
@@ -435,21 +433,21 @@ export default function UserDetailsPage() {
 
 
   <div className="
-    mt-5
+    mt-3
     flex
     flex-wrap
-    gap-3
+    gap-2
   ">
 
 
     <span className="
       inline-flex
       items-center
-      gap-2
+      gap-1.5
       rounded-full
       border
       bg-muted/50
-      px-3
+      px-2
       py-1
       text-xs
     ">
@@ -467,11 +465,11 @@ export default function UserDetailsPage() {
     <span className="
       inline-flex
       items-center
-      gap-2
+      gap-1.5
       rounded-full
       border
       bg-muted/50
-      px-3
+      px-2
       py-1
       text-xs
     ">
@@ -492,12 +490,12 @@ export default function UserDetailsPage() {
         <span className="
           inline-flex
           items-center
-          gap-2
+          gap-1.5
           rounded-full
           border
           border-primary/20
           bg-primary/10
-          px-3
+          px-2
           py-1
           text-xs
           text-primary
@@ -526,7 +524,7 @@ export default function UserDetailsPage() {
           <div className="
             flex
             flex-wrap
-            gap-3
+            gap-2
           ">
 
 
@@ -539,11 +537,11 @@ export default function UserDetailsPage() {
               className="
                 inline-flex
                 items-center
-                gap-2
+                gap-1.5
                 rounded-xl
                 bg-yellow-500/15
-                px-4
-                py-2
+                px-3
+                py-1.5
                 text-sm
                 text-yellow-500
                 transition
@@ -561,11 +559,11 @@ export default function UserDetailsPage() {
               className="
                 inline-flex
                 items-center
-                gap-2
+                gap-1.5
                 rounded-xl
                 bg-green-500/15
-                px-4
-                py-2
+                px-3
+                py-1.5
                 text-sm
                 text-green-500
                 transition
@@ -586,11 +584,11 @@ export default function UserDetailsPage() {
               className="
                 inline-flex
                 items-center
-                gap-2
+                gap-1.5
                 rounded-xl
                 bg-blue-500/15
-                px-4
-                py-2
+                px-3
+                py-1.5
                 text-sm
                 text-blue-500
                 transition
@@ -609,11 +607,11 @@ export default function UserDetailsPage() {
               className="
                 inline-flex
                 items-center
-                gap-2
+                gap-1.5
                 rounded-xl
                 bg-red-500/15
-                px-4
-                py-2
+                px-3
+                py-1.5
                 text-sm
                 text-red-500
                 transition
@@ -653,9 +651,9 @@ export default function UserDetailsPage() {
         }}
         className="
           grid
-          gap-8
+          gap-4
           md:grid-cols-2
-          xl:grid-cols-2
+          xl:grid-cols-3
         "
       >
 
@@ -665,10 +663,6 @@ export default function UserDetailsPage() {
 
         <SubscriptionSummaryCard
           summary={user.subscription}
-        />
-
-        <PurchaseSummaryCard
-          summary={user.purchases}
         />
 
         <SessionSummaryCard
@@ -691,13 +685,13 @@ export default function UserDetailsPage() {
             border
             border-red-500/20
             bg-red-500/5
-            p-6
+            p-4
           ">
 
             <div className="
               flex
               items-center
-              gap-3
+              gap-2
             ">
 
               <Activity
@@ -714,8 +708,8 @@ export default function UserDetailsPage() {
 
 
             <ul className="
-              mt-4
-              space-y-2
+              mt-2
+              space-y-1.5
               text-sm
             ">
 
@@ -727,7 +721,7 @@ export default function UserDetailsPage() {
                       className="
                         flex
                         items-center
-                        gap-2
+                        gap-1.5
                       "
                     >
 
@@ -759,18 +753,11 @@ export default function UserDetailsPage() {
 
       {/* HISTORY */}
 
-      <section className="space-y-8">
+      <section className="space-y-4">
 
         <PaymentHistoryTable
           payments={
             user.payments.latestPayments
-          }
-        />
-
-
-        <PurchaseHistoryTable
-          purchases={
-            user.purchases.latestPurchases
           }
         />
 

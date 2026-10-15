@@ -1,1239 +1,954 @@
+
+
+// frontend/services/sports.service.ts
+
 import api from '@/lib/axios';
 
-
-// ============================================================
-// TYPES
-// ============================================================
-
-export type CompetitionType =
-  | 'LEAGUE'
-  | 'CUP'
-  | 'PLAYOFFS'
-  | 'LEAGUE_CUP'
-  | string;
-
-
-export type CompetitionStage =
-  | 'REGULAR_SEASON'
-  | 'GROUP_STAGE'
-  | 'ROUND_OF_32'
-  | 'LAST_16'
-  | 'ROUND_OF_16'
-  | 'QUARTER_FINALS'
-  | 'SEMI_FINALS'
-  | 'THIRD_PLACE'
-  | 'FINAL'
-  | string;
-
-
-export type MatchDuration =
-  | 'REGULAR'
-  | 'EXTRA_TIME'
-  | 'PENALTIES'
-  | string;
-
-
-// ============================================================
-// LEAGUE
-// ============================================================
-
-export interface League {
-
-  code: string;
-
-  name: string;
-
-  country: string;
-
-  type?: CompetitionType;
-
-  emblem?: string;
-
-}
+import type {
+  ActiveCompetition,
+  EspnFixtureRecord,
+  EspnLeagueRecord,
+  EspnNewsRecord,
+  EspnQueueRecord,
+  EspnQueueSummary,
+  EspnStandingRecord,
+  EspnTeamRecord,
+  FootballDataCompetitionRecord,
+  FootballDataMatchRecord,
+  FootballDataStandingRecord,
+  FootballDataTeamRecord,
+  OddsApiSportRecord,
+  PaginatedResponse,
+  SportsAdminCompetitionQuery,
+  SportsAdminEspnLeagueQuery,
+  SportsAdminEspnLiveMatchQuery,
+  SportsAdminFixtureQuery,
+  SportsAdminFootballDataMatchQuery,
+  SportsAdminFootballDataStandingQuery,
+  SportsAdminFootballDataTeamQuery,
+  SportsAdminNewsQuery,
+  SportsAdminOddsSnapshotQuery,
+  SportsAdminOddsSportsQuery,
+  SportsAdminProviderRateLimitQuery,
+  SportsAdminQueueQuery,
+  SportsAdminStandingQuery,
+  SportsAdminSyncStateQuery,
+  SportsAdminTeamQuery,
+  SportsAdminYoutubeQuery,
+  SportsFixtureQuery,
+  SportsListQuery,
+  SportsOddsSnapshotRecord,
+  SportsProviderRateLimitRecord,
+  SportsSyncState,
+  SportsSyncStateSummary,
+  SportsSystemMonitorQuery,
+  SportsSystemMonitorResponse,
+  SportsEndpointValue,
+  SportsFootballNewsQuery,
+  FootballNewsFeedItem,
+  YouTubeHighlightRecord,
+} from '@/types/sports';
 
 
 // ============================================================
-// GOAL EVENT
+// QUERY SERIALIZATION
 // ============================================================
 
-export interface GoalEvent {
+type QueryValue =
+  | string
+  | number
+  | boolean
+  | Date
+  | undefined
+  | null;
 
-  minute: number;
+const compactQuery = (
+  query?: object,
+): Record<string, string | number | boolean> => {
+  if (!query) {
+    return {};
+  }
 
-  injuryTime?: number | null;
+  const result: Record<string, string | number | boolean> = {};
 
-  type?: string;
+  for (const [key, value] of Object.entries(
+    query as Record<string, QueryValue>,
+  )) {
+    if (
+      value === undefined ||
+      value === null ||
+      value === ''
+    ) {
+      continue;
+    }
 
+    result[key] =
+      value instanceof Date
+        ? value.toISOString()
+        : value;
+  }
 
-  team?: {
-
-    id?: number;
-
-    name?: string;
-
-  };
-
-
-  scorer?: {
-
-    id?: number;
-
-    name?: string;
-
-  };
-
-
-  assist?: {
-
-    id?: number;
-
-    name?: string;
-
-  };
-
-
-  score?: {
-
-    home?: number;
-
-    away?: number;
-
-  };
-
-}
+  return result;
+};
 
 
 // ============================================================
-// MATCH
+// SPORTS API
 // ============================================================
 
-export interface Match {
-
-  id: string;
-
-  leagueCode: string;
-
-
-  league?: {
-
-    code: string;
-
-    name: string;
-
-    country: string;
-
-    emblem?: string;
-
-    type?: CompetitionType;
-
-  };
-
-
+export const sportsApi = {
   // ==========================================================
-  // TEAMS
+  // PUBLIC / APPLICATION
   // ==========================================================
 
-  homeTeam: string;
-
-  awayTeam: string;
-
-
-  homeTeamId?: number;
-
-  awayTeamId?: number;
-
-
-  homeTeamBadge?: string;
-
-  awayTeamBadge?: string;
-
-
-  // ==========================================================
-  // DATE / TIME / VENUE
-  // ==========================================================
-
-  /**
-   * Original UTC timestamp.
-   *
-   * Example:
-   * 2026-08-22T18:35:10Z
-   */
-  date: string;
-
-
-  /**
-   * UTC kickoff time.
-   *
-   * Example:
-   * 18:35:10
-   */
-  time?: string;
-
-
-  venue?: string;
-
-
-  /**
-   * Absolute UTC timestamp.
-   */
-  kickoffTimestamp: number;
-
-
-  // ==========================================================
-  // STATUS
-  // ==========================================================
-
-  status?: string;
-
-  matchday?: number;
-
-
-  // ==========================================================
-  // COMPETITION
-  // ==========================================================
-
-  stage?: CompetitionStage;
-
-  group?: string | null;
-
-
-  // ==========================================================
-  // LIVE INFORMATION
-  // ==========================================================
-
-  /**
-   * Provider-reported match minute.
-   *
-   * This is authoritative.
-   */
-  minute?: number | null;
-
-  injuryTime?: number | null;
-
-
-  // ==========================================================
-  // SCORE
-  // ==========================================================
-
-  homeScore?: number | null;
-
-  awayScore?: number | null;
-
-
-  scoreDuration?: MatchDuration;
-
-
-  halfTimeHomeScore?: number | null;
-
-  halfTimeAwayScore?: number | null;
-
-
-  extraTimeHomeScore?: number | null;
-
-  extraTimeAwayScore?: number | null;
-
-
-  // ==========================================================
-  // EVENTS
-  // ==========================================================
-
-  goals: GoalEvent[];
-
-}
-
-
-// ============================================================
-// STANDING
-// ============================================================
-
-export interface Standing {
-
-  position: number;
-
-  teamId?: number;
-
-  team: string;
-
-  shortName?: string;
-
-  tla?: string;
-
-  crest?: string;
-
-
-  points: number;
-
-  playedGames: number;
-
-  won: number;
-
-  draw: number;
-
-  lost: number;
-
-
-  goalsFor: number;
-
-  goalsAgainst: number;
-
-  goalDifference: number;
-
-
-  form?: string | null;
-
-}
-
-
-// ============================================================
-// STANDING GROUP
-// ============================================================
-
-export interface StandingGroup {
-
-  stage: CompetitionStage;
-
-  group: string;
-
-  table: Standing[];
-
-}
-
-
-// ============================================================
-// KNOCKOUT MATCH
-// ============================================================
-
-export interface KnockoutMatch {
-
-  id: string;
-
-  homeTeam: string;
-
-  awayTeam: string;
-
-
-  homeTeamBadge?: string;
-
-  awayTeamBadge?: string;
-
-
-  date: string;
-
-  time?: string;
-
-  venue?: string;
-
-
-  status?: string;
-
-
-  minute?: number | null;
-
-  injuryTime?: number | null;
-
-
-  homeScore?: number | null;
-
-  awayScore?: number | null;
-
-
-  stage: CompetitionStage;
-
-
-  goals: GoalEvent[];
-
-
-  kickoffTimestamp: number;
-
-}
-
-
-// ============================================================
-// KNOCKOUT STAGE
-// ============================================================
-
-export interface KnockoutStage {
-
-  stage: CompetitionStage;
-
-  label: string;
-
-  matches: KnockoutMatch[];
-
-}
-
-
-// ============================================================
-// COMPETITION STANDINGS
-// ============================================================
-
-export interface CompetitionStandingsResponse {
-
-  type: CompetitionType;
-
-
-  competition: {
-
-    code: string;
-
-    name: string;
-
-    country: string;
-
-    emblem?: string;
-
-  };
-
-
-  season?: {
-
-    id?: number;
-
-    startDate?: string;
-
-    endDate?: string;
-
-    currentMatchday?: number;
-
-    stages?: CompetitionStage[];
-
-    winner?: unknown;
-
-  };
-
-
-  table?: Standing[];
-
-  groups?: StandingGroup[];
-
-  knockout?: KnockoutStage[];
-
-}
-
-
-// ============================================================
-// API
-// ============================================================
-
-export const getLeagues =
-  async (): Promise<League[]> => {
-
-    const res =
-      await api.get(
-        '/sports/leagues',
-      );
-
-    return res.data;
-
-  };
-
-
-export const getLiveMatches =
-  async (): Promise<Match[]> => {
-
-    const res =
-      await api.get(
-        '/sports/live',
-      );
-
-    return res.data;
-
-  };
-
-
-export const getFixtures =
-  async (
-    leagueCode: string,
-  ): Promise<Match[]> => {
-
-    const res =
-      await api.get(
-        '/sports/fixtures',
-        {
-          params: {
-            leagueCode,
-          },
-        },
-      );
-
-    return res.data;
-
-  };
-
-
-export const getMatchDetails =
-  async (
-    matchId: string,
-  ): Promise<Match> => {
-
-    const res =
-      await api.get(
-        `/sports/match/${matchId}`,
-      );
-
-    return res.data;
-
-  };
-
-
-export const getPastResults =
-  async (
-    leagueCode: string,
-  ): Promise<Match[]> => {
-
-    const res =
-      await api.get(
-        '/sports/results',
-        {
-          params: {
-            leagueCode,
-          },
-        },
-      );
-
-    return res.data;
-
-  };
-
-
-export const getStandings =
-  async (
-    leagueCode: string,
-  ): Promise<CompetitionStandingsResponse> => {
-
-    const res =
-      await api.get(
-        '/sports/standings',
-        {
-          params: {
-            leagueCode,
-          },
-        },
-      );
-
-    return res.data;
-
-  };
-
-
-// ============================================================
-// UTC FORMATTING
-// ============================================================
-
-export const formatMatchTime = (
-  dateString: string,
-): string => {
-
-  const date =
-    new Date(
-      dateString,
+  async getCompetitions(params?: {
+    activeOnly?: boolean;
+    predictionEnabled?: boolean;
+  }): Promise<ActiveCompetition[]> {
+    const response = await api.get<ActiveCompetition[]>(
+      '/sports/competitions',
+      {
+        params: compactQuery(params),
+      },
     );
 
-
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
-
-    return 'Date unavailable';
-
-  }
-
-
-  return new Intl.DateTimeFormat(
-    'en-GB',
-    {
-      timeZone: 'UTC',
-
-      weekday: 'short',
-
-      month: 'short',
-
-      day: '2-digit',
-
-      year: 'numeric',
-
-      hour: '2-digit',
-
-      minute: '2-digit',
-
-      second: '2-digit',
-
-      hour12: false,
-    },
-  ).format(
-    date,
-  ) + ' UTC';
-
-};
-
-
-// ============================================================
-// LIVE DATE HEADER
-// ============================================================
-
-export const formatLiveDate = (
-  dateString: string,
-): string => {
-
-  const date =
-    new Date(
-      dateString,
-    );
-
-
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
-
-    return 'DATE UNAVAILABLE';
-
-  }
-
-
-  return new Intl.DateTimeFormat(
-    'en-GB',
-    {
-      timeZone: 'UTC',
-
-      weekday: 'short',
-
-      month: 'short',
-
-      day: '2-digit',
-
-      year: 'numeric',
-    },
-  ).format(
-    date,
-  ).toUpperCase() + ' UTC';
-
-};
-
-
-// ============================================================
-// UTC KICKOFF TIME
-// ============================================================
-
-export const formatKickoffTime = (
-  dateString: string,
-): string => {
-
-  const date =
-    new Date(
-      dateString,
-    );
-
-
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
-
-    return '--:--:-- UTC';
-
-  }
-
-
-  return new Intl.DateTimeFormat(
-    'en-GB',
-    {
-      timeZone: 'UTC',
-
-      hour: '2-digit',
-
-      minute: '2-digit',
-
-      second: '2-digit',
-
-      hour12: false,
-    },
-  ).format(
-    date,
-  ) + ' UTC';
-
-};
-
-
-// ============================================================
-// STATUS
-// ============================================================
-
-export const isLiveMatch = (
-  status?: string,
-): boolean => {
-
-  return (
-    status === 'IN_PLAY' ||
-    status === 'PAUSED' ||
-    status === 'LIVE'
-  );
-
-};
-
-
-export const isActiveLiveMatch = (
-  status?: string,
-): boolean => {
-
-  return (
-    status === 'IN_PLAY' ||
-    status === 'LIVE'
-  );
-
-};
-
-
-export const isUpcomingMatch = (
-  status?: string,
-): boolean => {
-
-  return status === 'SCHEDULED';
-
-};
-
-
-export const isFinishedMatch = (
-  status?: string,
-): boolean => {
-
-  return status === 'FINISHED';
-
-};
-
-
-// ============================================================
-// SPLIT MATCHES
-// ============================================================
-
-export const splitMatches = (
-  matches: Match[],
-) => {
-
-  return {
-
-    liveMatches:
-      matches.filter(
-        match =>
-          isLiveMatch(
-            match.status,
-          ),
-      ),
-
-    upcomingMatches:
-      matches.filter(
-        match =>
-          isUpcomingMatch(
-            match.status,
-          ),
-      ),
-
-    finishedMatches:
-      matches.filter(
-        match =>
-          isFinishedMatch(
-            match.status,
-          ),
-      ),
-
-  };
-
-};
-
-
-// ============================================================
-// STAGE LABEL
-// ============================================================
-
-export const getStageLabel = (
-  stage?: string,
-): string => {
-
-  switch (stage) {
-
-    case 'REGULAR_SEASON':
-      return 'League';
-
-    case 'GROUP_STAGE':
-      return 'Group Stage';
-
-    case 'LAST_16':
-    case 'ROUND_OF_16':
-      return 'Round of 16';
-
-    case 'QUARTER_FINALS':
-      return 'Quarter-finals';
-
-    case 'SEMI_FINALS':
-      return 'Semi-finals';
-
-    case 'THIRD_PLACE':
-      return 'Third-place Playoff';
-
-    case 'FINAL':
-      return 'Final';
-
-    default:
-
-      return (
-        stage
-          ?.replaceAll(
-            '_',
-            ' ',
-          )
-          .toLowerCase()
-          .replace(
-            /\b\w/g,
-            char =>
-              char.toUpperCase(),
-          ) ||
-        'Stage'
-      );
-
-  }
-
-};
-
-
-// ============================================================
-// GOAL TIME
-// ============================================================
-
-export const getGoalTimeLabel = (
-  goal: GoalEvent,
-): string => {
-
-  if (
-    goal.injuryTime &&
-    goal.injuryTime > 0
-  ) {
-
-    return (
-      `${goal.minute}'+${goal.injuryTime}`
-    );
-
-  }
-
-
-  return `${goal.minute}'`;
-
-};
-
-
-// ============================================================
-// PROVIDER MATCH TIME LABEL
-// ============================================================
-
-export const getMatchTimeLabel = (
-  match: Match,
-): string => {
-
-  if (
-    !isLiveMatch(
-      match.status,
-    )
-  ) {
-
-    return '';
-
-  }
-
-
-  if (
-    match.minute == null
-  ) {
-
-    return 'LIVE';
-
-  }
-
-
-  if (
-    match.injuryTime &&
-    match.injuryTime > 0
-  ) {
-
-    return (
-      `${match.minute}'+${match.injuryTime}`
-    );
-
-  }
-
-
-  return `${match.minute}'`;
-
-};
-
-
-// ============================================================
-// CLOCK
-// ============================================================
-
-export type MatchClockPhase =
-  | 'NOT_STARTED'
-  | 'FIRST_HALF'
-  | 'HALFTIME'
-  | 'SECOND_HALF'
-  | 'EXTRA_TIME_FIRST_HALF'
-  | 'EXTRA_TIME_HALFTIME'
-  | 'EXTRA_TIME_SECOND_HALF'
-  | 'PENALTIES'
-  | 'FULL_TIME';
-
-
-export interface MatchClock {
-
-  minute: number;
-
-  seconds: number;
-
-  display: string;
-
-  phase: MatchClockPhase;
-
-}
-
-
-// ============================================================
-// PROVIDER-ANCHORED CLOCK
-//
-// IMPORTANT:
-// The API controls the minute.
-//
-// The frontend ONLY supplies seconds between
-// provider updates.
-//
-// Example:
-//
-// API -> 62
-// UI  -> 62:00
-// UI  -> 62:01
-// UI  -> 62:02
-//
-// Next API:
-//
-// API -> 63
-// UI  -> 63:00
-//
-// We never calculate a new minute ourselves.
-// ============================================================
-
-export const getProviderMatchClock = (
-  match: Match,
-  elapsedSeconds = 0,
-): MatchClock => {
-
-  // ==========================================================
-  // NOT STARTED
-  // ==========================================================
-
-  if (
-    match.status === 'SCHEDULED'
-  ) {
-
-    return {
-
-      minute: 0,
-
-      seconds: 0,
-
-      display: '00:00',
-
-      phase:
-        'NOT_STARTED',
-
-    };
-
-  }
-
-
-  // ==========================================================
-  // PENALTIES
-  // ==========================================================
-
-  if (
-    match.scoreDuration === 'PENALTIES'
-  ) {
-
-    return {
-
-      minute:
-        match.minute ??
-        120,
-
-      seconds: 0,
-
-      display: 'PEN',
-
-      phase:
-        'PENALTIES',
-
-    };
-
-  }
-
-
-  // ==========================================================
-  // FINISHED
-  // ==========================================================
-
-  if (
-    match.status === 'FINISHED'
-  ) {
-
-    const minute =
-      match.minute ??
-      (
-        match.scoreDuration === 'EXTRA_TIME'
-          ? 120
-          : 90
-      );
-
-
-    return {
-
-      minute,
-
-      seconds: 0,
-
-      display:
-        `${minute}'`,
-
-      phase:
-        'FULL_TIME',
-
-    };
-
-  }
-
-
-  // ==========================================================
-  // NO PROVIDER MINUTE
-  // ==========================================================
-
-  if (
-    match.minute == null
-  ) {
-
-    return {
-
-      minute: 0,
-
-      seconds: 0,
-
-      display: 'LIVE',
-
-      phase:
-        'SECOND_HALF',
-
-    };
-
-  }
-
-
-  const minute =
-    match.minute;
-
-
-  // ==========================================================
-  // HALFTIME
-  // ==========================================================
-
-  if (
-    match.status === 'PAUSED' &&
-    minute >= 45 &&
-    minute < 46
-  ) {
-
-    return {
-
-      minute,
-
-      seconds: 0,
-
-      display: 'HT',
-
-      phase:
-        'HALFTIME',
-
-    };
-
-  }
-
-
-  // ==========================================================
-  // EXTRA TIME HALF TIME
-  // ==========================================================
-
-  if (
-    match.status === 'PAUSED' &&
-    match.scoreDuration === 'EXTRA_TIME' &&
-    minute >= 105 &&
-    minute < 106
-  ) {
-
-    return {
-
-      minute,
-
-      seconds: 0,
-
-      display: 'HT',
-
-      phase:
-        'EXTRA_TIME_HALFTIME',
-
-    };
-
-  }
-
-
-  // ==========================================================
-  // PAUSED / COOLING BREAK
-  // ==========================================================
-
-  if (
-    match.status === 'PAUSED'
-  ) {
-
-    return {
-
-      minute,
-
-      seconds: 0,
-
-      display:
-        `${minute}:00`,
-
-      phase:
-        minute < 45
-          ? 'FIRST_HALF'
-          : (
-              match.scoreDuration === 'EXTRA_TIME'
-                ? 'EXTRA_TIME_SECOND_HALF'
-                : 'SECOND_HALF'
-            ),
-
-    };
-
-  }
-
-
-  // ==========================================================
-  // PROVIDER-ANCHORED SECONDS
-  // ==========================================================
-
-  const seconds =
-    Math.min(
-      59,
-      Math.max(
-        0,
-        Math.floor(
-          elapsedSeconds,
-        ),
-      ),
-    );
-
-
-  // ==========================================================
-  // EXTRA TIME
-  // ==========================================================
-
-  if (
-    match.scoreDuration === 'EXTRA_TIME'
-  ) {
-
-    return {
-
-      minute,
-
-      seconds,
-
-      display:
-        `${minute}:${String(
-          seconds,
-        ).padStart(
-          2,
-          '0',
+    return response.data;
+  },
+
+  async getCompetition(
+    competitionId: string,
+  ): Promise<ActiveCompetition | null> {
+    const response =
+      await api.get<ActiveCompetition | null>(
+        `/sports/competitions/${encodeURIComponent(
+          competitionId,
         )}`,
+      );
 
-      phase:
-        minute < 105
-          ? 'EXTRA_TIME_FIRST_HALF'
-          : 'EXTRA_TIME_SECOND_HALF',
+    return response.data;
+  },
 
-    };
+  async getUpcomingFixtures(
+    params: SportsFixtureQuery = {},
+  ): Promise<EspnFixtureRecord[]> {
+    const response =
+      await api.get<EspnFixtureRecord[]>(
+        '/sports/fixtures/upcoming',
+        {
+          params: compactQuery(params),
+        },
+      );
 
-  }
+    return response.data;
+  },
+
+  async getLiveFixtures(
+    params: SportsFixtureQuery = {},
+  ): Promise<EspnFixtureRecord[]> {
+    const response =
+      await api.get<EspnFixtureRecord[]>(
+        '/sports/fixtures/live',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+  getFootballNewsStreamUrl(
+    params: SportsFootballNewsQuery = {},
+  ): string {
+    return api.getUri({
+      url: '/sports/news-feed/stream',
+      params: compactQuery(params),
+    });
+  },
+
+  async getFootballNews(
+    params: SportsFootballNewsQuery = {},
+  ): Promise<PaginatedResponse<FootballNewsFeedItem>> {
+    const response =
+      await api.get<
+        PaginatedResponse<FootballNewsFeedItem>
+      >(
+        '/sports/news-feed',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+  async getFinishedFixtures(
+    params: SportsFixtureQuery = {},
+  ): Promise<EspnFixtureRecord[]> {
+    const response =
+      await api.get<EspnFixtureRecord[]>(
+        '/sports/fixtures/finished',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
 
 
   // ==========================================================
-  // NORMAL MATCH
+  // PUBLIC / ESPN FIXTURE PAYLOAD FIELDS
   // ==========================================================
 
-  return {
+  async getFixtureId(eventId: string): Promise<string | null> {
+    const response = await api.get<string | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/id`,
+    );
 
-    minute,
+    return response.data;
+  },
 
-    seconds,
+  async getFixtureUid(eventId: string): Promise<string | null> {
+    const response = await api.get<string | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/uid`,
+    );
 
-    display:
-      `${minute}:${String(
-        seconds,
-      ).padStart(
-        2,
-        '0',
-      )}`,
+    return response.data;
+  },
 
-    phase:
-      minute < 45
-        ? 'FIRST_HALF'
-        : 'SECOND_HALF',
+  async getFixtureDate(eventId: string): Promise<string | null> {
+    const response = await api.get<string | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/date`,
+    );
 
-  };
+    return response.data;
+  },
 
+  async getFixtureName(eventId: string): Promise<string | null> {
+    const response = await api.get<string | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/name`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureShortName(eventId: string): Promise<string | null> {
+    const response = await api.get<string | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/short-name`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureTimeValid(eventId: string): Promise<boolean | null> {
+    const response = await api.get<boolean | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/time-valid`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSeason(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/season`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSeasonType(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/season-type`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureCompetitions(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/competitions`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureLinks(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/links`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureLeague(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/league`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureStatus(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/status`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureVenue(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/venue`,
+    );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // PUBLIC / ESPN MATCH SUMMARY SECTIONS
+  // ==========================================================
+
+  async getFixtureSummaryBoxscore(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/boxscore`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryFormat(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/format`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryGameInfo(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/game-info`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryLastFiveGames(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/last-five-games`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryLeaders(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/leaders`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryBroadcasts(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/broadcasts`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryPickcenter(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/pickcenter`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryOdds(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/odds`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryHasOdds(eventId: string): Promise<boolean | null> {
+    const response = await api.get<boolean | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/has-odds`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryRosters(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/rosters`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryNews(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/news`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummarySeasonSeries(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/season-series`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryVideos(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/videos`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryHeader(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/header`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryKeyEvents(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/key-events`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryCommentary(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/commentary`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryWallclockAvailable(eventId: string): Promise<boolean | null> {
+    const response = await api.get<boolean | null>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/wallclock-available`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryMeta(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/meta`,
+    );
+
+    return response.data;
+  },
+
+  async getFixtureSummaryStandings(eventId: string): Promise<SportsEndpointValue> {
+    const response = await api.get<SportsEndpointValue>(
+      `/sports/fixtures/${encodeURIComponent(eventId)}/summary/standings`,
+    );
+
+    return response.data;
+  },
+
+  async getLeagueTable(
+    competitionId: string,
+    teamId?: string,
+    groupId?: string,
+  ): Promise<EspnStandingRecord[]> {
+    const response =
+      await api.get<EspnStandingRecord[]>(
+        `/sports/competitions/${encodeURIComponent(
+          competitionId,
+        )}/standings`,
+        {
+          params: compactQuery({ teamId, groupId }),
+        },
+      );
+
+    return response.data;
+  },
+
+  async getCompetitionTeams(
+    competitionId: string,
+    teamId?: string,
+  ): Promise<EspnTeamRecord[]> {
+    const response =
+      await api.get<EspnTeamRecord[]>(
+        `/sports/competitions/${encodeURIComponent(
+          competitionId,
+        )}/teams`,
+        {
+          params: compactQuery({ teamId }),
+        },
+      );
+
+    return response.data;
+  },
+
+  async getEventOdds(
+    eventId: string,
+  ): Promise<SportsOddsSnapshotRecord[]> {
+    const response =
+      await api.get<SportsOddsSnapshotRecord[]>(
+        `/sports/odds/event/${encodeURIComponent(
+          eventId,
+        )}`,
+      );
+
+    return response.data;
+  },
+
+  async getYoutubeHighlight(
+    fixtureId: string,
+  ): Promise<YouTubeHighlightRecord | null> {
+    const response =
+      await api.get<YouTubeHighlightRecord | null>(
+        `/sports/youtube/${encodeURIComponent(
+          fixtureId,
+        )}`,
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: SYSTEM MONITOR
+  // ==========================================================
+
+  async getAdminSystemMonitor(
+    params: SportsSystemMonitorQuery = {},
+  ): Promise<SportsSystemMonitorResponse> {
+    const response =
+      await api.get<SportsSystemMonitorResponse>(
+        '/sports/admin/system-monitor',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ACTIVE COMPETITIONS
+  // ==========================================================
+
+  async getAdminActiveCompetitions(
+    params: SportsAdminCompetitionQuery = {},
+  ): Promise<PaginatedResponse<ActiveCompetition>> {
+    const response =
+      await api.get<
+        PaginatedResponse<ActiveCompetition>
+      >(
+        '/sports/admin/active-competitions',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN LEAGUES
+  // ==========================================================
+
+  async getAdminEspnLeagues(
+    params: SportsAdminEspnLeagueQuery = {},
+  ): Promise<PaginatedResponse<EspnLeagueRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnLeagueRecord>
+      >(
+        '/sports/admin/espn/leagues',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN LIVE MATCHES
+  // ==========================================================
+
+  async getAdminEspnLiveMatches(
+    params: SportsAdminEspnLiveMatchQuery = {},
+  ): Promise<PaginatedResponse<EspnFixtureRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnFixtureRecord>
+      >(
+        '/sports/admin/espn/live-matches',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN NEWS
+  // ==========================================================
+
+  async getAdminEspnNews(
+    params: SportsAdminNewsQuery = {},
+  ): Promise<PaginatedResponse<EspnNewsRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnNewsRecord>
+      >(
+        '/sports/admin/espn/news',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN STANDINGS
+  // ==========================================================
+
+  async getAdminEspnStandings(
+    params: SportsAdminStandingQuery = {},
+  ): Promise<PaginatedResponse<EspnStandingRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnStandingRecord>
+      >(
+        '/sports/admin/espn/standings',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN TEAMS
+  // ==========================================================
+
+  async getAdminEspnTeams(
+    params: SportsAdminTeamQuery = {},
+  ): Promise<PaginatedResponse<EspnTeamRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnTeamRecord>
+      >(
+        '/sports/admin/espn/teams',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN FIXTURES
+  // ==========================================================
+
+  async getAdminEspnFixtures(
+    params: SportsAdminFixtureQuery = {},
+  ): Promise<PaginatedResponse<EspnFixtureRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnFixtureRecord>
+      >(
+        '/sports/admin/espn/fixtures',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN QUEUE SUMMARY
+  // ==========================================================
+
+  async getAdminEspnQueueSummary(): Promise<EspnQueueSummary> {
+    const response =
+      await api.get<EspnQueueSummary>(
+        '/sports/admin/espn/queues/summary',
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ESPN QUEUES
+  // ==========================================================
+
+  async getAdminEspnQueues(
+    params: SportsAdminQueueQuery = {},
+  ): Promise<PaginatedResponse<EspnQueueRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<EspnQueueRecord>
+      >(
+        '/sports/admin/espn/queues',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: FOOTBALL-DATA COMPETITIONS
+  // ==========================================================
+
+  async getAdminFootballDataCompetitions(
+    params: SportsListQuery = {},
+  ): Promise<
+    PaginatedResponse<FootballDataCompetitionRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<FootballDataCompetitionRecord>
+      >(
+        '/sports/admin/football-data/competitions',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: FOOTBALL-DATA MATCHES
+  // ==========================================================
+
+  async getAdminFootballDataMatches(
+    params: SportsAdminFootballDataMatchQuery = {},
+  ): Promise<
+    PaginatedResponse<FootballDataMatchRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<FootballDataMatchRecord>
+      >(
+        '/sports/admin/football-data/matches',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: FOOTBALL-DATA STANDINGS
+  // ==========================================================
+
+  async getAdminFootballDataStandings(
+    params: SportsAdminFootballDataStandingQuery = {},
+  ): Promise<
+    PaginatedResponse<FootballDataStandingRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<FootballDataStandingRecord>
+      >(
+        '/sports/admin/football-data/standings',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: FOOTBALL-DATA TEAMS
+  // ==========================================================
+
+  async getAdminFootballDataTeams(
+    params: SportsAdminFootballDataTeamQuery = {},
+  ): Promise<
+    PaginatedResponse<FootballDataTeamRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<FootballDataTeamRecord>
+      >(
+        '/sports/admin/football-data/teams',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ODDS API SPORTS
+  // ==========================================================
+
+  async getAdminOddsApiSports(
+    params: SportsAdminOddsSportsQuery = {},
+  ): Promise<PaginatedResponse<OddsApiSportRecord>> {
+    const response =
+      await api.get<
+        PaginatedResponse<OddsApiSportRecord>
+      >(
+        '/sports/admin/odds-api/sports',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: ODDS SNAPSHOTS
+  // ==========================================================
+
+  async getAdminSportsOddsSnapshots(
+    params: SportsAdminOddsSnapshotQuery = {},
+  ): Promise<
+    PaginatedResponse<SportsOddsSnapshotRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<SportsOddsSnapshotRecord>
+      >(
+        '/sports/admin/odds-api/snapshots',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: PROVIDER RATE LIMITS
+  // ==========================================================
+
+  async getAdminProviderRateLimits(
+    params: SportsAdminProviderRateLimitQuery = {},
+  ): Promise<
+    PaginatedResponse<SportsProviderRateLimitRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<SportsProviderRateLimitRecord>
+      >(
+        '/sports/admin/provider-rate-limits',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: YOUTUBE HIGHLIGHTS
+  // ==========================================================
+
+  async getAdminYoutubeHighlights(
+    params: SportsAdminYoutubeQuery = {},
+  ): Promise<
+    PaginatedResponse<YouTubeHighlightRecord>
+  > {
+    const response =
+      await api.get<
+        PaginatedResponse<YouTubeHighlightRecord>
+      >(
+        '/sports/admin/youtube-highlights',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+
+  // ==========================================================
+  // ADMIN: SPORTS SYNC STATES
+  // ==========================================================
+
+  async getAdminSportsSyncStates(
+    params: SportsAdminSyncStateQuery = {},
+  ): Promise<PaginatedResponse<SportsSyncState>> {
+    const response =
+      await api.get<
+        PaginatedResponse<SportsSyncState>
+      >(
+        '/sports/admin/sync-states',
+        {
+          params: compactQuery(params),
+        },
+      );
+
+    return response.data;
+  },
+
+  async getAdminSportsSyncStateSummary(): Promise<SportsSyncStateSummary> {
+    const response =
+      await api.get<SportsSyncStateSummary>(
+        '/sports/admin/sync-states/summary',
+      );
+
+    return response.data;
+  },
+
+  async getAdminSportsSyncState(
+    stateKey: string,
+  ): Promise<SportsSyncState | null> {
+    const response =
+      await api.get<SportsSyncState | null>(
+        `/sports/admin/sync-states/${encodeURIComponent(
+          stateKey,
+        )}`,
+      );
+
+    return response.data;
+  },
 };
 
-
-// ============================================================
-// COMPATIBILITY HELPERS
-// ============================================================
-
-export const getMatchClock = (
-  match: Match,
-): MatchClock => {
-
-  return getProviderMatchClock(
-    match,
-    0,
-  );
-
-};
-
-
-export const getEstimatedMatchClock = (
-  match: Match,
-): MatchClock => {
-
-  return getProviderMatchClock(
-    match,
-    0,
-  );
-
-};
-
-
-export const getMatchPhase = (
-  match: Match,
-): MatchClockPhase => {
-
-  return getProviderMatchClock(
-    match,
-    0,
-  ).phase;
-
-};
+export default sportsApi;

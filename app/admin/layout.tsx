@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 
 import { useRouter } from 'next/navigation';
 
-import { LoaderCircle } from 'lucide-react';
+import {
+  LoaderCircle,
+} from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 
 import AdminSidebar from '@/components/admin/admin-sidebar';
-import AdminHeader from '@/components/admin/admin-header';
 
 
 export default function AdminLayout({
@@ -20,13 +21,12 @@ export default function AdminLayout({
 
   const router = useRouter();
 
-  const [sidebarOpen,setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const {
     user,
     loading,
   } = useAuth();
-
 
 
   useEffect(() => {
@@ -44,24 +44,26 @@ export default function AdminLayout({
       router.push('/');
     }
 
-  },[
+  }, [
     user,
     loading,
     router,
   ]);
 
 
-
   if (loading) {
 
     return (
-      <div className="
-        min-h-screen
-        flex
-        items-center
-        justify-center
-        bg-background
-      ">
+      <div
+        className="
+          flex
+          min-h-[60vh]
+          items-center
+          justify-center
+          bg-background
+        "
+      >
+
         <LoaderCircle
           size={32}
           className="
@@ -69,11 +71,11 @@ export default function AdminLayout({
             text-primary
           "
         />
+
       </div>
     );
 
   }
-
 
 
   if (!user || user.role !== 'admin') {
@@ -81,19 +83,23 @@ export default function AdminLayout({
   }
 
 
-
   return (
-
-    <main
+    <div
       className="
         relative
         flex
-        h-screen
+        min-h-[calc(100vh-4rem)]
+        w-full
+        min-w-0
         overflow-hidden
         bg-background
         text-foreground
       "
     >
+
+      {/* ================================================================
+          ADMIN SIDEBAR
+      ================================================================ */}
 
       <AdminSidebar
         open={sidebarOpen}
@@ -101,46 +107,46 @@ export default function AdminLayout({
       />
 
 
-            <section
+      {/* ================================================================
+          ADMIN CONTENT
+      ================================================================ */}
+
+      <section
+        className="
+          flex
+          min-w-0
+          flex-1
+          flex-col
+        "
+      >
+
+        <div
+          className="
+            min-h-0
+            min-w-0
+            flex-1
+            overflow-x-hidden
+            overflow-y-auto
+          "
+        >
+
+          <div
             className="
-              flex
+              min-h-full
               min-w-0
-              flex-1
-              flex-col
-              overflow-hidden
+              max-w-full
+              p-3
+              sm:p-4
+              lg:p-5
             "
           >
-            <div className="z-40 shrink-0">
-              <AdminHeader
-                onMenuClick={() => setSidebarOpen(true)}
-              />
-            </div>
+            {children}
+          </div>
 
-            <div
-              className="
-                min-w-0
-                flex-1
-                overflow-x-hidden
-                overflow-y-auto
-                scrollbar-hide
-              "
-            >
-              <div
-                className="
-                  min-h-full
-                  min-w-0
-                  max-w-full
-                  p-4
-                  lg:p-6
-                "
-              >
-                {children}
-              </div>
-            </div>
-          </section>
+        </div>
 
-    </main>
+      </section>
 
+    </div>
   );
-
 }

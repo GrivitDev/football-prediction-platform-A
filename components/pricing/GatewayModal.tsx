@@ -25,21 +25,14 @@ import PaymentModal from './PaymentModal';
 interface GatewayModalProps {
   type:
     | 'subscription'
-    | 'prediction'
     | 'vip_upgrade';
 
   target: string;
-
   amount: number;
-
   currency: PaymentCurrency;
-
   config: PlanConfig;
-
   title?: string;
-
   description?: string;
-
   onClose: () => void;
 }
 
@@ -61,16 +54,21 @@ export default function GatewayModal({
   const [manualPayment, setManualPayment] =
     useState(false);
 
-  // =====================================================
-  // INITIALIZE GATEWAY PAYMENT
-  // =====================================================
+  const getDurationLabel = () => {
+    if (target === 'premium') {
+      return config.premiumDurationDays === 0
+        ? 'Lifetime'
+        : `${config.premiumDurationDays} days`;
+    }
+
+    return `${config.subscriptionDurationDays} days`;
+  };
 
   async function initializePayment(
     gateway: PaymentGateway,
   ) {
     try {
       setError('');
-
       setLoadingGateway(gateway);
 
       const data =
@@ -98,10 +96,6 @@ export default function GatewayModal({
     }
   }
 
-  // =====================================================
-  // MANUAL PAYMENT
-  // =====================================================
-
   if (manualPayment) {
     return (
       <PaymentModal
@@ -112,16 +106,12 @@ export default function GatewayModal({
         config={config}
         title={title}
         description={description}
-        onClose={() => {
-          setManualPayment(false);
-        }}
+        onClose={() => setManualPayment(false)}
       />
     );
   }
 
-  // =====================================================
-  // GATEWAY MODAL
-  // =====================================================
+  const duration = getDurationLabel();
 
   return (
     <div
@@ -137,34 +127,25 @@ export default function GatewayModal({
         p-3
         backdrop-blur-md
         sm:items-center
-        sm:p-4
       "
     >
       <motion.div
         initial={{
           opacity: 0,
-          scale: 0.97,
-          y: 12,
+          scale: 0.98,
+          y: 10,
         }}
         animate={{
           opacity: 1,
           scale: 1,
           y: 0,
         }}
-        exit={{
-          opacity: 0,
-          scale: 0.97,
-          y: 12,
-        }}
-        transition={{
-          duration: 0.2,
-        }}
         className="
           relative
           my-2
           flex
           w-full
-          max-w-lg
+          max-w-md
           flex-col
           overflow-hidden
           rounded-2xl
@@ -172,23 +153,17 @@ export default function GatewayModal({
           bg-background
           shadow-2xl
           sm:my-0
-          max-h-[calc(100vh-1.5rem)]
-          sm:max-h-[calc(100vh-2rem)]
         "
       >
-        {/* =====================================================
-            CLOSE BUTTON
-        ===================================================== */}
-
         <button
           type="button"
           onClick={onClose}
           disabled={loadingGateway !== null}
-          aria-label="Close payment gateway modal"
+          aria-label="Close payment modal"
           className="
             absolute
-            right-4
-            top-4
+            right-3
+            top-3
             z-20
             flex
             h-8
@@ -198,159 +173,49 @@ export default function GatewayModal({
             rounded-full
             border
             bg-background/90
-            shadow-sm
             transition
             hover:bg-muted
-            disabled:cursor-not-allowed
             disabled:opacity-50
           "
         >
-          <X size={16} />
+          <X size={15} />
         </button>
 
-        {/* =====================================================
-            HEADER
-        ===================================================== */}
-
-        <div
-          className="
-            shrink-0
-            border-b
-            bg-gradient-to-b
-            from-primary/10
-            via-primary/5
-            to-transparent
-            px-5
-            py-5
-            sm:px-6
-            sm:py-6
-          "
-        >
-          <p
-            className="
-              text-xs
-              font-semibold
-              text-primary
-            "
-          >
-            Payment Gateway
+        <div className="border-b bg-primary/5 px-5 py-5">
+          <p className="pr-8 text-xs font-semibold text-primary">
+            Payment
           </p>
 
-          <h2
-            className="
-              mt-1.5
-              pr-10
-              text-xl
-              font-black
-              sm:text-2xl
-            "
-          >
+          <h2 className="mt-1 pr-8 text-lg font-bold">
             {title ?? 'Choose Payment Method'}
           </h2>
 
-          <p
-            className="
-              mt-2
-              max-w-xl
-              text-xs
-              leading-5
-              text-muted-foreground
-              sm:text-sm
-            "
-          >
+          <p className="mt-1 text-xs text-muted-foreground">
             {description ??
-              'Select your preferred payment gateway to complete your payment securely.'}
+              'Select a payment method to continue.'}
           </p>
 
-          {/* =====================================================
-              AMOUNT
-          ===================================================== */}
-
-          <div
-            className="
-              mt-4
-              rounded-xl
-              border
-              border-primary/20
-              bg-primary/5
-              px-4
-              py-3
-            "
-          >
-            <div
-              className="
-                flex
-                items-center
-                justify-between
-                gap-4
-              "
-            >
-              <p
-                className="
-                  text-xs
-                  text-muted-foreground
-                "
-              >
+          <div className="mt-4 flex items-end justify-between gap-4 rounded-xl border bg-background px-4 py-3">
+            <div>
+              <p className="text-[11px] text-muted-foreground">
                 Amount
               </p>
 
-              <h3
-                className="
-                  text-2xl
-                  font-black
-                  sm:text-3xl
-                "
-              >
-                {currency === 'NGN'
-                  ? '₦'
-                  : '$'}
-                {amount.toLocaleString()}
-              </h3>
+              {duration && (
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {duration}
+                </p>
+              )}
             </div>
 
-            {type !== 'prediction' && (
-              <p
-                className="
-                  mt-1
-                  text-xs
-                  text-muted-foreground
-                "
-              >
-                Valid for{' '}
-                {config.subscriptionDurationDays}{' '}
-                days
-              </p>
-            )}
+            <p className="text-2xl font-black">
+              {currency === 'NGN' ? '₦' : '$'}
+              {amount.toLocaleString()}
+            </p>
           </div>
         </div>
 
-        {/* =====================================================
-            BODY
-        ===================================================== */}
-
-        <div
-          className="
-            min-h-0
-            flex-1
-            overflow-y-auto
-            p-5
-            sm:p-6
-          "
-        >
-          <h3
-            className="
-              mb-3
-              text-base
-              font-bold
-            "
-          >
-            Select Gateway
-          </h3>
-
-          {/* =====================================================
-              PAYSTACK
-          ===================================================== */}
-
+        <div className="space-y-3 p-5">
           <button
             type="button"
             disabled={loadingGateway !== null}
@@ -366,219 +231,78 @@ export default function GatewayModal({
               rounded-xl
               border
               bg-card
-              p-4
+              p-3.5
               text-left
-              transition-all
+              transition
               hover:border-primary
               hover:bg-primary/5
               disabled:cursor-not-allowed
               disabled:opacity-60
             "
           >
-            <div
-              className="
-                flex
-                min-w-0
-                items-center
-                gap-4
-              "
-            >
-              {/* Paystack Logo */}
-
-              <div
-                className="
-                  relative
-                  flex
-                  h-12
-                  w-12
-                  shrink-0
-                  items-center
-                  justify-center
-                  overflow-hidden
-                  rounded-xl
-                "
-              >
+            <div className="flex items-center gap-3">
+              <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg">
                 <Image
                   src="/gateway/paystack.png"
                   alt="Paystack"
-                  width={80}
-                  height={80}
-                  className="
-                    h-20
-                    w-20
-                    max-w-none
-                    scale-150
-                    object-contain
-                  "
+                  width={64}
+                  height={64}
+                  className="h-16 w-16 max-w-none scale-150 object-contain"
                   priority
                 />
 
-                {loadingGateway ===
-                  'paystack' && (
-                  <div
-                    className="
-                      absolute
-                      inset-0
-                      flex
-                      items-center
-                      justify-center
-                      rounded-xl
-                      bg-background/80
-                      backdrop-blur-sm
-                    "
-                  >
+                {loadingGateway === 'paystack' && (
+                  <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-background/80">
                     <Loader2
-                      size={20}
-                      className="
-                        animate-spin
-                        text-primary
-                      "
+                      size={17}
+                      className="animate-spin text-primary"
                     />
                   </div>
                 )}
               </div>
 
-              <div className="min-w-0">
-                <h4
-                  className="
-                    text-base
-                    font-bold
-                  "
-                >
+              <div>
+                <p className="text-sm font-bold">
                   Paystack
-                </h4>
+                </p>
 
-                <p
-                  className="
-                    mt-0.5
-                    text-xs
-                    leading-5
-                    text-muted-foreground
-                    sm:text-sm
-                  "
-                >
-                  Debit Card, Bank Transfer,
-                  USSD and more.
+                <p className="mt-0.5 text-xs text-muted-foreground">
+                  Card, bank transfer, USSD and more.
                 </p>
               </div>
             </div>
 
             <ArrowRight
-              size={18}
-              className="
-                ml-3
-                shrink-0
-                transition-transform
-                group-hover:translate-x-1
-              "
+              size={17}
+              className="shrink-0 transition-transform group-hover:translate-x-1"
             />
           </button>
 
-          {/* =====================================================
-              ERROR
-          ===================================================== */}
-
           {error && (
-            <div
-              className="
-                mt-4
-                flex
-                items-start
-                gap-2.5
-                rounded-xl
-                border
-                border-destructive/20
-                bg-destructive/10
-                p-3
-                text-destructive
-              "
-            >
+            <div className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-xs text-destructive">
               <AlertCircle
-                size={16}
-                className="
-                  mt-0.5
-                  shrink-0
-                "
+                size={15}
+                className="mt-0.5 shrink-0"
               />
 
-              <span
-                className="
-                  text-xs
-                  leading-5
-                "
-              >
-                {error}
-              </span>
+              <span>{error}</span>
             </div>
           )}
 
-          {/* =====================================================
-              MANUAL PAYMENT
-          ===================================================== */}
-
-          <div
-            className="
-              mt-5
-              rounded-xl
-              border
-              border-amber-500/20
-              bg-amber-500/5
-              p-4
-            "
-          >
-            <div
-              className="
-                flex
-                items-start
-                gap-3
-              "
-            >
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5">
+            <div className="flex items-start gap-2.5">
               <AlertCircle
-                size={18}
-                className="
-                  mt-0.5
-                  shrink-0
-                  text-amber-500
-                "
+                size={16}
+                className="mt-0.5 shrink-0 text-amber-500"
               />
 
-              <div className="min-w-0">
-                <h4
-                  className="
-                    text-sm
-                    font-semibold
-                  "
-                >
-                  Having trouble with Paystack?
-                </h4>
-
-                <p
-                  className="
-                    mt-1.5
-                    text-xs
-                    leading-5
-                    text-muted-foreground
-                  "
-                >
-                  Manual payment is only available
-                  as a fallback if Paystack is
-                  temporarily unavailable or your
-                  payment has failed several times.
+              <div>
+                <p className="text-xs font-semibold">
+                  Manual payment
                 </p>
 
-                <p
-                  className="
-                    mt-2
-                    text-xs
-                    font-medium
-                    leading-5
-                    text-foreground
-                  "
-                >
-                  Please contact an admin before
-                  making any manual payment. Do not
-                  transfer money without first
-                  receiving confirmation from the
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                  Use this fallback only after contacting an
                   admin.
                 </p>
               </div>
@@ -586,28 +310,22 @@ export default function GatewayModal({
 
             <button
               type="button"
-              onClick={() =>
-                setManualPayment(true)
-              }
-              disabled={
-                loadingGateway !== null
-              }
+              onClick={() => setManualPayment(true)}
+              disabled={loadingGateway !== null}
               className="
-                mt-4
+                mt-3
                 w-full
                 rounded-lg
                 border
                 border-amber-500/40
                 bg-background
-                px-4
-                py-2.5
-                text-sm
+                px-3
+                py-2
+                text-xs
                 font-semibold
                 text-amber-600
-                transition-all
-                hover:border-amber-500
+                transition
                 hover:bg-amber-500/10
-                disabled:cursor-not-allowed
                 disabled:opacity-50
                 dark:text-amber-400
               "
@@ -616,39 +334,25 @@ export default function GatewayModal({
             </button>
           </div>
 
-          {/* =====================================================
-              CANCEL
-          ===================================================== */}
-
-          <div
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={loadingGateway !== null}
             className="
-              mt-5
-              flex
-              justify-end
+              w-full
+              rounded-lg
+              border
+              px-4
+              py-2.5
+              text-sm
+              font-medium
+              transition
+              hover:bg-muted
+              disabled:opacity-50
             "
           >
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={
-                loadingGateway !== null
-              }
-              className="
-                rounded-lg
-                border
-                px-5
-                py-2
-                text-sm
-                font-medium
-                transition
-                hover:bg-muted
-                disabled:cursor-not-allowed
-                disabled:opacity-50
-              "
-            >
-              Cancel
-            </button>
-          </div>
+            Cancel
+          </button>
         </div>
       </motion.div>
     </div>

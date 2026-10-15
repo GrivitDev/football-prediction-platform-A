@@ -2,7 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+
+import {
+  ArrowRight,
+  Mail,
+  Phone,
+  ShieldCheck,
+} from 'lucide-react';
 
 import {
   FaFacebookF,
@@ -10,478 +16,655 @@ import {
   FaXTwitter,
   FaTelegram,
 } from 'react-icons/fa6';
+
 import { useAuth } from '@/providers/auth-provider';
 
 
-const explore = [
+const publicLinks = [
   {
     name: 'Home',
     href: '/',
   },
   {
-    name: 'Live Scores',
-    href: '/live-scores',
+    name: 'Predictions',
+    href: '/predictions',
   },
   {
     name: 'Articles',
     href: '/articles',
-  },  
+  },
   {
-    name: 'Pricing',
-    href: '/pricing',
+    name: 'News',
+    href: '/news',
+  },
+  {
+    name: 'Highlights',
+    href: '/highlights',
   },
 ];
 
 
-const company = [
+const adminLinks = [
   {
-    name: 'About Us',
-    href: '/about',
+    name: 'Dashboard',
+    href: '/admin',
   },
   {
-    name: 'Contact',
-    href: '/about#contact',
+    name: 'System Monitor',
+    href: '/admin/system-monitor',
+  },
+  {
+    name: 'Create Prediction',
+    href: '/admin/create-prediction',
+  },
+  {
+    name: 'Predictions',
+    href: '/admin/predictions',
+  },
+  {
+    name: 'Create Article',
+    href: '/admin/create-article',
+  },
+  {
+    name: 'Articles',
+    href: '/admin/articles',
+  },
+  {
+    name: 'Users',
+    href: '/admin/users',
+  },
+  {
+    name: 'Subscriptions',
+    href: '/admin/subscriptions',
+  },
+  {
+    name: 'Ads',
+    href: '/admin/ads',
+  },
+  {
+    name: 'Promos',
+    href: '/admin/promos',
+  },
+  {
+    name: 'Referrals',
+    href: '/admin/referrals',
   },
 ];
 
 
-const legal = [
+const userLinks = [
   {
-    name: 'Privacy Policy',
-    href: '/privacy-policy',
+    name: 'Dashboard',
+    href: '/dashboard',
   },
   {
-    name: 'Terms & Conditions',
-    href: '/terms-and-conditions',
+    name: 'Profile',
+    href: '/dashboard/profile',
+  },
+  {
+    name: 'Purchases',
+    href: '/dashboard/purchases',
+  },
+  {
+    name: 'Referrals',
+    href: '/dashboard/referrals',
+  },
+  {
+    name: 'Subscriptions',
+    href: '/dashboard/subscriptions',
   },
 ];
 
 
 const socials = [
   {
+    name: 'X',
     icon: FaXTwitter,
     href: process.env.NEXT_PUBLIC_TWITTER || '#',
   },
   {
+    name: 'Facebook',
     icon: FaFacebookF,
     href: process.env.NEXT_PUBLIC_FACEBOOK || '#',
   },
   {
+    name: 'Instagram',
     icon: FaInstagram,
     href: process.env.NEXT_PUBLIC_INSTAGRAM || '#',
   },
   {
+    name: 'Telegram',
     icon: FaTelegram,
-    href: process.env.NEXT_PUBLIC_YOUTUBE || '#',
+    href: process.env.NEXT_PUBLIC_TELEGRAM || '#',
   },
+];
+
+
+const acknowledgements = [
+  'ESPNAPI',
+  'The Odds API',
+  'Youtube API Services',
+  'footballdata.org',
+  'groqAPI',
 ];
 
 
 export default function Footer() {
   const { user } = useAuth();
 
-  const exploreLinks = user
-    ? [
-        ...explore,
-        {
-          name: 'Dashboard',
-          href: '/dashboard',
-        },
-      ]
-    : explore;
+  const accountLinks =
+    user?.role === 'admin'
+      ? adminLinks
+      : user
+        ? userLinks
+        : [];
+
+
   return (
-
     <footer
-  className="
-    relative
-    overflow-hidden
-    bg-gradient-to-b
-    from-transparent
-    via-background/40
-    to-background
-  "
->
-{/* BACKGROUND */}
+      className="
+        relative
+        border-t
+        border-border/60
+        bg-background
+      "
+    >
 
-<div className="absolute inset-0 overflow-hidden">
-
-  {/* Left Glow */}
-
-  <div
-    className="
-      absolute
-      -left-40
-      top-24
-      h-[450px]
-      w-[450px]
-      rounded-full
-      bg-indigo-500/10
-      blur-[140px]
-    "
-  />
-
-  {/* Center Glow */}
-
-  <div
-    className="
-      absolute
-      left-1/2
-      top-0
-      h-[650px]
-      w-[950px]
-      -translate-x-1/2
-      rounded-full
-      bg-sky-500/10
-      blur-[160px]
-    "
-  />
-
-  {/* Right Glow */}
-
-  <div
-    className="
-      absolute
-      -right-32
-      bottom-0
-      h-[500px]
-      w-[500px]
-      rounded-full
-      bg-emerald-500/10
-      blur-[150px]
-    "
-  />
-
-  {/* Grid */}
-
-  <div
-    className="
-      absolute
-      inset-0
-      opacity-[0.025]
-    "
-    style={{
-      backgroundImage: `
-        linear-gradient(to right,currentColor 1px,transparent 1px),
-        linear-gradient(to bottom,currentColor 1px,transparent 1px)
-      `,
-      backgroundSize: '40px 40px',
-    }}
-  />
-
-  {/* Watermark */}
-
-  <div
-    className="
-      pointer-events-none
-      absolute
-      left-1/2
-      top-20
-      -translate-x-1/2
-      select-none
-      whitespace-nowrap
-      text-[150px]
-      font-black
-      tracking-[0.4em]
-      text-foreground/[0.025]
-      blur-[2px]
-      md:text-[260px]
-    "
-  >
-    HonestPredict
-  </div>
-
-</div>
       <div
         className="
-          relative
           mx-auto
+          w-full
           max-w-7xl
           px-4
-          py-3
+          py-8
+          sm:px-6
+          lg:px-8
         "
       >
-<div
-  className="
-    relative
-    overflow-hidden
-    rounded-[40px]
-    border
-    border-white/10
-    bg-background/55
-    shadow-2xl
-    shadow-black/30
-    backdrop-blur-3xl
-  "
->
-          <div
-            className="
-              grid
-              gap-10
-              p-10
-              lg:grid-cols-[3fr_1fr_1fr_2.8fr]
-            "
-          >
-            {/* BRAND */}
-            <div>
-              <Link
-                href="/"
-                className="flex items-center gap-0"
-              >
-                <Image
-                  src="/logo.png"
-                  alt="HonestPredict"
-                  width={98}
-                  height={68}
-                  className="rounded-lg h-auto "
-                />
-                <span
-                  className="
-                    bg-gradient-to-r
-                    from-foreground
-                    via-indigo-500
-                    to-emerald-500
-                    bg-clip-text
-                    text-3xl
-                    font-bold
-                    text-transparent
-                  "
-                >
-                  HonestPredict
-                </span>
-              </Link>
-              <p
-                className="
-                  mt-0
-                  max-w-sm
-                  leading-8
-                  text-muted-foreground
-                "
-              >
-                Premium football predictions,
-                live match coverage,
-                winning insights,
-                and everything you need to stay one step ahead.
-              </p>
-            </div>
-            {/* EXPLORE */}
-            <FooterColumn
-              title="Explore"
-              items={exploreLinks}
-            />
-            {/* COMPANY */}
-            <FooterColumn
-              title="Company"
-              items={company}
-            />
-            {/* VIP CARD */}
-            <div>
-              <div
-                className="
-                  rounded-3xl
-                  border
-                  border-border/60
-                  bg-muted/30
-                  p-6
-                  backdrop-blur-xl
-                "
-              >
-                <div
-                  className="
-                    mb-4
-                    inline-flex
-                    rounded-full
-                    border
-                    border-emerald-500/20
-                    bg-emerald-500/10
-                    px-3
-                    py-1
-                    text-xs
-                    font-semibold
-                    uppercase
-                    tracking-widest
-                    text-emerald-500
-                  "
-                >
-                  VIP
-                </div>
-                <h3 className="text-2xl font-bold">
-                  Become a VIP Member
-                </h3>
-                <p
-                  className="
-                    mt-4
-                    text-sm
-                    leading-7
-                    text-muted-foreground
-                  "
-                >
-                  Unlock premium predictions,
-                  exclusive tips,
-                  early match analysis,
-                  and members-only content.
-                </p>
-                <Link
-                  href="/pricing"
-                  className="
-                    mt-8
-                    inline-flex
-                    items-center
-                    rounded-full
-                    bg-gradient-to-r
-                    from-indigo-500
-                    via-sky-500
-                    to-emerald-500
-                    px-6
-                    py-3
-                    font-medium
-                    text-white
-                    transition
-                    hover:scale-[1.02]
-                  "
-                >
-                  Upgrade Now
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </div>
-            </div>
 
-  <div
-    className="
-      flex
-      flex-wrap
-      items-center
-      gap-6
-      text-s
-      text-muted-foreground
-      -mt-12
-      -mb-20
-    "
-  >
-    <Link
-      href="/terms-and-conditions"
-      className="
-        transition
-        hover:text-foreground
-      "
-    >
-      Terms of Use
-    </Link>
+        {/* ============================================================
+            MAIN FOOTER
+        ============================================================ */}
 
-    <Link
-      href="/privacy-policy"
-      className="
-        transition
-        hover:text-foreground
-      "
-    >
-      Privacy Policy
-    </Link>
-  </div>
+        <div
+          className="
+            grid
+            gap-8
+            md:grid-cols-[1.2fr_1fr_1fr]
+            lg:gap-12
+          "
+        >
 
-          </div>
-          {/* BOTTOM BAR */}
-          <div
-            className="
-              border-t
-              border-border/60
-              px-5
-              py-4
-            "
-          >
-            <div
+          {/* ==========================================================
+              BRAND + CONTACT
+          ========================================================== */}
+
+          <div className="min-w-0">
+
+            <Link
+              href="/"
+              aria-label="HonestPredict home"
               className="
-                flex
-                flex-col
-                justify-between
-                gap-4
-                md:flex-row
+                inline-flex
+                items-center
               "
             >
-<div
-  className="
-    flex
-    flex-col
-    gap-2
-    sm:flex-row
-    sm:items-center
-    sm:gap-4
-    -mb-4
-  "
->
-  <p className="font-medium">
-    © 2026 HonestPredict
-  </p>
+              <Image
+                src="/logo.png"
+                alt="HonestPredict"
+                width={260}
+                height={90}
+                className="
+                  h-auto
+                  w-[190px]
+                  object-contain
+                  object-left
+                  sm:w-[220px]
+                "
+              />
+            </Link>
 
-  <p className="text-sm text-muted-foreground">
-    All rights reserved.
-  </p>
-</div>
-<div
-  className="
-    -mt-2
-    text-sm
-    text-muted-foreground
-  "
->
-  <p>
-    Designed & Developed by GrivitDev
-  </p>
 
-  <p className="mt-2">
-    For more information visit{' '}
-    <a
-      href="https://wa.me/2348164580712?text=Hello%20GrivitDev,%20I%20would%20like%20to%20know%20more%20about%20your%20website%20development%20services."
-      target="_blank"
-      className="
-        font-semibold
-        text-foreground
-        transition
-        hover:text-primary
-      "
-    >
-      www.grivitdev.com
-    </a>
-  </p>
-</div>
-              {/* SOCIALS */}
-              <div className="flex gap-4">
-                {socials.map(
-                  ({ icon: Icon, href }, index) => (
+            <div
+              className="
+                mt-5
+                space-y-2
+              "
+            >
+
+              <a
+                href="tel:+2348164580712"
+                className="
+                  flex
+                  items-center
+                  gap-2
+                  text-sm
+                  text-muted-foreground
+                  transition-colors
+                  hover:text-foreground
+                "
+              >
+                <Phone className="h-4 w-4 shrink-0" />
+                +234 816 458 0712
+              </a>
+
+
+              <a
+                href="mailto:contact@honestpredict.com"
+                className="
+                  flex
+                  items-center
+                  gap-2
+                  text-sm
+                  text-muted-foreground
+                  transition-colors
+                  hover:text-foreground
+                "
+              >
+                <Mail className="h-4 w-4 shrink-0" />
+                contact@honestpredict.com
+              </a>
+
+            </div>
+
+
+            {/* SOCIALS */}
+
+            <div
+              className="
+                mt-5
+                flex
+                items-center
+                gap-2
+              "
+            >
+
+              {socials.map(
+                ({
+                  name,
+                  icon: Icon,
+                  href,
+                }) => {
+
+                  const disabled =
+                    href === '#';
+
+                  return (
                     <Link
-                      key={index}
+                      key={name}
                       href={href}
-                      target="_blank"
+                      target={
+                        disabled
+                          ? undefined
+                          : '_blank'
+                      }
+                      rel={
+                        disabled
+                          ? undefined
+                          : 'noopener noreferrer'
+                      }
+                      aria-label={name}
+                      onClick={
+                        disabled
+                          ? (event) =>
+                              event.preventDefault()
+                          : undefined
+                      }
                       className="
                         flex
-                        h-11
-                        w-11
+                        h-9
+                        w-9
                         items-center
                         justify-center
                         rounded-full
                         border
                         border-border
-                        bg-background/40
-                        backdrop-blur-xl
+                        bg-muted/30
+                        text-muted-foreground
                         transition-all
-                        duration-300
-                        hover:-translate-y-1
-                        hover:border-indigo-500/40
-                        hover:bg-muted
-                        mt-2
+                        duration-200
+                        hover:border-primary/40
+                        hover:bg-primary/10
+                        hover:text-primary
                       "
                     >
-                      <Icon className="h-5 w-5" />
+                      <Icon className="h-4 w-4" />
                     </Link>
-                  )
-                )}
-              </div>
+                  );
+                },
+              )}
+
             </div>
+
           </div>
+
+
+          {/* ==========================================================
+              NAVIGATION
+          ========================================================== */}
+
+          <div
+            className="
+              grid
+              grid-cols-2
+              gap-8
+            "
+          >
+
+            <FooterColumn
+              title="Explore"
+              items={publicLinks}
+            />
+
+
+            {accountLinks.length > 0 && (
+              <FooterColumn
+                title={
+                  user?.role === 'admin'
+                    ? 'Administration'
+                    : 'Account'
+                }
+                items={accountLinks}
+              />
+            )}
+
+
+            {!user && (
+              <div>
+                <h3
+                  className="
+                    mb-3
+                    text-sm
+                    font-semibold
+                    text-foreground
+                  "
+                >
+                  Account
+                </h3>
+
+                <div className="space-y-2">
+
+                  <Link
+                    href="/login"
+                    className="
+                      inline-flex
+                      items-center
+                      rounded-lg
+                      bg-primary
+                      px-3
+                      py-2
+                      text-sm
+                      font-semibold
+                      text-primary-foreground
+                      transition-opacity
+                      hover:opacity-90
+                    "
+                  >
+                    Login
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    className="
+                      block
+                      text-sm
+                      text-muted-foreground
+                      transition-colors
+                      hover:text-foreground
+                    "
+                  >
+                    Register
+                  </Link>
+
+                </div>
+              </div>
+            )}
+
+          </div>
+
+
+          {/* ==========================================================
+              CONTACT
+          ========================================================== */}
+
+          <div>
+
+            <h3
+              className="
+                mb-3
+                text-sm
+                font-semibold
+                text-foreground
+              "
+            >
+              Contact Us
+            </h3>
+
+            <p
+              className="
+                mb-4
+                text-sm
+                leading-6
+                text-muted-foreground
+              "
+            >
+              Have a question or need assistance?
+            </p>
+
+
+            <form
+              action="mailto:contact@honestpredict.com"
+              method="post"
+              encType="text/plain"
+              className="
+                flex
+                gap-2
+              "
+            >
+
+              <input
+                type="email"
+                name="email"
+                required
+                placeholder="Your email"
+                aria-label="Your email"
+                className="
+                  min-w-0
+                  flex-1
+                  rounded-xl
+                  border
+                  border-border
+                  bg-background
+                  px-3
+                  py-2.5
+                  text-sm
+                  outline-none
+                  transition
+                  placeholder:text-muted-foreground
+                  focus:border-primary
+                  focus:ring-2
+                  focus:ring-primary/15
+                "
+              />
+
+              <button
+                type="submit"
+                aria-label="Contact us"
+                className="
+                  flex
+                  h-10
+                  w-10
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-xl
+                  bg-primary
+                  text-primary-foreground
+                  transition-opacity
+                  hover:opacity-90
+                "
+              >
+                <ArrowRight className="h-4 w-4" />
+              </button>
+
+            </form>
+
+          </div>
+
         </div>
+
+
+        {/* ============================================================
+            LOWER INFORMATION
+        ============================================================ */}
+
+        <div
+          className="
+            mt-8
+            border-t
+            border-border/60
+            pt-6
+          "
+        >
+
+          <div
+            className="
+              flex
+              flex-col
+              gap-5
+            "
+          >
+
+            {/* TERMS + ACKNOWLEDGEMENTS */}
+
+            <div
+              className="
+                flex
+                flex-wrap
+                items-center
+                gap-x-5
+                gap-y-2
+                text-xs
+              "
+            >
+
+              <Link
+                href="/terms-and-conditions"
+                className="
+                  font-medium
+                  text-muted-foreground
+                  transition-colors
+                  hover:text-foreground
+                "
+              >
+                Terms of Use
+              </Link>
+
+
+              <span className="text-border">
+                •
+              </span>
+
+
+              <div
+                className="
+                  flex
+                  items-center
+                  gap-2
+                  text-muted-foreground
+                "
+              >
+
+                <ShieldCheck className="h-4 w-4" />
+
+                <span>
+                  Data &amp; Service Acknowledgements:
+                </span>
+
+                <span className="font-medium text-foreground">
+                  {acknowledgements.join(' · ')}
+                </span>
+
+              </div>
+
+            </div>
+
+
+              {/* 18+ DISCLAIMER */}
+
+            <div
+              className="
+                rounded-xl
+                border
+                border-amber-500/80
+                bg-amber-500/20
+                px-3.5
+                py-2.5
+                dark:bg-amber-500/30
+              "
+            >
+              <p
+                className="
+                  text-[11px]
+                  leading-4.5
+                  text-amber-950
+                  dark:text-amber-100
+                "
+              >
+                <strong className="font-semibold">
+                  18+ only.
+                </strong>{' '}
+                HonestPredict is for users aged 18 and older. Our Predictions are not 100% guaranteed. Gamble wisely and responsibly.
+              </p>
+            </div>
+
+
+            {/* COPYRIGHT */}
+            <div
+              className="
+                flex
+                flex-col
+                gap-2
+                text-xs
+                text-muted-foreground
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+              "
+            >
+              <p>
+                © 2026 HonestPredict. All rights reserved.
+              </p>
+
+              <p>
+                Designed &amp; Developed by GrivitTechStudio{' '}
+                <span className="mx-1">•</span>
+                <a
+                  href="https://wa.me/2348164580712"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    font-medium
+                    text-foreground
+                    transition-colors
+                    hover:text-primary
+                  "
+                >
+                  www.grivit.com
+                </a>
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
+
     </footer>
   );
 }
+
 
 function FooterColumn({
   title,
@@ -495,41 +678,62 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className="mb-6 text-lg font-semibold">
+
+      <h3
+        className="
+          mb-3
+          text-sm
+          font-semibold
+          text-foreground
+        "
+      >
         {title}
       </h3>
-      <ul className="space-y-4">
+
+
+      <ul className="space-y-2">
+
         {items.map((item) => (
+
           <li key={item.href}>
+
             <Link
               href={item.href}
               className="
                 group
                 inline-flex
                 items-center
+                text-sm
                 text-muted-foreground
-                transition
+                transition-colors
                 hover:text-foreground
               "
             >
+
               {item.name}
+
               <ArrowRight
                 className="
-                  ml-2
-                  h-4
-                  w-4
-                  -translate-x-2
+                  ml-1
+                  h-3.5
+                  w-3.5
+                  -translate-x-1
                   opacity-0
                   transition-all
-                  duration-300
+                  duration-200
                   group-hover:translate-x-0
                   group-hover:opacity-100
                 "
               />
+
             </Link>
+
           </li>
+
         ))}
+
       </ul>
+
     </div>
   );
 }

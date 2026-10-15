@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BadgeCheck,
   Check,
   Crown,
   Loader2,
@@ -15,13 +16,13 @@ import type { PaymentCurrency } from '@/services/payment-gateway.service';
 type CurrentPlan =
   | 'free'
   | 'regular'
-  | 'vip';
+  | 'vip'
+  | 'premium';
 
 type UpgradeTarget =
   | 'regular'
-  | 'vip';
-
-
+  | 'vip'
+  | 'premium';
 
 interface UpgradeCardProps {
   currentPlan: CurrentPlan;
@@ -40,6 +41,7 @@ interface PlanCard {
   id: UpgradeTarget;
   name: string;
   price: number;
+  durationLabel: string;
   description: string;
   features: string[];
   popular?: boolean;
@@ -53,36 +55,53 @@ export default function UpgradeCard({
   upgradeLoading = false,
   onUpgrade,
 }: UpgradeCardProps) {
-  // ==========================================
-  // AVAILABLE PLANS
-  // ==========================================
-
   const currencySymbol =
-  currency === 'USD'
-    ? '$'
-    : '₦';
+    currency === 'USD'
+      ? '$'
+      : '₦';
 
-const formatMoney = (
-  value: number,
-  fractionDigits = currency === 'USD' ? 2 : 0,
-) =>
-  `${currencySymbol}${value.toLocaleString('en-GB', {
-    minimumFractionDigits: fractionDigits,
-    maximumFractionDigits: fractionDigits,
-  })}`;
+  const formatMoney = (
+    value: number,
+    fractionDigits =
+      currency === 'USD' ? 2 : 0,
+  ) =>
+    `${currencySymbol}${value.toLocaleString(
+      'en-GB',
+      {
+        minimumFractionDigits:
+          fractionDigits,
+        maximumFractionDigits:
+          fractionDigits,
+      },
+    )}`;
+
+  const getDurationLabel = (
+    plan: UpgradeTarget,
+  ) => {
+    if (plan === 'premium') {
+      return config.premiumDurationDays ===
+        0
+        ? 'Lifetime'
+        : `${config.premiumDurationDays} days`;
+    }
+
+    return `${config.subscriptionDurationDays} days`;
+  };
 
   const regularPlan: PlanCard = {
     id: 'regular',
     name: config.planLabels.regular,
     price:
-  currency === 'USD'
-    ? config.regularPriceUSD
-    : config.regularPrice,
+      currency === 'USD'
+        ? config.regularPriceUSD
+        : config.regularPrice,
+    durationLabel:
+      getDurationLabel('regular'),
     description:
-      'For users who want more winning opportunities every day.',
+      'More prediction access with fewer advertisements.',
     popular: true,
     features: [
-      'Access to Regular Predictions',
+      'Regular Predictions',
       'Reduced advertisements',
       'Priority prediction releases',
     ],
@@ -91,23 +110,39 @@ const formatMoney = (
   const vipPlan: PlanCard = {
     id: 'vip',
     name: config.planLabels.vip,
-
-    // Regular users see the calculated upgrade price.
-    // Free users see the normal VIP subscription price.
-price:
-  currentPlan === 'regular' && upgradePrice
-    ? upgradePrice.amount
-    : currency === 'USD'
-      ? config.vipPriceUSD
-      : config.vipPrice,
-
+    price:
+      currentPlan === 'regular' &&
+      upgradePrice
+        ? upgradePrice.amount
+        : currency === 'USD'
+          ? config.vipPriceUSD
+          : config.vipPrice,
+    durationLabel:
+      getDurationLabel('vip'),
     description:
-      'The complete Honest Predict experience with every premium benefit.',
-
+      'Full VIP prediction access with zero advertisements.',
     features: [
       'Unlimited VIP Predictions',
       'Zero advertisements',
-      'Early access to premium tips',
+      'Early prediction access',
+    ],
+  };
+
+  const premiumPlan: PlanCard = {
+    id: 'premium',
+    name: config.planLabels.premium,
+    price:
+      currency === 'USD'
+        ? config.premiumPriceUSD
+        : config.premiumPrice,
+    durationLabel:
+      getDurationLabel('premium'),
+    description:
+      'Complete platform access at the highest membership level.',
+    features: [
+      'All premium prediction access',
+      'Zero advertisements',
+      'Highest membership level',
     ],
   };
 
@@ -117,335 +152,254 @@ price:
     plans = [
       regularPlan,
       vipPlan,
+      premiumPlan,
     ];
-  } else if (
-    currentPlan === 'regular'
-  ) {
-    plans = [vipPlan];
+  } else if (currentPlan === 'regular') {
+    plans = [
+      vipPlan,
+      premiumPlan,
+    ];
+  } else if (currentPlan === 'vip') {
+    plans = [premiumPlan];
   }
-
-  // ==========================================
-  // STYLES
-  // ==========================================
 
   const icons = {
     regular: Trophy,
     vip: Crown,
+    premium: Sparkles,
   };
 
   const iconStyles = {
     regular:
-      'bg-blue-500/15 text-blue-500 ring-2 ring-blue-500/20',
-
+      'bg-primary/10 text-primary',
     vip:
-      'bg-yellow-500/15 text-yellow-500',
+      'bg-amber-500/10 text-amber-500',
+    premium:
+      'bg-violet-500/10 text-violet-500',
   };
 
-  const cardStyles = {
+  const borderStyles = {
     regular:
-      'border-blue-500 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-background shadow-xl shadow-blue-500/20',
-
+      'border-primary/30',
     vip:
-      'border-yellow-500/30 bg-gradient-to-br from-yellow-500/10 via-background to-background shadow-xl shadow-yellow-500/15',
+      'border-amber-500/30',
+    premium:
+      'border-violet-500/30',
+  };
+
+  const buttonStyles = {
+    regular:
+      'bg-primary text-primary-foreground hover:bg-primary/90',
+    vip:
+      'bg-amber-500 text-black hover:bg-amber-400',
+    premium:
+      'bg-violet-600 text-white hover:bg-violet-500',
   };
 
   const buttonText = {
-    regular: 'Subscribe Now',
+    regular: 'Subscribe',
     vip: 'Upgrade to VIP',
+    premium: 'Upgrade to Premium',
   };
 
-  // ==========================================
-  // PAGE
-  // ==========================================
+  if (currentPlan === 'premium') {
+    return (
+      <div className="rounded-lg border border-violet-500/30 bg-card p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-violet-500/10 text-violet-500">
+            <Sparkles className="h-4 w-4" />
+          </div>
+
+          <div className="min-w-0">
+            <p className="text-sm font-semibold">
+              {config.planLabels.premium}
+            </p>
+
+            <p className="text-[11px] text-muted-foreground">
+              You already have the highest membership level.
+            </p>
+          </div>
+
+          <span className="ml-auto shrink-0 rounded-md bg-violet-500/10 px-2 py-1 text-[10px] font-medium text-violet-500">
+            Current
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4 mt-4">
-
-      {/* ========================================== */}
-      {/* VIP USER */}
-      {/* ========================================== */}
-
-      {currentPlan === 'vip' ? (
-        <div className="rounded-3xl border bg-card p-8 text-center shadow-sm">
-
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-yellow-500/15 text-yellow-500">
-            <Crown className="h-8 w-8" />
-          </div>
-
-          <h2 className="mt-6 text-2xl font-black">
-            You&apos;re Already a VIP Member
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-lg text-sm leading-7 text-muted-foreground">
-            You already have access to every premium feature available on
-            Honest Predict. There are currently no higher membership plans.
-          </p>
-
-          <div className="mt-8 rounded-xl bg-yellow-500 px-6 py-3 font-semibold text-black">
-            Current Membership
-          </div>
-
-        </div>
-      ) : (
-
-        <div
-          className={`grid gap-6 ${
+    <div>
+      <div
+        className={`
+          grid
+          gap-3
+          ${
             plans.length === 1
-              ? 'mx-auto max-w-xl'
-              : 'md:grid-cols-2'
-          }`}
-        >
+              ? 'mx-auto max-w-md'
+              : plans.length === 2
+                ? 'md:grid-cols-2'
+                : 'lg:grid-cols-3'
+          }
+        `}
+      >
+        {plans.map((plan) => {
+          const Icon = icons[plan.id];
 
-          {plans.map((plan) => {
-            const Icon = icons[plan.id];
+          const isCalculatedUpgrade =
+            currentPlan === 'regular' &&
+            plan.id === 'vip' &&
+            !!upgradePrice;
 
-            return (
-              <div
-                key={plan.id}
-                className={`relative rounded-3xl border p-8 transition hover:-translate-y-1 hover:shadow-2xl ${cardStyles[plan.id]}`}
-              >
+          return (
+            <div
+              key={plan.id}
+              className={`
+                relative
+                rounded-lg
+                border
+                bg-card
+                p-3.5
+                ${borderStyles[plan.id]}
+              `}
+            >
+              {plan.popular && (
+                <span className="absolute right-3 top-3 rounded-md bg-primary/10 px-2 py-1 text-[9px] font-semibold text-primary">
+                  POPULAR
+                </span>
+              )}
 
-                {/* ==========================================
-                    POPULAR BADGE
-                ========================================== */}
+              <div className="flex items-start gap-2.5">
+                <div
+                  className={`
+                    flex
+                    h-9
+                    w-9
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-md
+                    ${iconStyles[plan.id]}
+                  `}
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
 
-                {plan.popular && (
-                  <div className="absolute left-1/2 top-0 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full bg-blue-600 px-5 py-2 text-xs font-bold tracking-wider text-white">
-                    <Sparkles className="h-4 w-4" />
-                    MOST POPULAR
+                <div className="min-w-0 pr-12">
+                  <h2 className="text-sm font-semibold">
+                    {plan.name}
+                  </h2>
+
+                  <p className="mt-0.5 text-[11px] leading-4 text-muted-foreground">
+                    {plan.description}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-3 flex items-baseline gap-1.5">
+                <span className="text-xl font-bold">
+                  {formatMoney(plan.price)}
+                </span>
+
+                <span className="text-[10px] text-muted-foreground">
+                  {isCalculatedUpgrade
+                    ? 'upgrade'
+                    : `/ ${plan.durationLabel}`}
+                </span>
+              </div>
+
+              {isCalculatedUpgrade &&
+                upgradePrice && (
+                  <div className="mt-3 rounded-md border bg-muted/30 p-2.5">
+                    <div className="space-y-1.5 text-[10px]">
+                      <div className="flex justify-between gap-3">
+                        <span className="text-muted-foreground">
+                          Days remaining
+                        </span>
+
+                        <span className="font-medium">
+                          {upgradePrice.daysRemaining}
+                        </span>
+                      </div>
+
+                      <div className="flex justify-between gap-3">
+                        <span className="text-muted-foreground">
+                          Upgrade rate
+                        </span>
+
+                        <span className="font-medium">
+                          {formatMoney(
+                            upgradePrice.upgradeDailyPrice,
+                            2,
+                          )}
+                          /day
+                        </span>
+                      </div>
+
+                      <div className="border-t pt-1.5">
+                        <div className="flex justify-between gap-3">
+                          <span className="font-medium">
+                            Amount to pay
+                          </span>
+
+                          <span className="font-semibold text-primary">
+                            {formatMoney(
+                              upgradePrice.amount,
+                            )}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                {/* ==========================================
-                    PLAN HEADER
-                ========================================== */}
-
-                <div className="flex items-center gap-4">
-
-                  <div
-                    className={`flex h-16 w-16 items-center justify-center rounded-2xl ${iconStyles[plan.id]}`}
-                  >
-                    <Icon className="h-8 w-8" />
-                  </div>
-
-                  <div>
-                    <h2 className="text-2xl font-black">
-                      {plan.name}
-                    </h2>
-
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {plan.description}
-                    </p>
-                  </div>
-
-                </div>
-
-                {/* ==========================================
-                    PRICE
-                ========================================== */}
-
-                <div className="mt-8 space-y-4">
-
-                  <div className="flex items-end gap-2">
-
-                    <span className="text-3xl font-black">
-                        {formatMoney(plan.price)}
-                    </span>
-
-                    <span className="mb-1 text-sm text-muted-foreground">
-                      {currentPlan === 'regular'
-                        ? 'Upgrade Price'
-                        : '/30 Days'}
-                    </span>
-
-                  </div>
-
-                  {/* ==========================================
-                      REGULAR → VIP UPGRADE ANALYSIS
-                  ========================================== */}
-
-                  {currentPlan === 'regular' &&
-                    upgradePrice && (
-
-                    <div className="rounded-2xl border bg-muted/40 p-4">
-
-                      <h3 className="mb-4 font-semibold">
-                        Upgrade Summary
-                      </h3>
-
-                      <div className="space-y-3 text-sm">
-
-                        {/* CURRENT PLAN */}
-
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-muted-foreground">
-                            Current Plan
-                          </span>
-
-                          <span className="font-medium">
-                            {config.planLabels.regular}
-                          </span>
-                        </div>
-
-                        {/* REGULAR PRICE */}
-
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-muted-foreground">
-                            Regular Price
-                          </span>
-
-                          <span className="font-medium">
-                            {formatMoney(upgradePrice.regularPrice)}
-                          </span>
-                        </div>
-
-                        {/* VIP PRICE */}
-
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-muted-foreground">
-                            VIP Price
-                          </span>
-
-                          <span className="font-medium">
-                            {formatMoney(upgradePrice.vipPrice)}
-                          </span>
-                        </div>
-
-                        {/* DAYS REMAINING */}
-
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-muted-foreground">
-                            Days Remaining
-                          </span>
-
-                          <span className="font-medium">
-                            {upgradePrice.daysRemaining}{' '}
-                            {upgradePrice.daysRemaining === 1
-                              ? 'day'
-                              : 'days'}
-                          </span>
-                        </div>
-
-                        {/* UPGRADE DAILY RATE */}
-
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-muted-foreground">
-                            Upgrade Rate
-                          </span>
-
-                          <span className="font-medium">
-                            {formatMoney(upgradePrice.upgradeDailyPrice, 2)}/day
-                          </span>
-                        </div>
-
-                        {/* UPGRADE COST */}
-
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-muted-foreground">
-                            Upgrade Cost
-                          </span>
-
-                          <span className="font-medium">
-                            {formatMoney(upgradePrice.upgradeCost)}
-                          </span>
-                        </div>
-
-                        {/* FINAL AMOUNT */}
-
-                        <div className="border-t pt-3">
-
-                          <div className="flex items-center justify-between gap-4">
-
-                            <span className="font-semibold">
-                              Amount to Pay
-                            </span>
-
-                            <span className="text-xl font-black text-primary">
-                              {formatMoney(upgradePrice.amount)}
-                            </span>
-
-                          </div>
-
-                        </div>
-
-                      </div>
-
-                      {/* ==========================================
-                          UPGRADE INFORMATION
-                      ========================================== */}
-
-                      <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3">
-
-                        <p className="text-xs leading-5 text-muted-foreground">
-                          Your upgrade amount is calculated based on the
-                          remaining days of your current Regular membership.
-                          After a successful upgrade, your VIP membership
-                          will begin with a new full subscription period.
-                        </p>
-
-                      </div>
-
-                    </div>
-                  )}
-
-                </div>
-
-                {/* ==========================================
-                    FEATURES
-                ========================================== */}
-
-                <ul className="mt-4 space-y-2">
-
-                  {plan.features.map((feature) => (
+              <ul className="mt-3 space-y-1.5">
+                {plan.features.map(
+                  (feature) => (
                     <li
                       key={feature}
-                      className="flex items-start gap-3"
+                      className="flex items-start gap-1.5 text-[11px] leading-4"
                     >
-
-                      <div className="mt-0.5 rounded-full bg-green-500/10 p-1">
-                        <Check className="h-3.5 w-3.5 text-green-500" />
-                      </div>
-
-                      <span className="text-sm leading-6">
-                        {feature}
-                      </span>
-
+                      <Check className="mt-0.5 h-3 w-3 shrink-0 text-emerald-500" />
+                      <span>{feature}</span>
                     </li>
-                  ))}
+                  ),
+                )}
+              </ul>
 
-                </ul>
-
-                {/* ==========================================
-                    ACTION BUTTON
-                ========================================== */}
-
-                <button
-                  type="button"
-                  disabled={upgradeLoading}
-                  onClick={() => onUpgrade(plan.id)}
-                  className={`mt-10 flex w-full items-center justify-center rounded-xl py-3.5 font-semibold transition ${
-                    plan.id === 'vip'
-                      ? 'bg-yellow-500 text-black hover:bg-yellow-400'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90'
-                  } disabled:cursor-not-allowed disabled:opacity-60`}
-                >
-
-                  {upgradeLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    buttonText[plan.id]
-                  )}
-
-                </button>
-
-              </div>
-            );
-          })}
-
-        </div>
-
-      )}
-
+              <button
+                type="button"
+                disabled={upgradeLoading}
+                onClick={() =>
+                  onUpgrade(plan.id)
+                }
+                className={`
+                  mt-3
+                  flex
+                  h-8
+                  w-full
+                  items-center
+                  justify-center
+                  rounded-md
+                  px-3
+                  text-[11px]
+                  font-medium
+                  transition
+                  disabled:cursor-not-allowed
+                  disabled:opacity-60
+                  ${buttonStyles[plan.id]}
+                `}
+              >
+                {upgradeLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  buttonText[plan.id]
+                )}
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -6,7 +6,6 @@ import {
   Pencil,
   User2,
   Phone,
-  Sparkles,
 } from 'lucide-react';
 
 import { z } from 'zod';
@@ -41,19 +40,19 @@ import { useProfile } from '@/hooks/useProfile';
 import type { User } from '@/types/user';
 
 const schema = z.object({
-
-  fullName:
-    z.string().min(
+  fullName: z
+    .string()
+    .min(
       3,
       'Full name is required',
     ),
 
-  phoneNumber:
-    z.string().min(
+  phoneNumber: z
+    .string()
+    .min(
       11,
       'Phone number is invalid',
     ),
-
 });
 
 type FormValues =
@@ -66,7 +65,6 @@ interface Props {
 export default function EditProfileDialog({
   user,
 }: Props) {
-
   const {
     updateProfile,
     updating,
@@ -87,324 +85,180 @@ export default function EditProfileDialog({
     });
 
   useEffect(() => {
-
     form.reset({
-
       fullName:
         user.fullName,
 
       phoneNumber:
         user.phoneNumber || '',
-
     });
-
   }, [user, form]);
 
   async function onSubmit(
     values: FormValues,
   ) {
-
     await updateProfile(values);
-
   }
 
   return (
-
     <Dialog>
-
       <DialogTrigger asChild>
-
         <Button
+          variant="outline"
           className="
-            h-11
-            rounded-xl
-            bg-gradient-to-r
-            from-blue-600
-            via-indigo-600
-            to-violet-600
-            text-white
-            shadow-lg
-            transition-all
-            duration-300
-            hover:scale-[1.02]
-            hover:shadow-blue-500/30
-            active:scale-[0.98]
+            h-9
+            rounded-lg
+            px-3
+            text-xs
+            font-medium
           "
         >
-
-          <Pencil className="mr-2 h-4 w-4" />
-
+          <Pencil className="mr-1.5 h-3.5 w-3.5" />
           Edit Profile
-
         </Button>
-
       </DialogTrigger>
 
-      <DialogContent
-        className="
-          overflow-hidden
-          border-border/60
-          bg-background/95
-          p-0
-          backdrop-blur-2xl
-          sm:max-w-lg
-        "
-      >
-
-        <div
-          className="
-            absolute
-            -left-20
-            -top-20
-            h-52
-            w-52
-            rounded-full
-            bg-blue-500/20
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -bottom-20
-            -right-20
-            h-52
-            w-52
-            rounded-full
-            bg-violet-500/20
-            blur-3xl
-          "
-        />
-
-        <div className="relative">
-
-          <DialogHeader
-            className="
-              border-b
-              border-border/50
-              px-6
-              py-6
-            "
-          >
-
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader className="space-y-1">
+          <div className="flex items-center gap-2.5">
             <div
               className="
-                mb-4
                 flex
-                h-16
-                w-16
+                h-8
+                w-8
                 items-center
                 justify-center
-                rounded-2xl
-                bg-gradient-to-br
-                from-blue-500
-                via-indigo-500
-                to-violet-500
-                text-white
-                shadow-xl
+                rounded-lg
+                border
+                bg-muted
+                text-muted-foreground
               "
             >
-
-              <Sparkles className="h-7 w-7" />
-
+              <Pencil className="h-4 w-4" />
             </div>
 
-            <DialogTitle
-              className="
-                text-2xl
-                font-bold
-              "
-            >
+            <div>
+              <DialogTitle className="text-base">
+                Edit Profile
+              </DialogTitle>
 
-              Edit Profile
+              <DialogDescription className="text-xs">
+                Update your basic account information.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
 
-            </DialogTitle>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(
+              onSubmit,
+            )}
+            className="space-y-4 pt-2"
+          >
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">
+                    Full Name
+                  </FormLabel>
 
-            <DialogDescription
-              className="
-                max-w-md
-                text-sm
-                leading-relaxed
-              "
-            >
+                  <FormControl>
+                    <div className="relative">
+                      <User2
+                        className="
+                          absolute
+                          left-3
+                          top-1/2
+                          h-3.5
+                          w-3.5
+                          -translate-y-1/2
+                          text-muted-foreground
+                        "
+                      />
 
-              Keep your account information
-              up to date. Changes are saved
-              immediately after submission.
+                      <Input
+                        {...field}
+                        placeholder="John Doe"
+                        className="
+                          h-9
+                          rounded-lg
+                          pl-9
+                          text-sm
+                        "
+                      />
+                    </div>
+                  </FormControl>
 
-            </DialogDescription>
-
-          </DialogHeader>
-
-          <Form {...form}>
-
-            <form
-              onSubmit={form.handleSubmit(
-                onSubmit,
+                  <FormMessage className="text-xs" />
+                </FormItem>
               )}
-              className="
-                space-y-6
-                px-6
-                py-6
-              "
-            >
+            />
 
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({ field }) => (
+            <FormField
+              control={form.control}
+              name="phoneNumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs">
+                    Phone Number
+                  </FormLabel>
 
-                  <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone
+                        className="
+                          absolute
+                          left-3
+                          top-1/2
+                          h-3.5
+                          w-3.5
+                          -translate-y-1/2
+                          text-muted-foreground
+                        "
+                      />
 
-                    <FormLabel>
-                      Full Name
-                    </FormLabel>
+                      <Input
+                        {...field}
+                        placeholder="+234..."
+                        className="
+                          h-9
+                          rounded-lg
+                          pl-9
+                          text-sm
+                        "
+                      />
+                    </div>
+                  </FormControl>
 
-                    <FormControl>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
 
-                      <div className="relative">
-
-                        <User2
-                          className="
-                            absolute
-                            left-3
-                            top-1/2
-                            h-4
-                            w-4
-                            -translate-y-1/2
-                            text-muted-foreground
-                          "
-                        />
-
-                        <Input
-                          {...field}
-                          placeholder="John Doe"
-                          className="
-                            h-12
-                            rounded-xl
-                            border-border/60
-                            bg-muted/40
-                            pl-10
-                            transition-all
-                            backdrop-blur
-                            focus-visible:ring-2
-                            focus-visible:ring-blue-500
-                          "
-                        />
-
-                      </div>
-
-                    </FormControl>
-
-                    <FormMessage />
-
-                  </FormItem>
-
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phoneNumber"
-                render={({ field }) => (
-
-                  <FormItem>
-
-                    <FormLabel>
-                      Phone Number
-                    </FormLabel>
-
-                    <FormControl>
-
-                      <div className="relative">
-
-                        <Phone
-                          className="
-                            absolute
-                            left-3
-                            top-1/2
-                            h-4
-                            w-4
-                            -translate-y-1/2
-                            text-muted-foreground
-                          "
-                        />
-
-                        <Input
-                          {...field}
-                          placeholder="+234..."
-                          className="
-                            h-12
-                            rounded-xl
-                            border-border/60
-                            bg-muted/40
-                            pl-10
-                            transition-all
-                            backdrop-blur
-                            focus-visible:ring-2
-                            focus-visible:ring-blue-500
-                          "
-                        />
-
-                      </div>
-
-                    </FormControl>
-
-                    <FormMessage />
-
-                  </FormItem>
-
-                )}
-              />
-
-              <DialogFooter
+            <DialogFooter className="pt-1">
+              <Button
+                type="submit"
+                disabled={updating}
                 className="
-                  pt-2
+                  h-9
+                  rounded-lg
+                  px-4
+                  text-xs
                 "
               >
+                <Pencil className="mr-1.5 h-3.5 w-3.5" />
 
-                <Button
-                  type="submit"
-                  disabled={updating}
-                  className="
-                    h-12
-                    w-full
-                    rounded-xl
-                    bg-gradient-to-r
-                    from-blue-600
-                    via-indigo-600
-                    to-violet-600
-                    text-white
-                    shadow-lg
-                    transition-all
-                    duration-300
-                    hover:scale-[1.01]
-                    hover:shadow-blue-500/30
-                    sm:w-auto
-                  "
-                >
-
-                  <Pencil className="mr-2 h-4 w-4" />
-
-                  {updating
-                    ? 'Saving...'
-                    : 'Save Changes'}
-
-                </Button>
-
-              </DialogFooter>
-
-            </form>
-
-          </Form>
-
-        </div>
-
+                {updating
+                  ? 'Saving...'
+                  : 'Save Changes'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
-
     </Dialog>
-
   );
-
 }

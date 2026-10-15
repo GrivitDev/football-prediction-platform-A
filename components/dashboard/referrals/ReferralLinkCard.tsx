@@ -17,13 +17,7 @@ import {
   getMyReferralLink,
 } from '@/services/referrals.service';
 
-
-// ============================================================
-// COMPONENT
-// ============================================================
-
 export function ReferralLinkCard() {
-
   const {
     data,
     isLoading,
@@ -32,44 +26,23 @@ export function ReferralLinkCard() {
     queryFn: getMyReferralLink,
   });
 
-
-  // ==========================================================
-  // COPY
-  // ==========================================================
-
   async function copyLink() {
-
     if (!data?.referralLink) {
       return;
     }
 
     try {
-
       await navigator.clipboard.writeText(
         data.referralLink,
       );
 
-      toast.success(
-        'Referral link copied',
-      );
-
+      toast.success('Referral link copied');
     } catch {
-
-      toast.error(
-        'Unable to copy referral link',
-      );
-
+      toast.error('Unable to copy referral link');
     }
-
   }
 
-
-  // ==========================================================
-  // SHARE
-  // ==========================================================
-
   async function shareLink() {
-
     if (!data?.referralLink) {
       return;
     }
@@ -78,20 +51,12 @@ export function ReferralLinkCard() {
       typeof navigator !== 'undefined' &&
       navigator.share
     ) {
-
       try {
-
         await navigator.share({
-          title:
-            'Join Football Prediction Platform',
-
-          text:
-            'Join using my referral link and earn rewards.',
-
-          url:
-            data.referralLink,
+          title: 'Join Football Prediction Platform',
+          text: 'Join using my referral link and earn rewards.',
+          url: data.referralLink,
         });
-
       } catch {
         // User cancelled native share.
       }
@@ -100,376 +65,96 @@ export function ReferralLinkCard() {
     }
 
     await copyLink();
-
   }
-
-
-  // ==========================================================
-  // LOADING
-  // ==========================================================
 
   if (isLoading) {
-
     return (
+      <div className="rounded-lg border border-border bg-card p-3">
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 animate-pulse rounded-md bg-muted/50" />
 
-      <div
-        className="
-          animate-pulse
-          rounded-xl
-          border
-          border-primary/10
-          bg-primary/[0.02]
-          p-3
-        "
-      >
-
-        <div
-          className="
-            mb-2.5
-            flex
-            items-center
-            gap-2
-          "
-        >
-
-          <div
-            className="
-              h-7
-              w-7
-              rounded-lg
-              bg-muted/40
-            "
-          />
-
-          <div
-            className="
-              h-3
-              w-24
-              rounded
-              bg-muted/40
-            "
-          />
-
-        </div>
-
-
-        <div
-          className="
-            grid
-            gap-2
-            sm:grid-cols-[auto_1fr_auto]
-            sm:items-center
-          "
-        >
-
-          <div
-            className="
-              h-8
-              rounded-lg
-              bg-muted/30
-            "
-          />
-
-          <div
-            className="
-              h-8
-              min-w-0
-              rounded-lg
-              bg-muted/30
-            "
-          />
-
-          <div
-            className="
-              grid
-              grid-cols-2
-              gap-1.5
-            "
-          >
-
-            <div
-              className="
-                h-8
-                w-full
-                rounded-lg
-                bg-muted/30
-              "
-            />
-
-            <div
-              className="
-                h-8
-                w-full
-                rounded-lg
-                bg-muted/30
-              "
-            />
-
+          <div className="space-y-1">
+            <div className="h-3 w-24 animate-pulse rounded bg-muted/50" />
+            <div className="h-2.5 w-36 animate-pulse rounded bg-muted/40" />
           </div>
-
         </div>
 
+        <div className="mt-3 grid gap-2 sm:grid-cols-[auto_1fr_auto]">
+          <div className="h-8 animate-pulse rounded-md bg-muted/40" />
+          <div className="h-8 min-w-0 animate-pulse rounded-md bg-muted/40" />
+          <div className="grid grid-cols-2 gap-1.5">
+            <div className="h-8 animate-pulse rounded-md bg-muted/40" />
+            <div className="h-8 animate-pulse rounded-md bg-muted/40" />
+          </div>
+        </div>
       </div>
-
     );
-
   }
 
-
-  // ==========================================================
-  // CONTENT
-  // ==========================================================
-
   return (
-
-    <div
-      className="
-        relative
-        overflow-hidden
-        rounded-xl
-        border
-        border-primary/15
-        bg-primary/[0.03]
-        p-3
-      "
-    >
-
-      {/* Premium accent */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-x-0
-          top-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-primary/60
-          to-transparent
-        "
-      />
-
-
-      {/* Header */}
-
-      <div
-        className="
-          relative
-          mb-2.5
-          flex
-          items-center
-          gap-2
-        "
-      >
-
-        <div
-          className="
-            flex
-            h-7
-            w-7
-            shrink-0
-            items-center
-            justify-center
-            rounded-lg
-            border
-            border-primary/15
-            bg-primary/10
-            text-primary
-          "
-        >
-          <Link2 className="h-3.5 w-3.5" />
+    <div className="rounded-lg border border-border bg-card p-3">
+      <div className="flex items-center gap-2">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+          <Link2 className="h-4 w-4" />
         </div>
-
 
         <div className="min-w-0">
-
-          <span
-            className="
-              text-xs
-              font-semibold
-            "
-          >
+          <p className="text-xs font-semibold">
             Referral Link
-          </span>
-
-          <p
-            className="
-              text-[9px]
-              text-muted-foreground
-            "
-          >
-            Invite users and earn rewards
           </p>
 
+          <p className="text-[10px] text-muted-foreground">
+            Invite users and earn rewards
+          </p>
         </div>
-
       </div>
 
+      <div className="mt-3 grid gap-2 sm:grid-cols-[auto_1fr_auto] sm:items-center">
+        <div className="flex min-w-0 items-center gap-2 rounded-md border border-border bg-muted/20 px-2.5 py-1.5">
+          <Users className="h-3.5 w-3.5 shrink-0 text-primary" />
 
-      {/* Details */}
-
-      <div
-        className="
-          relative
-          grid
-          gap-2
-          sm:grid-cols-[auto_1fr_auto]
-          sm:items-center
-        "
-      >
-
-        {/* Code */}
-
-        <div
-          className="
-            flex
-            min-w-0
-            items-center
-            gap-2
-            rounded-lg
-            border
-            border-border/50
-            bg-muted/20
-            px-2.5
-            py-1.5
-          "
-        >
-
-          <Users
-            className="
-              h-3.5
-              w-3.5
-              shrink-0
-              text-primary
-            "
-          />
-
-          <span
-            className="
-              text-[10px]
-              text-muted-foreground
-            "
-          >
+          <span className="text-[10px] text-muted-foreground">
             Code
           </span>
 
-          <span
-            className="
-              truncate
-              text-xs
-              font-bold
-              tracking-wider
-            "
-          >
+          <span className="truncate text-xs font-semibold tracking-wide">
             {data?.referralCode || '—'}
           </span>
-
         </div>
 
-
-        {/* URL */}
-
-        <div
-          className="
-            flex
-            min-w-0
-            items-center
-            gap-2
-            rounded-lg
-            border
-            border-border/50
-            bg-muted/20
-            px-2.5
-            py-1.5
-          "
-        >
-
-          <span
-            className="
-              shrink-0
-              text-[10px]
-              text-muted-foreground
-            "
-          >
+        <div className="flex min-w-0 items-center gap-2 rounded-md border border-border bg-muted/20 px-2.5 py-1.5">
+          <span className="shrink-0 text-[10px] text-muted-foreground">
             Link
           </span>
 
-          <span
-            className="
-              min-w-0
-              flex-1
-              truncate
-              text-[11px]
-            "
-          >
+          <span className="min-w-0 flex-1 truncate text-[10px]">
             {data?.referralLink || '—'}
           </span>
-
         </div>
 
-
-        {/* Actions */}
-
-        <div
-          className="
-            grid
-            grid-cols-2
-            gap-1.5
-          "
-        >
-
+        <div className="grid grid-cols-2 gap-1.5">
           <Button
             type="button"
             onClick={copyLink}
             disabled={!data?.referralLink}
-            className="
-              h-8
-              rounded-lg
-              px-3
-              text-[11px]
-            "
+            className="h-8 rounded-md px-2.5 text-[10px]"
           >
-            <Copy
-              className="
-                mr-1.5
-                h-3.5
-                w-3.5
-              "
-            />
-
+            <Copy className="mr-1 h-3 w-3" />
             Copy
           </Button>
-
 
           <Button
             type="button"
             variant="outline"
             onClick={shareLink}
             disabled={!data?.referralLink}
-            className="
-              h-8
-              rounded-lg
-              px-3
-              text-[11px]
-            "
+            className="h-8 rounded-md px-2.5 text-[10px]"
           >
-            <Share2
-              className="
-                mr-1.5
-                h-3.5
-                w-3.5
-              "
-            />
-
+            <Share2 className="mr-1 h-3 w-3" />
             Share
           </Button>
-
         </div>
-
       </div>
-
     </div>
-
   );
 }

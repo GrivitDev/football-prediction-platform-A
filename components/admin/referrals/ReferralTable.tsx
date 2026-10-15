@@ -40,35 +40,35 @@ export default function ReferralTable({
             <tr>
 
 
-              <th className="px-4 py-3 text-left font-medium">
+              <th className="px-3 py-2 text-left font-medium">
 
                 Referrer
 
               </th>
 
 
-              <th className="px-4 py-3 text-left font-medium">
+              <th className="px-3 py-2 text-left font-medium">
 
                 Referred User
 
               </th>
 
 
-              <th className="px-4 py-3 text-left font-medium">
+              <th className="px-3 py-2 text-left font-medium">
 
                 Progress
 
               </th>
 
 
-              <th className="px-4 py-3 text-left font-medium">
+              <th className="px-3 py-2 text-left font-medium">
 
                 Reward
 
               </th>
 
 
-              <th className="px-4 py-3 text-left font-medium">
+              <th className="px-3 py-2 text-left font-medium">
 
                 Date
 
@@ -101,7 +101,7 @@ export default function ReferralTable({
 
 
 
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-2">
 
 
                       <div className="font-medium">
@@ -128,7 +128,7 @@ export default function ReferralTable({
 
 
 
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-2">
 
 
                       <div className="font-medium">
@@ -155,10 +155,10 @@ export default function ReferralTable({
 
 
 
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-2">
 
 
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
 
 
                         <ReferralStatusBadge
@@ -213,7 +213,7 @@ export default function ReferralTable({
 
 
 
-                    <td className="px-4 py-4">
+                    <td className="px-3 py-2">
 
 
                       <ReferralStatusBadge
@@ -232,7 +232,7 @@ export default function ReferralTable({
 
 
 
-                    <td className="px-4 py-4 text-muted-foreground">
+                    <td className="px-3 py-2 text-muted-foreground">
 
 
                       {

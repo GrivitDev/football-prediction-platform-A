@@ -154,7 +154,7 @@ export default function AdminReferralsPage(){
 
   return (
 
-    <div className="space-y-8">
+    <div className="space-y-4">
 
 
       <div>
@@ -184,7 +184,7 @@ export default function AdminReferralsPage(){
         loadingStats
         ?
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
 
           {
             Array.from({
@@ -223,7 +223,7 @@ export default function AdminReferralsPage(){
 
 
 
-      <div className="space-y-4">
+      <div className="space-y-3">
 
 
         <ReferralFilters

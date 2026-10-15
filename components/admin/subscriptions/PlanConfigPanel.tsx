@@ -3,15 +3,13 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import {
-  BadgeDollarSign,
-  CheckCircle2,
   AlertTriangle,
-  Save,
-  Settings2,
-  Loader2,
-  Globe2,
-  Tag,
+  CheckCircle2,
   Clock3,
+  Globe2,
+  Loader2,
+  Save,
+  Tag,
 } from 'lucide-react';
 
 import toast from 'react-hot-toast';
@@ -28,7 +26,9 @@ export default function PlanConfigPanel({
 }: {
   token: string;
 }) {
-  const [config, setConfig] = useState<PlanConfig | null>(null);
+  const [config, setConfig] =
+    useState<PlanConfig | null>(null);
+
   const [originalConfig, setOriginalConfig] =
     useState<PlanConfig | null>(null);
 
@@ -56,39 +56,39 @@ export default function PlanConfigPanel({
     key: keyof PlanConfig,
     value: number,
   ) => {
-    setConfig((prev) => {
-      if (!prev) return prev;
-
-      return {
-        ...prev,
-        [key]: value,
-      };
-    });
+    setConfig((prev) =>
+      prev
+        ? {
+            ...prev,
+            [key]: value,
+          }
+        : prev,
+    );
   };
 
   const updateLabel = (
     key: keyof PlanConfig['planLabels'],
     value: string,
   ) => {
-    setConfig((prev) => {
-      if (!prev) return prev;
-
-      return {
-        ...prev,
-        planLabels: {
-          ...prev.planLabels,
-          [key]: value,
-        },
-      };
-    });
+    setConfig((prev) =>
+      prev
+        ? {
+            ...prev,
+            planLabels: {
+              ...prev.planLabels,
+              [key]: value,
+            },
+          }
+        : prev,
+    );
   };
 
-  const hasChanges = useMemo(() => {
-    return (
+  const hasChanges = useMemo(
+    () =>
       JSON.stringify(config) !==
-      JSON.stringify(originalConfig)
-    );
-  }, [config, originalConfig]);
+      JSON.stringify(originalConfig),
+    [config, originalConfig],
+  );
 
   const incomplete = useMemo(() => {
     if (!config) return true;
@@ -96,383 +96,274 @@ export default function PlanConfigPanel({
     return (
       config.regularPrice <= 0 ||
       config.vipPrice <= 0 ||
+      config.premiumPrice <= 0 ||
       config.regularPriceUSD <= 0 ||
       config.vipPriceUSD <= 0 ||
+      config.premiumPriceUSD <= 0 ||
       config.subscriptionDurationDays < 1 ||
+      config.premiumDurationDays < 0 ||
       !config.planLabels.free.trim() ||
       !config.planLabels.regular.trim() ||
-      !config.planLabels.vip.trim()
+      !config.planLabels.vip.trim() ||
+      !config.planLabels.premium.trim()
     );
   }, [config]);
 
-  const save = async () => {
+  async function save() {
     if (!config) return;
 
     if (incomplete) {
       toast.error(
-        'Please complete all configuration fields',
+        'Please complete all configuration fields.',
       );
-
       return;
     }
 
     try {
       setSaving(true);
 
-      await updatePlanConfig(token, config);
+      const updated =
+        await updatePlanConfig(token, config);
 
-      setOriginalConfig({
-        ...config,
-        planLabels: {
-          ...config.planLabels,
-        },
-      });
+      setConfig(updated);
+      setOriginalConfig(updated);
 
       toast.success(
-        'Subscription configuration updated',
+        'Subscription configuration updated.',
       );
     } catch {
       toast.error(
-        'Failed to update configuration',
+        'Failed to update configuration.',
       );
     } finally {
       setSaving(false);
     }
-  };
+  }
 
   if (loading) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          bg-card/70
-          p-6
-          backdrop-blur-xl
-        "
-      >
-        <div
-          className="
-            h-6
-            w-56
-            animate-pulse
-            rounded-lg
-            bg-muted
-          "
-        />
-
-        <div
-          className="
-            mt-6
-            h-40
-            animate-pulse
-            rounded-2xl
-            bg-muted
-          "
-        />
+      <div className="rounded-2xl border bg-card/70 p-4">
+        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+        <div className="mt-4 h-40 animate-pulse rounded-xl bg-muted" />
       </div>
     );
   }
 
   if (!config) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          bg-card/70
-          p-6
-          text-sm
-          text-muted-foreground
-        "
-      >
+      <div className="rounded-2xl border bg-card/70 p-4 text-sm text-muted-foreground">
         Subscription configuration could not be loaded.
       </div>
     );
   }
 
   return (
-    <div
-      className="
-        relative
-        overflow-hidden
-        rounded-3xl
-        border
-        bg-card/70
-        p-6
-        backdrop-blur-xl
-      "
-    >
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -right-20
-          -top-20
-          h-48
-          w-48
-          rounded-full
-          bg-primary/10
-          blur-3xl
-        "
-      />
+    <div className="rounded-2xl border bg-card/70 p-4 sm:p-5">
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="text-sm font-semibold">
+          Pricing
+        </div>
 
-      {/* Header */}
-
-      <div
-        className="
-          relative
-          flex
-          flex-col
-          gap-4
-          md:flex-row
-          md:items-center
-          md:justify-between
-        "
-      >
         <div
-          className="
+          className={`
             flex
             items-center
-            gap-4
-          "
+            gap-1.5
+            rounded-full
+            border
+            px-2.5
+            py-1
+            text-[11px]
+            ${
+              hasChanges
+                ? 'border-orange-500/20 bg-orange-500/10 text-orange-600'
+                : 'border-green-500/20 bg-green-500/10 text-green-600'
+            }
+          `}
         >
-          <div
-            className="
-              rounded-2xl
-              bg-primary/10
-              p-4
-            "
-          >
-            <Settings2
-              className="
-                h-6
-                w-6
-                text-primary
-              "
+          {hasChanges ? (
+            <>
+              <AlertTriangle className="h-3 w-3" />
+              Unsaved
+            </>
+          ) : (
+            <>
+              <CheckCircle2 className="h-3 w-3" />
+              Synced
+            </>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-7">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <span>₦</span>
+            Nigeria
+          </div>
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <PriceInput
+              label="Regular"
+              value={config.regularPrice}
+              onChange={(value) =>
+                updateField(
+                  'regularPrice',
+                  value,
+                )
+              }
+            />
+
+            <PriceInput
+              label="VIP"
+              value={config.vipPrice}
+              onChange={(value) =>
+                updateField('vipPrice', value)
+              }
+            />
+
+            <PriceInput
+              label="Premium"
+              value={config.premiumPrice}
+              onChange={(value) =>
+                updateField(
+                  'premiumPrice',
+                  value,
+                )
+              }
             />
           </div>
+        </div>
 
-          <div>
-            <h3
-              className="
-                text-xl
-                font-semibold
-              "
-            >
-              Subscription Pricing Engine
-            </h3>
+        <div>
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <Globe2 className="h-3.5 w-3.5" />
+            International
+          </div>
 
-            <p
-              className="
-                text-sm
-                text-muted-foreground
-              "
-            >
-              Control Nigerian and international
-              subscription pricing.
-            </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <PriceInput
+              label="Regular USD"
+              value={config.regularPriceUSD}
+              onChange={(value) =>
+                updateField(
+                  'regularPriceUSD',
+                  value,
+                )
+              }
+            />
+
+            <PriceInput
+              label="VIP USD"
+              value={config.vipPriceUSD}
+              onChange={(value) =>
+                updateField(
+                  'vipPriceUSD',
+                  value,
+                )
+              }
+            />
+
+            <PriceInput
+              label="Premium USD"
+              value={config.premiumPriceUSD}
+              onChange={(value) =>
+                updateField(
+                  'premiumPriceUSD',
+                  value,
+                )
+              }
+            />
           </div>
         </div>
 
-        {hasChanges ? (
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-orange-500/20
-              bg-orange-500/10
-              px-4
-              py-2
-              text-xs
-              text-orange-600
-            "
-          >
-            <AlertTriangle className="h-4 w-4" />
-            Unsaved Changes
+        <div>
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <Clock3 className="h-3.5 w-3.5" />
+            Duration
           </div>
-        ) : (
-          <div
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-green-500/20
-              bg-green-500/10
-              px-4
-              py-2
-              text-xs
-              text-green-600
-            "
-          >
-            <CheckCircle2 className="h-4 w-4" />
-            Synced
+
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+            <PriceInput
+              label="Regular / VIP Days"
+              value={config.subscriptionDurationDays}
+              onChange={(value) =>
+                updateField(
+                  'subscriptionDurationDays',
+                  value,
+                )
+              }
+            />
+
+            <PriceInput
+              label="Premium Days (0 = Lifetime)"
+              value={config.premiumDurationDays}
+              onChange={(value) =>
+                updateField(
+                  'premiumDurationDays',
+                  value,
+                )
+              }
+            />
           </div>
-        )}
-      </div>
+        </div>
 
-      {/* Nigeria Pricing */}
+        <div>
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <Tag className="h-3.5 w-3.5" />
+            Plan Labels
+          </div>
 
-      <div className="mt-8">
-        <SectionHeading
-          icon={<span className="text-lg">₦</span>}
-          title="Nigeria Pricing"
-          description="Prices used for Nigerian subscribers."
-        />
+          <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <TextInput
+              label="Free"
+              value={config.planLabels.free}
+              onChange={(value) =>
+                updateLabel('free', value)
+              }
+            />
 
-        <div
-          className="
-            mt-4
-            grid
-            gap-5
-            md:grid-cols-2
-          "
-        >
-          <PriceInput
-            label="Regular Subscription"
-            value={config.regularPrice}
-            onChange={(value) =>
-              updateField('regularPrice', value)
-            }
-          />
+            <TextInput
+              label="Regular"
+              value={config.planLabels.regular}
+              onChange={(value) =>
+                updateLabel('regular', value)
+              }
+            />
 
-          <PriceInput
-            label="VIP Subscription"
-            value={config.vipPrice}
-            onChange={(value) =>
-              updateField('vipPrice', value)
-            }
-          />
+            <TextInput
+              label="VIP"
+              value={config.planLabels.vip}
+              onChange={(value) =>
+                updateLabel('vip', value)
+              }
+            />
+
+            <TextInput
+              label="Premium"
+              value={config.planLabels.premium}
+              onChange={(value) =>
+                updateLabel('premium', value)
+              }
+            />
+          </div>
         </div>
       </div>
-
-      {/* International Pricing */}
-
-      <div className="mt-10">
-        <SectionHeading
-          icon={<Globe2 className="h-5 w-5" />}
-          title="International Pricing"
-          description="USD prices used for international subscribers."
-        />
-
-        <div
-          className="
-            mt-4
-            grid
-            gap-5
-            md:grid-cols-2
-          "
-        >
-          <PriceInput
-            label="Regular Subscription (USD)"
-            value={config.regularPriceUSD}
-            onChange={(value) =>
-              updateField(
-                'regularPriceUSD',
-                value,
-              )
-            }
-          />
-
-          <PriceInput
-            label="VIP Subscription (USD)"
-            value={config.vipPriceUSD}
-            onChange={(value) =>
-              updateField(
-                'vipPriceUSD',
-                value,
-              )
-            }
-          />
-        </div>
-      </div>
-
-      {/* Common Configuration */}
-
-      <div className="mt-10">
-        <SectionHeading
-          icon={<Clock3 className="h-5 w-5" />}
-          title="Subscription Settings"
-          description="Settings shared across all subscription currencies."
-        />
-
-        <div className="mt-4 max-w-md">
-          <PriceInput
-            label="Subscription Duration (Days)"
-            value={config.subscriptionDurationDays}
-            onChange={(value) =>
-              updateField(
-                'subscriptionDurationDays',
-                value,
-              )
-            }
-          />
-        </div>
-      </div>
-
-      {/* Plan Labels */}
-
-      <div className="mt-10">
-        <SectionHeading
-          icon={<Tag className="h-5 w-5" />}
-          title="Plan Labels"
-          description="Names displayed to subscribers throughout the platform."
-        />
-
-        <div
-          className="
-            mt-4
-            grid
-            gap-5
-            md:grid-cols-3
-          "
-        >
-          <TextInput
-            label="Free Plan"
-            value={config.planLabels.free}
-            onChange={(value) =>
-              updateLabel('free', value)
-            }
-          />
-
-          <TextInput
-            label="Regular Plan"
-            value={config.planLabels.regular}
-            onChange={(value) =>
-              updateLabel('regular', value)
-            }
-          />
-
-          <TextInput
-            label="VIP Plan"
-            value={config.planLabels.vip}
-            onChange={(value) =>
-              updateLabel('vip', value)
-            }
-          />
-        </div>
-      </div>
-
-      {/* Save */}
 
       <button
+        type="button"
         onClick={save}
         disabled={saving || !hasChanges}
         className="
-          mt-8
+          mt-6
           inline-flex
           items-center
           gap-2
-          rounded-xl
+          rounded-lg
           bg-primary
-          px-6
-          py-3
-          text-sm
+          px-4
+          py-2.5
+          text-xs
           font-semibold
           text-primary-foreground
           transition
@@ -482,60 +373,13 @@ export default function PlanConfigPanel({
         "
       >
         {saving ? (
-          <Loader2
-            className="
-              h-4
-              w-4
-              animate-spin
-            "
-          />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <Save className="h-4 w-4" />
+          <Save className="h-3.5 w-3.5" />
         )}
 
-        {saving
-          ? 'Saving...'
-          : 'Save Configuration'}
+        {saving ? 'Saving...' : 'Save Changes'}
       </button>
-    </div>
-  );
-}
-
-function SectionHeading({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <div
-        className="
-          flex
-          h-9
-          w-9
-          items-center
-          justify-center
-          rounded-xl
-          bg-primary/10
-          text-primary
-        "
-      >
-        {icon}
-      </div>
-
-      <div>
-        <h4 className="font-semibold">
-          {title}
-        </h4>
-
-        <p className="text-sm text-muted-foreground">
-          {description}
-        </p>
-      </div>
     </div>
   );
 }
@@ -550,34 +394,10 @@ function PriceInput({
   onChange: (value: number) => void;
 }) {
   return (
-    <div
-      className="
-        rounded-2xl
-        border
-        bg-background/50
-        p-5
-      "
-    >
-      <label
-        className="
-          mb-3
-          flex
-          items-center
-          gap-2
-          text-sm
-          font-medium
-        "
-      >
-        <BadgeDollarSign
-          className="
-            h-4
-            w-4
-            text-primary
-          "
-        />
-
+    <label className="block">
+      <span className="mb-1.5 block text-[11px] font-medium text-muted-foreground">
         {label}
-      </label>
+      </span>
 
       <input
         type="number"
@@ -588,20 +408,19 @@ function PriceInput({
         }
         className="
           w-full
-          rounded-xl
+          rounded-lg
           border
-          bg-card
-          px-4
-          py-3
+          bg-background
+          px-3
+          py-2.5
           text-sm
           outline-none
-          transition
           focus:border-primary
-          focus:ring-4
+          focus:ring-2
           focus:ring-primary/10
         "
       />
-    </div>
+    </label>
   );
 }
 
@@ -615,24 +434,10 @@ function TextInput({
   onChange: (value: string) => void;
 }) {
   return (
-    <div
-      className="
-        rounded-2xl
-        border
-        bg-background/50
-        p-5
-      "
-    >
-      <label
-        className="
-          mb-3
-          block
-          text-sm
-          font-medium
-        "
-      >
+    <label className="block">
+      <span className="mb-1.5 block text-[11px] font-medium text-muted-foreground">
         {label}
-      </label>
+      </span>
 
       <input
         type="text"
@@ -642,19 +447,18 @@ function TextInput({
         }
         className="
           w-full
-          rounded-xl
+          rounded-lg
           border
-          bg-card
-          px-4
-          py-3
+          bg-background
+          px-3
+          py-2.5
           text-sm
           outline-none
-          transition
           focus:border-primary
-          focus:ring-4
+          focus:ring-2
           focus:ring-primary/10
         "
       />
-    </div>
+    </label>
   );
 }

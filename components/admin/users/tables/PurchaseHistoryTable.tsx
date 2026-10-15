@@ -47,11 +47,11 @@ export default function PurchaseHistoryTable({
       <div className="
         flex
         items-center
-        gap-3
+        gap-2
         border-b
         border-border
-        px-6
-        py-5
+        px-4
+        py-3
       ">
 
 
@@ -110,11 +110,11 @@ export default function PurchaseHistoryTable({
 
           <div className="
             flex
-            min-h-[220px]
+            min-h-[172px]
             flex-col
             items-center
             justify-center
-            gap-3
+            gap-2
             text-center
           ">
 
@@ -176,8 +176,8 @@ export default function PurchaseHistoryTable({
 
 
                   <th className="
-                    px-6
-                    py-4
+                    px-4
+                    py-2
                   ">
                     Date
                   </th>
@@ -234,15 +234,15 @@ export default function PurchaseHistoryTable({
                       {/* DATE */}
 
                       <td className="
-                        px-6
-                        py-4
+                        px-4
+                        py-2
                       ">
 
 
                         <div className="
                           flex
                           items-center
-                          gap-2
+                          gap-1.5
                           text-muted-foreground
                         ">
 
@@ -277,7 +277,7 @@ export default function PurchaseHistoryTable({
                         <div className="
                           flex
                           items-center
-                          gap-3
+                          gap-2
                         ">
 
 
@@ -361,10 +361,10 @@ export default function PurchaseHistoryTable({
                         <div className="
                           inline-flex
                           items-center
-                          gap-2
+                          gap-1.5
                           rounded-full
                           bg-green-500/10
-                          px-3
+                          px-2
                           py-1
                           text-sm
                           font-semibold
@@ -416,3 +416,4 @@ export default function PurchaseHistoryTable({
   );
 
 }
+

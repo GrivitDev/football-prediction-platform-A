@@ -2,226 +2,268 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+
 import {
-  motion,
-  useScroll,
-  useMotionValueEvent,
-} from 'framer-motion';
-import {
-  useState,
-} from 'react';
+  FaFacebookF,
+  FaInstagram,
+  FaXTwitter,
+  FaTelegram,
+} from 'react-icons/fa6';
 
 import NavLinks from './NavLinks';
 import ThemeSwitcher from './ThemeSwitcher';
 import UserMenu from './UserMenu';
 import MobileMenu from './MobileMenu';
-import {
-  useNavbar,
-} from './NavbarContext';
+import MobilePublicTabs from './MobilePublicTabs';
 
+import { useAuth } from '@/providers/auth-provider';
 
+const socials = [
+  {
+    name: 'X',
+    icon: FaXTwitter,
+    href: process.env.NEXT_PUBLIC_TWITTER || '#',
+  },
+  {
+    name: 'Facebook',
+    icon: FaFacebookF,
+    href: process.env.NEXT_PUBLIC_FACEBOOK || '#',
+  },
+  {
+    name: 'Instagram',
+    icon: FaInstagram,
+    href: process.env.NEXT_PUBLIC_INSTAGRAM || '#',
+  },
+  {
+    name: 'Telegram',
+    icon: FaTelegram,
+    href: process.env.NEXT_PUBLIC_TELEGRAM || '#',
+  },
+];
 
 export default function Navbar() {
-  const { scrollY } = useScroll();
+  const { user } = useAuth();
 
-const {
-  visible,
-  setVisible,
-} = useNavbar();
+  const isAdmin = user?.role === 'admin';
 
-  const [lastScroll, setLastScroll] =
-    useState(0);
-
-  useMotionValueEvent(
-    scrollY,
-    'change',
-    (latest) => {
-      if (latest < 30) {
-        setVisible(true);
-        setLastScroll(latest);
-        return;
-      }
-
-      if (latest > lastScroll) {
-        setVisible(false);
-      } else {
-        setVisible(true);
-      }
-
-      setLastScroll(latest);
-    },
-  );
-
-return (
+  return (
     <>
-      <motion.header
-        initial={{ y: 0 }}
-        animate={{
-          y: visible ? 0 : -120,
-        }}
-        transition={{
-          duration: 0.28,
-          ease: 'easeOut',
-        }}
+      <header
         className="
           fixed
           inset-x-0
           top-0
-          z-50
+          z-[9999]
           px-3
           pt-3
           sm:px-5
         "
       >
-        <div
-          className="
-            mx-auto
-            max-w-7xl
-          "
-        >
+        <div className="mx-auto max-w-7xl">
           <div
-className="
-  flex
-  h-16
-  items-center
-  justify-between
-  rounded-4xl
-
-  border
-  border-emerald-500/80
-
-  bg-background/80
-
-  px-4
-
-  shadow-lg
-  shadow-emerald-500/10
-
-  backdrop-blur-2xl
-  supports-[backdrop-filter]:bg-background/65
-
-  sm:px-6
-"
+            className="
+              overflow-hidden
+              rounded-3xl
+              border
+              border-emerald-500/35
+              bg-background/90
+              shadow-lg
+              shadow-emerald-950/10
+              backdrop-blur-2xl
+              supports-[backdrop-filter]:bg-background/75
+            "
           >
-            {/* Logo */}
+            {/* ======================================================
+                MAIN NAVBAR
+            ====================================================== */}
 
-            <Link
-              href="/"
+            <div
               className="
                 flex
+                h-16
                 items-center
+                justify-between
                 gap-3
+                px-3
+                sm:px-5
               "
             >
-              <div
+              {/* ====================================================
+                  LOGO
+              ==================================================== */}
+
+              <Link
+                href="/"
+                aria-label="HonestPredict home"
                 className="
                   flex
-                  h-10
-                  w-10
+                  h-14
+                  w-32
+                  shrink-0
                   items-center
-                  justify-center
+                  justify-start
                   overflow-hidden
-                  rounded-xl
-                  border
-                  border-border
-                  bg-muted/40
+                  sm:w-36
                 "
               >
                 <Image
                   src="/logo.png"
                   alt="HonestPredict"
-                  width={40}
-                  height={40}
+                  width={180}
+                  height={180}
                   priority
+                  className="
+                    h-auto
+                    w-full
+                    object-contain
+                  "
                 />
-              </div>
+              </Link>
 
-              <div className="">
-                <p
-                  className="
-                    text-lg
-                    font-bold
-                    tracking-tight
-                    text-foreground
-                  "
-                >
-                  Honest Predict
-                </p>
+              {/* ====================================================
+                  DESKTOP PRIMARY NAVIGATION
+              ==================================================== */}
 
-                <p
-                  className="
-                    text-xs
-                    text-muted-foreground
-                  "
-                >
-                  Football Predictions
-                </p>
-              </div>
-            </Link>
-
-<div
-className="
-  hidden
-  lg:flex
-
-  items-center
-
-  rounded-4xl
-
-  border
-  border-blue-400/70
-
-  bg-gradient-to-r
-  from-blue-500/10
-  via-cyan-500/10
-  to-blue-500/10
-
-  backdrop-blur-xl
-
-  p-1
-
-  shadow-lg
-  shadow-blue-500/15
-"
->
-  <NavLinks />
-</div>
-
-            <div
-              className="
-                flex
-                items-center
-                gap-2
-              "
-            >
               <div
                 className="
                   hidden
-                  lg:flex
+                  min-w-0
+                  flex-1
                   items-center
-                  gap-2
-                  rounded-full
-                  border
-                  border-border
-                  bg-muted/40
-                  px-2
-                  py-1
+                  justify-center
+                  lg:flex
+                "
+              >
+                <NavLinks />
+              </div>
+
+              {/* ====================================================
+                  DESKTOP CONTROLS
+              ==================================================== */}
+
+              <div
+                className="
+                  hidden
+                  shrink-0
+                  items-center
+                  gap-1
+                  lg:flex
                 "
               >
                 <ThemeSwitcher />
+
                 <UserMenu />
+
+                <div
+                  className="
+                    ml-6
+                    flex
+                    items-center
+                    gap-1.5
+                    border-l
+                    border-border/60
+                    pl-6
+                  "
+                >
+                  {socials.map(
+                    ({
+                      name,
+                      icon: Icon,
+                      href,
+                    }) => {
+                      const disabled =
+                        href === '#';
+
+                      return (
+                        <Link
+                          key={name}
+                          href={href}
+                          target={
+                            disabled
+                              ? undefined
+                              : '_blank'
+                          }
+                          rel={
+                            disabled
+                              ? undefined
+                              : 'noopener noreferrer'
+                          }
+                          aria-label={name}
+                          aria-disabled={disabled}
+                          onClick={
+                            disabled
+                              ? (event) =>
+                                  event.preventDefault()
+                              : undefined
+                          }
+                          className="
+                            flex
+                            h-9
+                            w-9
+                            items-center
+                            justify-center
+                            rounded-full
+                            border
+                            border-border/60
+                            bg-background/40
+                            text-muted-foreground
+                            transition-all
+                            duration-200
+                            hover:border-primary/40
+                            hover:bg-primary/10
+                            hover:text-primary
+                          "
+                        >
+                          <Icon className="h-4 w-4" />
+                        </Link>
+                      );
+                    },
+                  )}
+                </div>
               </div>
 
-              <div className="lg:hidden">
+              {/* ====================================================
+                  MOBILE CONTROLS
+              ==================================================== */}
+
+              <div
+                className="
+                  flex
+                  shrink-0
+                  items-center
+                  gap-1
+                  lg:hidden
+                "
+              >
+                <ThemeSwitcher />
+
+                <UserMenu />
+
                 <MobileMenu />
               </div>
             </div>
+
+            {/* ======================================================
+                MOBILE PUBLIC TABS
+            ====================================================== */}
+
+            {!isAdmin && <MobilePublicTabs />}
           </div>
         </div>
-      </motion.header>
+      </header>
 
-      {/* Spacer */}
-      <div className="h-20" />
+      {/* ============================================================
+          NAVBAR SPACER
+      ============================================================ */}
+
+
+<div
+  aria-hidden="true"
+  className={`
+    shrink-0
+    ${isAdmin ? 'h-20' : 'h-28 lg:h-20'}
+  `}
+/>
     </>
   );
 }

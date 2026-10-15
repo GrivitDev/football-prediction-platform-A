@@ -315,7 +315,7 @@ const form = useForm<FormValues, any, FormOutput>({
     <Card>
 
 
-      <CardHeader>
+      <CardHeader className="px-4 py-3">
 
         <CardTitle>
 
@@ -332,14 +332,14 @@ const form = useForm<FormValues, any, FormOutput>({
 
 
 
-      <CardContent>
+      <CardContent className="px-4 pb-4 pt-0">
 
 
         <form
           onSubmit={
             form.handleSubmit(submit)
           }
-          className="space-y-6"
+          className="space-y-3"
         >
 
 
@@ -376,7 +376,7 @@ const form = useForm<FormValues, any, FormOutput>({
 
 
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-3">
 
 
             <div>
@@ -454,7 +454,7 @@ const form = useForm<FormValues, any, FormOutput>({
 
 
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-3">
 
 
             <div>
@@ -506,7 +506,7 @@ const form = useForm<FormValues, any, FormOutput>({
 
 
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-3">
 
 
             <div>
@@ -611,7 +611,7 @@ const form = useForm<FormValues, any, FormOutput>({
             &&
             (
 
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-3">
 
 
                 <Select

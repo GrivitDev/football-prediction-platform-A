@@ -11,13 +11,7 @@ import {
 
 import { getMyRewards } from '@/services/promos.service';
 
-
-// ============================================================
-// COMPONENT
-// ============================================================
-
 export function RewardHistory() {
-
   const {
     data: rewards = [],
     isLoading,
@@ -26,270 +20,75 @@ export function RewardHistory() {
     queryFn: getMyRewards,
   });
 
-
-  // ==========================================================
-  // LOADING
-  // ==========================================================
-
   if (isLoading) {
     return (
-      <div
-        className="
-          flex
-          min-h-20
-          items-center
-          justify-center
-          rounded-xl
-          border
-          border-border/50
-          bg-card
-          text-[10px]
-          text-muted-foreground
-        "
-      >
+      <div className="flex min-h-16 items-center justify-center rounded-lg border border-border bg-card text-[10px] text-muted-foreground">
         Loading rewards...
       </div>
     );
   }
 
-
-  // ==========================================================
-  // EMPTY
-  // ==========================================================
-
   if (rewards.length === 0) {
     return (
-      <div
-        className="
-          flex
-          flex-col
-          items-center
-          justify-center
-          rounded-xl
-          border
-          border-dashed
-          border-border/60
-          bg-muted/[0.03]
-          px-4
-          py-7
-          text-center
-        "
-      >
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-border bg-muted/10 px-4 py-6 text-center">
+        <Gift className="h-4 w-4 text-muted-foreground" />
 
-        <div
-          className="
-            flex
-            h-9
-            w-9
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-primary/15
-            bg-primary/10
-            text-primary
-          "
-        >
-          <Gift className="h-4 w-4" />
-        </div>
-
-
-        <p
-          className="
-            mt-2.5
-            text-xs
-            font-semibold
-          "
-        >
+        <p className="mt-1.5 text-xs font-semibold">
           No Rewards Yet
         </p>
 
-
-        <p
-          className="
-            mt-1
-            max-w-xs
-            text-[10px]
-            leading-relaxed
-            text-muted-foreground
-          "
-        >
-          Complete referral campaigns to start
-          earning rewards.
+        <p className="mt-0.5 max-w-xs text-[10px] leading-4 text-muted-foreground">
+          Complete referral campaigns to start earning rewards.
         </p>
-
       </div>
     );
   }
 
-
-  // ==========================================================
-  // CONTENT
-  // ==========================================================
-
   return (
-    <div
-      className="
-        overflow-hidden
-        rounded-xl
-        border
-        border-border/60
-        bg-card
-      "
-    >
-
-      {/* ======================================================
-          HEADER
-      ====================================================== */}
-
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          gap-3
-          border-b
-          border-border/50
-          bg-muted/[0.02]
-          px-3
-          py-2.5
-        "
-      >
-
-        <div
-          className="
-            flex
-            min-w-0
-            items-center
-            gap-2
-          "
-        >
-
-          <div
-            className="
-              flex
-              h-7
-              w-7
-              shrink-0
-              items-center
-              justify-center
-              rounded-lg
-              border
-              border-primary/15
-              bg-primary/10
-              text-primary
-            "
-          >
+    <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-muted/20 px-3 py-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
             <Gift className="h-3.5 w-3.5" />
           </div>
 
-
           <div className="min-w-0">
-
-            <p
-              className="
-                text-xs
-                font-semibold
-                tracking-tight
-              "
-            >
+            <p className="text-xs font-semibold">
               Reward History
             </p>
 
-            <p
-              className="
-                mt-0.5
-                truncate
-                text-[9px]
-                text-muted-foreground
-              "
-            >
+            <p className="text-[9px] text-muted-foreground">
               Your earned rewards
             </p>
-
           </div>
-
         </div>
 
-
-        <span
-          className="
-            shrink-0
-            rounded-full
-            border
-            border-primary/15
-            bg-primary/5
-            px-2
-            py-0.5
-            text-[8px]
-            font-semibold
-            text-primary
-          "
-        >
+        <span className="shrink-0 rounded-md bg-primary/10 px-1.5 py-0.5 text-[8px] font-medium text-primary">
           {rewards.length}
-          {rewards.length === 1
-            ? ' reward'
-            : ' rewards'}
         </span>
-
       </div>
 
-
-      {/* ======================================================
-          REWARDS
-      ====================================================== */}
-
-      <div className="divide-y divide-border/40">
-
+      <div className="divide-y divide-border">
         {rewards.map((reward: any) => {
-
           const isCash =
             reward.type === 'cash';
 
-
-          const date =
-            new Date(
-              reward.createdAt,
-            ).toLocaleDateString(
-              'en-GB',
-              {
-                day: '2-digit',
-                month: 'short',
-              },
-            );
-
+          const date = new Date(
+            reward.createdAt,
+          ).toLocaleDateString(
+            'en-GB',
+            {
+              day: '2-digit',
+              month: 'short',
+            },
+          );
 
           return (
             <div
               key={reward._id}
-              className="
-                group
-                flex
-                items-center
-                justify-between
-                gap-3
-                px-3
-                py-2.5
-                transition-colors
-                hover:bg-muted/[0.03]
-              "
+              className="flex items-center justify-between gap-3 px-3 py-2.5"
             >
-
-              {/* =================================================
-                  REWARD INFO
-              ================================================= */}
-
-              <div
-                className="
-                  flex
-                  min-w-0
-                  items-center
-                  gap-2.5
-                "
-              >
-
-                {/* Icon */}
-
+              <div className="flex min-w-0 items-center gap-2.5">
                 <div
                   className={`
                     flex
@@ -298,64 +97,33 @@ export function RewardHistory() {
                     shrink-0
                     items-center
                     justify-center
-                    rounded-lg
-                    border
+                    rounded-md
                     ${
                       isCash
-                        ? `
-                          border-emerald-500/15
-                          bg-emerald-500/10
-                          text-emerald-500
-                        `
-                        : `
-                          border-primary/15
-                          bg-primary/10
-                          text-primary
-                        `
+                        ? 'bg-emerald-500/10 text-emerald-500'
+                        : 'bg-primary/10 text-primary'
                     }
                   `}
                 >
-
                   {isCash ? (
                     <Wallet className="h-3.5 w-3.5" />
                   ) : (
                     <Crown className="h-3.5 w-3.5" />
                   )}
-
                 </div>
 
-
-                {/* Details */}
-
                 <div className="min-w-0">
-
-                  <p
-                    className="
-                      truncate
-                      text-[10px]
-                      font-semibold
-                    "
-                  >
+                  <p className="truncate text-[10px] font-medium">
                     {reward.promoId?.name ??
                       'Referral Reward'}
                   </p>
 
-
-                  <div
-                    className="
-                      mt-0.5
-                      flex
-                      min-w-0
-                      items-center
-                      gap-1.5
-                    "
-                  >
-
+                  <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
                     <p
                       className={`
                         truncate
                         text-[10px]
-                        font-bold
+                        font-semibold
                         ${
                           isCash
                             ? 'text-emerald-600 dark:text-emerald-400'
@@ -366,114 +134,44 @@ export function RewardHistory() {
                       {isCash
                         ? `₦${Number(
                             reward.amount ?? 0,
-                          ).toLocaleString('en-GB')}`
+                          ).toLocaleString(
+                            'en-GB',
+                          )}`
                         : `${reward.plan} Subscription`}
                     </p>
 
-
-                    <span
-                      className="
-                        shrink-0
-                        text-[8px]
-                        text-muted-foreground/60
-                      "
-                    >
+                    <span className="shrink-0 text-[8px] text-muted-foreground">
                       •
                     </span>
 
-
-                    <span
-                      className="
-                        shrink-0
-                        text-[8px]
-                        text-muted-foreground
-                      "
-                    >
+                    <span className="shrink-0 text-[8px] text-muted-foreground">
                       {isCash
                         ? date
                         : `${reward.durationDays} days`}
                     </span>
-
                   </div>
 
-
                   {!isCash && (
-                    <p
-                      className="
-                        mt-0.5
-                        flex
-                        items-center
-                        gap-1
-                        text-[8px]
-                        text-muted-foreground
-                      "
-                    >
-                      <span>
-                        Earned
-                      </span>
-
-                      <span>
-                        •
-                      </span>
-
-                      <span>
-                        {date}
-                      </span>
+                    <p className="mt-0.5 flex items-center gap-1 text-[8px] text-muted-foreground">
+                      <span>Earned</span>
+                      <span>•</span>
+                      <span>{date}</span>
                     </p>
                   )}
-
                 </div>
-
               </div>
 
+              <div className="flex shrink-0 items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-1">
+                <CheckCircle2 className="h-2.5 w-2.5 text-emerald-500" />
 
-              {/* =================================================
-                  STATUS
-              ================================================= */}
-
-              <div
-                className="
-                  flex
-                  shrink-0
-                  items-center
-                  gap-1
-                  rounded-full
-                  border
-                  border-emerald-500/15
-                  bg-emerald-500/5
-                  px-1.5
-                  py-0.5
-                "
-              >
-
-                <CheckCircle2
-                  className="
-                    h-2.5
-                    w-2.5
-                    text-emerald-500
-                  "
-                />
-
-                <span
-                  className="
-                    text-[8px]
-                    font-semibold
-                    text-emerald-600
-                    dark:text-emerald-400
-                  "
-                >
+                <span className="text-[8px] font-medium text-emerald-600 dark:text-emerald-400">
                   Completed
                 </span>
-
               </div>
-
             </div>
           );
-
         })}
-
       </div>
-
     </div>
   );
 }

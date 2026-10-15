@@ -1,195 +1,74 @@
-import {
-  DollarSign,
-  Crown,
-  CreditCard,
-  Target,
-} from 'lucide-react';
-
+import { DollarSign, Crown, CreditCard, Target, Sparkles } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import AnalyticsCard from './AnalyticsCard';
-
-import {
-  AnalyticsRevenue,
-  RevenueBreakdown,
-} from '@/types/analytics.types';
-
+import type { AnalyticsRevenue, RevenueBreakdown } from '@/types/analytics.types';
 import { useExchangeRate } from '@/hooks/useExchangeRate';
 
 interface Props {
   revenue: AnalyticsRevenue;
 }
 
-export default function RevenueSection({
-  revenue,
-}: Props) {
-  const {
-    rate,
-    loading,
-    error,
-  } = useExchangeRate();
+type ExtendedRevenue = AnalyticsRevenue & {
+  premiumRevenue?: RevenueBreakdown;
+};
 
-  const formatNaira = (amount: number) =>
-    `₦${amount.toLocaleString()}`;
+type RevenueCard = {
+  title: string;
+  revenue?: RevenueBreakdown;
+  icon: LucideIcon;
+  highlight?: boolean;
+};
 
-  const formatDollar = (amount: number) =>
-    `$${amount.toLocaleString()}`;
+const formatNaira = (amount: number) => `₦${amount.toLocaleString()}`;
+const formatDollar = (amount: number) => `$${amount.toLocaleString()}`;
 
-  const getEquivalent = (
-    value: RevenueBreakdown,
-  ) => value.NGN + value.USD * rate;
+export default function RevenueSection({ revenue }: Props) {
+  const { rate, loading, error } = useExchangeRate();
+  const extended = revenue as ExtendedRevenue;
 
-  const cards = [
-    {
-      title: 'Total Revenue',
-      revenue: revenue.totalRevenue,
-      description: 'Approved payments',
-      icon: DollarSign,
-      highlight: true,
-      hasDollar: true,
-    },
-
-    {
-      title: 'VIP Revenue',
-      revenue: revenue.vipRevenue,
-      description: 'VIP subscriptions',
-      icon: Crown,
-      highlight: true,
-      hasDollar: true,
-    },
-
-    {
-      title: 'Regular Revenue',
-      revenue: revenue.regularRevenue,
-      description: 'Regular subscriptions',
-      icon: CreditCard,
-      hasDollar: true,
-    },
-
-    {
-      title: 'Prediction Revenue',
-      revenue: revenue.predictionRevenue,
-      description: 'Prediction purchases',
-      icon: Target,
-      hasDollar: false,
-    },
+  const cards: RevenueCard[] = [
+    { title: 'Total', revenue: revenue.totalRevenue, icon: DollarSign, highlight: true },
+    { title: 'Regular', revenue: revenue.regularRevenue, icon: CreditCard },
+    { title: 'VIP', revenue: revenue.vipRevenue, icon: Crown, highlight: true },
+    { title: 'Premium', revenue: extended.premiumRevenue, icon: Sparkles },
+    { title: 'Predictions', revenue: revenue.predictionRevenue, icon: Target },
   ];
 
+  const availableCards = cards.filter(
+    (card): card is RevenueCard & { revenue: RevenueBreakdown } => Boolean(card.revenue),
+  );
+
   return (
-    <section
-      className="
-        space-y-4
-      "
-    >
-      <div>
-        <h2
-          className="
-            text-xl
-            font-semibold
-          "
-        >
-          Revenue Analytics
-        </h2>
-
-        <p
-          className="
-            text-sm
-            text-muted-foreground
-          "
-        >
-          Payment performance overview
-        </p>
-
+    <section className="space-y-2">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="text-xs font-semibold tracking-tight">Revenue Analytics</h2>
         {!loading && !error && (
-          <p
-            className="
-              mt-1
-              text-xs
-              text-muted-foreground
-            "
-          >
-            Exchange Rate: $1 ≈ ₦
-            {rate.toLocaleString(undefined, {
-              maximumFractionDigits: 2,
-            })}
-          </p>
+          <span className="text-[9px] leading-3 text-muted-foreground">
+            $1 ≈ ₦{rate.toLocaleString(undefined, { maximumFractionDigits: 2 })}
+          </span>
         )}
       </div>
 
-      <div
-        className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-4
-          gap-5
-        "
-      >
-        {cards.map((card) => (
-          <AnalyticsCard
-            key={card.title}
-            title={card.title}
-            description={card.description}
-            icon={card.icon}
-            highlight={card.highlight}
-          >
-            {card.hasDollar ? (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    USD Revenue
-                  </span>
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-5">
+        {availableCards.map((card) => (
+          <AnalyticsCard key={card.title} title={card.title} icon={card.icon} highlight={card.highlight}>
+            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 text-[9px] leading-3">
+              <span className="whitespace-nowrap">
+                <span className="text-muted-foreground">NGN </span>
+                <span className="font-medium tabular-nums">{formatNaira(card.revenue.NGN)}</span>
+              </span>
+              <span className="whitespace-nowrap">
+                <span className="text-muted-foreground">USD </span>
+                <span className="font-medium tabular-nums">{formatDollar(card.revenue.USD)}</span>
+              </span>
+            </div>
 
-                  <span className="font-semibold">
-                    {formatDollar(card.revenue.USD)}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    NGN Revenue
-                  </span>
-
-                  <span className="font-semibold">
-                    {formatNaira(card.revenue.NGN)}
-                  </span>
-                </div>
-
-                <div className="border-t pt-3">
-                  <p className="text-xs text-muted-foreground">
-                    Total (₦ Equivalent)
-                  </p>
-
-                  <p className="mt-1 text-2xl font-bold">
-                    {loading || error
-                      ? '--'
-                      : formatNaira(
-                          getEquivalent(card.revenue),
-                        )}
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    NGN Revenue
-                  </span>
-
-                  <span className="font-semibold">
-                    {formatNaira(card.revenue.NGN)}
-                  </span>
-                </div>
-
-                <div className="border-t pt-3">
-                  <p className="text-xs text-muted-foreground">
-                    Total Revenue
-                  </p>
-
-                  <p className="mt-1 text-2xl font-bold">
-                    {formatNaira(card.revenue.NGN)}
-                  </p>
-                </div>
-              </div>
-            )}
+            <div className="mt-1 flex items-center justify-between gap-2 border-t border-border/60 pt-1.5">
+              <span className="text-[9px] leading-3 text-muted-foreground">₦ equivalent</span>
+              <span className="truncate text-xs font-semibold leading-4 tabular-nums">
+                {loading || error ? '--' : formatNaira(card.revenue.NGN + card.revenue.USD * rate)}
+              </span>
+            </div>
           </AnalyticsCard>
         ))}
       </div>

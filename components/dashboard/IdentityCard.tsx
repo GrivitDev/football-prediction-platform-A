@@ -3,104 +3,44 @@ import {
   Crown,
   Mail,
   Phone,
-  UserRound,
   Sparkles,
+  UserRound,
 } from 'lucide-react';
 
-import {
-  type ElementType,
-  type ReactNode,
+import type {
+  ElementType,
+  ReactNode,
 } from 'react';
-
-
 
 function MiniStat({
   icon: Icon,
   label,
   value,
-}:{
-  icon:ElementType;
-  label:string;
-  value:ReactNode;
+}: {
+  icon: ElementType;
+  label: string;
+  value: ReactNode;
 }) {
-
   return (
-
-    <div
-      className="
-        rounded-2xl
-        border
-        border-border
-        bg-background/60
-        p-4
-      "
-    >
-
-      <div
-        className="
-          flex
-          items-start
-          gap-3
-        "
-      >
-
-        <div
-          className="
-            rounded-2xl
-            border
-            border-border
-            bg-muted/40
-            p-2.5
-          "
-        >
-
-          <Icon
-            className="
-              h-4
-              w-4
-              text-foreground
-            "
-          />
-
+    <div className="min-w-0 rounded-md border border-border bg-background/50 p-2.5">
+      <div className="flex min-w-0 items-center gap-2">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+          <Icon className="h-3.5 w-3.5" />
         </div>
 
-
         <div className="min-w-0">
-
-          <p
-            className="
-              text-xs
-              text-muted-foreground
-            "
-          >
+          <p className="text-[9px] text-muted-foreground">
             {label}
           </p>
 
-
-          <p
-            className="
-              mt-1
-              truncate
-              text-base
-              font-semibold
-              tracking-tight
-            "
-          >
+          <p className="mt-0.5 truncate text-xs font-medium">
             {value}
           </p>
-
         </div>
-
       </div>
-
     </div>
-
   );
-
 }
-
-
-
 
 export function IdentityCard({
   name,
@@ -115,270 +55,124 @@ export function IdentityCard({
   phoneNumber?: string | null;
   plan?: string | null;
 }) {
-
-
   const currentPlan =
     plan?.toLowerCase() || 'free';
 
+  const membership =
+    {
+      premium: {
+        label: 'PREMIUM',
+        icon: Sparkles,
+        iconClass:
+          'bg-violet-500/10 text-violet-500',
+        badgeClass:
+          'bg-violet-500/10 text-violet-500',
+      },
 
+      vip: {
+        label: 'VIP',
+        icon: Crown,
+        iconClass:
+          'bg-amber-500/10 text-amber-500',
+        badgeClass:
+          'bg-amber-500/10 text-amber-500',
+      },
 
-  const membership = {
+      regular: {
+        label: 'REGULAR',
+        icon: BadgeCheck,
+        iconClass:
+          'bg-primary/10 text-primary',
+        badgeClass:
+          'bg-primary/10 text-primary',
+      },
 
-    vip:{
-      label:'VIP',
-      icon:Crown,
-      className:
-        `
-          bg-gradient-to-br
-          from-amber-400
-          to-yellow-600
-          text-white
-          shadow-amber-500/30
-        `,
+      free: {
+        label: 'FREE',
+        icon: UserRound,
+        iconClass:
+          'bg-muted text-muted-foreground',
+        badgeClass:
+          'bg-muted text-muted-foreground',
+      },
+    }[currentPlan] || {
+      label: 'FREE',
+      icon: UserRound,
+      iconClass:
+        'bg-muted text-muted-foreground',
       badgeClass:
-        `
-          bg-amber-500/10
-          text-amber-500
-        `,
-    },
-
-
-    regular:{
-      label:'Regular',
-      icon:BadgeCheck,
-      className:
-        `
-          bg-primary
-          text-primary-foreground
-          shadow-primary/30
-        `,
-      badgeClass:
-        `
-          bg-primary/10
-          text-primary
-        `,
-    },
-
-
-    free:{
-      label:'FREE',
-      icon:Sparkles,
-      className:
-        `
-          bg-muted
-          text-muted-foreground
-        `,
-      badgeClass:
-        `
-          bg-muted
-          text-muted-foreground
-        `,
-    },
-
-  }[currentPlan] || {
-
-    label:'FREE',
-    icon:Sparkles,
-    className:
-      `
-        bg-muted
-        text-muted-foreground
-      `,
-    badgeClass:
-      `
-        bg-muted
-        text-muted-foreground
-      `,
-
-  };
-
-
+        'bg-muted text-muted-foreground',
+    };
 
   const MembershipIcon =
     membership.icon;
 
-
-
   return (
-
-    <div
-      className="
-        rounded-3xl
-        border
-        border-border
-        bg-card
-        p-4
-        shadow-sm
-      "
-    >
-
-
-      <div
-        className="
-          mb-4
-          flex
-          items-center
-          gap-3
-        "
-      >
-
-
-        <div
-          className="
-            relative
-            flex
-            h-14
-            w-14
-            shrink-0
-            items-center
-            justify-center
-            rounded-2xl
-            border
-            border-border
-            bg-muted/40
-          "
-        >
-
-          <UserRound
-            className="
-              h-6
-              w-6
-            "
-          />
-
-
+    <div className="rounded-lg border border-border bg-card p-3">
+      <div className="flex items-center gap-2.5">
+        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-muted/40">
+          <UserRound className="h-4.5 w-4.5 text-muted-foreground" />
 
           <div
             className={`
               absolute
-              -right-2
-              -top-2
+              -right-1.5
+              -top-1.5
               flex
-              h-7
-              w-7
+              h-5
+              w-5
               items-center
               justify-center
-              rounded-full
-              shadow-lg
-              ${membership.className}
+              rounded-md
+              ${membership.iconClass}
             `}
           >
-
-            <MembershipIcon
-              className="
-                h-4
-                w-4
-              "
-            />
-
+            <MembershipIcon className="h-3 w-3" />
           </div>
-
-
         </div>
 
-
-
-
-
-        <div
-          className="
-            min-w-0
-          "
-        >
-
-          <div
-            className="
-              flex
-              flex-wrap
-              items-center
-              gap-2
-            "
-          >
-
-            <h3
-              className="
-                truncate
-                text-base
-                font-semibold
-                tracking-tight
-                sm:text-lg
-              "
-            >
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <h3 className="truncate text-sm font-semibold">
               {name || 'User'}
             </h3>
 
-
-
             <span
               className={`
-                rounded-full
-                px-2.5
-                py-1
-                text-[10px]
-                font-bold
-                uppercase
+                rounded-md
+                px-1.5
+                py-0.5
+                text-[8px]
+                font-semibold
                 tracking-wide
                 ${membership.badgeClass}
               `}
             >
               {membership.label}
             </span>
-
-
           </div>
 
-
-
-          <p
-            className="
-              truncate
-              text-sm
-              text-muted-foreground
-            "
-          >
-            {
-              username
+          <p className="truncate text-[10px] text-muted-foreground">
+            {username
               ? `@${username}`
-              : 'No username'
-            }
+              : 'No username'}
           </p>
-
-
         </div>
-
-
       </div>
 
-
-
-
-      <div
-        className="
-          grid
-          gap-3
-          sm:grid-cols-2
-        "
-      >
-
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
         <MiniStat
           icon={Mail}
           label="Email"
           value={email || '—'}
         />
 
-
         <MiniStat
           icon={Phone}
           label="Phone"
           value={phoneNumber || '—'}
         />
-
-
       </div>
-
-
     </div>
-
   );
-
 }

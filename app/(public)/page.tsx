@@ -1,944 +1,129 @@
 'use client';
 
 import Image from 'next/image';
-
-import {
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
-
-import LeagueSelector from '@/components/home-sections/features/LeagueSelector';
-import LiveMatches from '@/components/home-sections/features/LiveMatches';
-import TodayMatches from '@/components/home-sections/features/TodayMatches';
-import UpcomingFixtures from '@/components/home-sections/features/UpcomingFixtures';
-import Results from '@/components/home-sections/features/Results';
-import CompetitionDisplay from '@/components/home-sections/features/CompetitionDisplay';
-import LivescoreFilters from '@/components/home-sections/features/LivescoreFilters';
+import { useAuth } from '@/providers/auth-provider';
 
 import HeroSection from '@/components/home-sections/hero/HeroSection';
-import ArticlesPreview from '@/components/home-sections/articles-preview';
-import CommunityPreviewSection from '@/components/home-sections/community-preview/CommunityPreviewSection';
-import PredictionPreview from '@/components/home-sections/PredictionsPreview';
-import SettledWins from '@/components/home-sections/SettledWins';
-
+import LatestNewsPreviewSection from '@/components/home-sections/news-preview/LatestNewsPreviewSection';
+import LatestHighlightsPreviewSection from '@/components/home-sections/highlights-preview/LatestHighlightsPreviewSection';
 import { InternalAds } from '@/components/ads/IntAds/InternalAds';
-
 import { AdPage } from '@/constants/ads/ad-page';
 import { AdPosition } from '@/constants/ads/ad-position';
-
-import { HomepageAds } from '@/components/ads/ExtAds/positions/HomepageAds';
-
-import {
-  useLivescore,
-} from '@/hooks/useLivescore';
-
-
-// ============================================================
-// PAGE
-// ============================================================
+import LatestArticlesSection from '@/components/articles/LatestArticlesSection';
+import PricingSection from '@/components/pricing/PricingSection';
+import RecentWinsTable from '@/components/predictions/public/RecentWinsTable';
+import StandingsTable from '@/components/predictions/public/StandingsTable';
+import FixturesTable from '@/components/predictions/public/FixturesTable';
+import TodaysPredictions from '@/components/predictions/public/TodaysPredictions';
 
 export default function HomePage() {
-
-  // ==========================================================
-  // LIVESCORE
-  // ==========================================================
-
-  const {
-    leagues,
-    selectedLeagueCode,
-    selectLeague,
-
-    matches,
-    liveMatches,
-    results,
-    standings,
-
-    isLoading,
-  } = useLivescore();
-
-
-  // ==========================================================
-  // SELECTED COMPETITION
-  // ==========================================================
-
-  const selectedLeague =
-    useMemo(() => {
-
-      return leagues.find(
-        league =>
-          league.code ===
-          selectedLeagueCode,
-      );
-
-    }, [
-      leagues,
-      selectedLeagueCode,
-    ]);
-
-
-  // ==========================================================
-  // FILTER STATE
-  // ==========================================================
-
-  const [
-    search,
-    setSearch,
-  ] = useState('');
-
-
-  const [
-    selectedDate,
-    setSelectedDate,
-  ] = useState('');
-
-
-  const [
-    goalFilter,
-    setGoalFilter,
-  ] = useState('');
-
-
-  const [
-    pointsFilter,
-    setPointsFilter,
-  ] = useState('');
-
-
-  const [
-    resultFilter,
-    setResultFilter,
-  ] = useState<
-    'all' | 'home' | 'away' | 'draw'
-  >('all');
-
-
-  // ==========================================================
-  // SECTION VIEW
-  // ==========================================================
-
-  type SectionView =
-    | 'all'
-    | 'predictions'
-    | 'live'
-    | 'today'
-    | 'results'
-    | 'upcoming'
-    | 'table';
-
-
-  const [
-    sectionView,
-    setSectionView,
-  ] = useState<SectionView>('all');
-
-
-  // ==========================================================
-  // RESET FILTERS
-  // ==========================================================
-
-  const resetFilters =
-    useCallback(() => {
-
-      setSearch('');
-
-      setSelectedDate('');
-
-      setGoalFilter('');
-
-      setPointsFilter('');
-
-      setResultFilter('all');
-
-    }, []);
-
-
-  // ==========================================================
-  // COMPETITION CHANGE
-  // ==========================================================
-
-  const handleLeagueChange =
-    useCallback(
-      (
-        leagueCode: string,
-      ) => {
-
-        resetFilters();
-
-        setSectionView('all');
-
-        selectLeague(
-          leagueCode,
-        );
-
-      },
-      [
-        resetFilters,
-        selectLeague,
-      ],
-    );
-
-
-  // ==========================================================
-  // FILTER MATCHES
-  // ==========================================================
-
-  const filteredMatches =
-    useMemo(() => {
-
-      const query =
-        search
-          .trim()
-          .toLowerCase();
-
-
-      return matches.filter(
-        match => {
-
-          if (query) {
-
-            const found =
-              match.homeTeam
-                .toLowerCase()
-                .includes(query) ||
-
-              match.awayTeam
-                .toLowerCase()
-                .includes(query) ||
-
-              (
-                match.venue ??
-                ''
-              )
-                .toLowerCase()
-                .includes(query);
-
-
-            if (!found) {
-              return false;
-            }
-
-          }
-
-
-          if (selectedDate) {
-
-            const matchDate =
-              new Date(
-                match.date,
-              )
-                .toISOString()
-                .split('T')[0];
-
-
-            if (
-              matchDate !==
-              selectedDate
-            ) {
-              return false;
-            }
-
-          }
-
-
-          return true;
-
-        },
-      );
-
-    }, [
-      matches,
-      search,
-      selectedDate,
-    ]);
-
-
-  // ==========================================================
-  // FILTER RESULTS
-  // ==========================================================
-
-  const filteredResults =
-    useMemo(() => {
-
-      const query =
-        search
-          .trim()
-          .toLowerCase();
-
-
-      return results.filter(
-        match => {
-
-          if (query) {
-
-            const found =
-              match.homeTeam
-                .toLowerCase()
-                .includes(query) ||
-
-              match.awayTeam
-                .toLowerCase()
-                .includes(query) ||
-
-              (
-                match.venue ??
-                ''
-              )
-                .toLowerCase()
-                .includes(query);
-
-
-            if (!found) {
-              return false;
-            }
-
-          }
-
-
-          if (selectedDate) {
-
-            const matchDate =
-              new Date(
-                match.date,
-              )
-                .toISOString()
-                .split('T')[0];
-
-
-            if (
-              matchDate !==
-              selectedDate
-            ) {
-              return false;
-            }
-
-          }
-
-
-          if (goalFilter) {
-
-            const goals =
-              (
-                match.homeScore ??
-                0
-              ) +
-              (
-                match.awayScore ??
-                0
-              );
-
-
-            if (
-              goals <
-              Number(
-                goalFilter,
-              )
-            ) {
-              return false;
-            }
-
-          }
-
-
-          if (
-            resultFilter ===
-            'home'
-          ) {
-
-            if (
-              (
-                match.homeScore ??
-                0
-              ) <=
-              (
-                match.awayScore ??
-                0
-              )
-            ) {
-              return false;
-            }
-
-          }
-
-
-          if (
-            resultFilter ===
-            'away'
-          ) {
-
-            if (
-              (
-                match.awayScore ??
-                0
-              ) <=
-              (
-                match.homeScore ??
-                0
-              )
-            ) {
-              return false;
-            }
-
-          }
-
-
-          if (
-            resultFilter ===
-            'draw'
-          ) {
-
-            if (
-              (
-                match.homeScore ??
-                0
-              ) !==
-              (
-                match.awayScore ??
-                0
-              )
-            ) {
-              return false;
-            }
-
-          }
-
-
-          return true;
-
-        },
-      );
-
-    }, [
-      results,
-      search,
-      selectedDate,
-      goalFilter,
-      resultFilter,
-    ]);
-
-
-  // ==========================================================
-  // FILTER LIVE MATCHES
-  // ==========================================================
-
-  const filteredLiveMatches =
-    useMemo(() => {
-
-      const query =
-        search
-          .trim()
-          .toLowerCase();
-
-
-      if (!query) {
-        return liveMatches;
-      }
-
-
-      return liveMatches.filter(
-        match => {
-
-          return (
-            match.homeTeam
-              .toLowerCase()
-              .includes(query) ||
-
-            match.awayTeam
-              .toLowerCase()
-              .includes(query) ||
-
-            (
-              match.venue ??
-              ''
-            )
-              .toLowerCase()
-              .includes(query)
-          );
-
-        },
-      );
-
-    }, [
-      liveMatches,
-      search,
-    ]);
-
-
-  // ==========================================================
-  // LOADING
-  // ==========================================================
+  const { user } = useAuth();
+  const isLoading = false;
 
   if (isLoading) {
-
     return (
-<main
-  className="
-    flex
-    min-h-screen
-    items-center
-    justify-center
-    bg-background
-    px-3
-  "
->
-  <div
-    className="
-      flex
-      flex-col
-      items-center
-      gap-8
-    "
-  >
+      <main className="flex min-h-screen items-center justify-center bg-background px-3">
+        <div className="flex flex-col items-center gap-8">
+          <div className="relative flex h-28 w-28 items-center justify-center">
+            <div className="absolute inset-0 animate-pulse rounded-full border border-primary/10" />
+            <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-r-primary/60 border-t-primary" />
+            <div className="absolute inset-2 animate-[spin_2.5s_linear_infinite_reverse] rounded-full border border-transparent border-b-primary/40 border-l-primary/20" />
+            <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/20 bg-primary/5 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)]">
+              <Image
+                src="/logo.png"
+                alt="honestpredict"
+                width={64}
+                height={64}
+                priority
+                className="h-14 w-14 object-contain"
+              />
+            </div>
+          </div>
 
-    {/* ================================================== */}
-    {/* LOGO LOADER */}
-    {/* ================================================== */}
-
-    <div
-      className="
-        relative
-        flex
-        h-28
-        w-28
-        items-center
-        justify-center
-      "
-    >
-
-      {/* Outer breathing ring */}
-
-      <div
-        className="
-          absolute
-          inset-0
-          rounded-full
-          border
-          border-primary/10
-          animate-pulse
-        "
-      />
-
-
-      {/* Rotating loader ring */}
-
-      <div
-        className="
-          absolute
-          inset-0
-          rounded-full
-          border-2
-          border-transparent
-          border-t-primary
-          border-r-primary/60
-          animate-spin
-        "
-      />
-
-
-      {/* Secondary rotating ring */}
-
-      <div
-        className="
-          absolute
-          inset-2
-          rounded-full
-          border
-          border-transparent
-          border-b-primary/40
-          border-l-primary/20
-          animate-[spin_2.5s_linear_infinite_reverse]
-        "
-      />
-
-
-      {/* Logo container */}
-
-      <div
-        className="
-          relative
-          flex
-          h-20
-          w-20
-          items-center
-          justify-center
-          rounded-full
-          border
-          border-primary/20
-          bg-primary/5
-          shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)]
-        "
-      >
-
-        <Image
-          src="/logo.png"
-          alt="honestpredict"
-          width={64}
-          height={64}
-          priority
-          className="
-            h-14
-            w-14
-            object-contain
-          "
-        />
-
-      </div>
-
-    </div>
-
-
-    {/* ================================================== */}
-    {/* LOADING TEXT */}
-    {/* ================================================== */}
-
-    <div
-      className="
-        flex
-        flex-col
-        items-center
-        gap-2
-      "
-    >
-
-      <p
-        className="
-          text-sm
-          font-semibold
-          text-foreground
-        "
-      >
-        Fetching the latest football data
-      </p>
-
-
-      {/* Animated dots */}
-
-      <div
-        className="
-          flex
-          items-center
-          gap-1.5
-        "
-      >
-
-        <span
-          className="
-            h-1.5
-            w-1.5
-            rounded-full
-            bg-primary
-            animate-bounce
-          "
-        />
-
-        <span
-          className="
-            h-1.5
-            w-1.5
-            rounded-full
-            bg-primary
-            animate-bounce
-            [animation-delay:150ms]
-          "
-        />
-
-        <span
-          className="
-            h-1.5
-            w-1.5
-            rounded-full
-            bg-primary
-            animate-bounce
-            [animation-delay:300ms]
-          "
-        />
-
-      </div>
-
-    </div>
-
-  </div>
-</main>
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm font-semibold text-foreground">
+              Fetching the latest football data
+            </p>
+            <div className="flex items-center gap-1.5" aria-label="Loading">
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:150ms]" />
+              <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-primary [animation-delay:300ms]" />
+            </div>
+          </div>
+        </div>
+      </main>
     );
-
   }
 
-
-  // ==========================================================
-  // PAGE
-  // ==========================================================
-
   return (
-<main
-  className="
-    min-h-screen
-    w-full
-    overflow-x-hidden
-    bg-background
-    text-foreground
-  "
->
-
-  
-
-      {/* ====================================================
-          HERO
-      ==================================================== */}
-
+    <main className="min-h-screen w-full overflow-x-hidden bg-background text-foreground">
       <HeroSection />
-
-
-  <div
-    className="
-      mx-auto
-      w-full
-      max-w-6xl
-      2xl:max-w-7xl
-      px-3
-      sm:px-4
-      lg:px-6
-    "
-  >
-
-
-
-      {/* ====================================================
-          TOP BANNER AD
-      ==================================================== */}
-
-      <div
-        className="
-          mx-auto
-          w-full
-          max-w-7xl
-          px-3
-          sm:px-4
-        "
-      >
-        <InternalAds
-          page={AdPage.HOME}
-          position={AdPosition.TOP_BANNER}
-        />
-      </div>
-
-
-      {/* ====================================================
-          HOMEPAGE EXTERNAL ADS
-      ==================================================== */}
-
-      <HomepageAds />
-
-
-      {/* ====================================================
-          MAIN CONTENT
-      ==================================================== */}
-
-      <div
-        className="
-          mx-auto
-          w-full
-          max-w-7xl
-          space-y-6
-          px-3
-          sm:px-4
-          lg:space-y-8
-          mt-4
-        "
-      >
-
-        {/* ==================================================
-            LIVE FILTER
-        ================================================== */}
-
-        {selectedLeagueCode && (
-          <LivescoreFilters
-            search={search}
-            selectedDate={selectedDate}
-            goalFilter={goalFilter}
-            pointsFilter={pointsFilter}
-            resultFilter={resultFilter}
-            sectionView={sectionView}
-            onSearchChange={setSearch}
-            onDateChange={setSelectedDate}
-            onGoalFilterChange={setGoalFilter}
-            onPointsFilterChange={setPointsFilter}
-            onResultFilterChange={setResultFilter}
-            onSectionViewChange={setSectionView}
-            onReset={resetFilters}
-          />
-        )}
-
-
-
-        {/* ==================================================
-            HERO AD
-        ================================================== */}
-
-        <InternalAds
-          page={AdPage.HOME}
-          position={AdPosition.HERO}
-        />
-
-
-        {/* ==================================================
-            TODAY'S PREDICTIONS
-        ================================================== */}
-
-        {(
-          sectionView === 'all' ||
-          sectionView === 'predictions'
-        ) && (
-          <><PredictionPreview
-              search={search}
-              selectedDate={selectedDate}
-              goalFilter={goalFilter}
-              resultFilter={resultFilter} />
-              
-              <SettledWins /></>
-        )}
-
-
-
-        {/* ==================================================
-            INLINE AD
-        ================================================== */}
-
-        <InternalAds
-          page={AdPage.HOME}
-          position={AdPosition.INLINE}
-        />
-
-
-        {/* ==================================================
-            SETTLED WINS
-        ================================================== */}
-
-
-
-        {/* ==================================================
-            LIVE MATCHES
-        ================================================== */}
-
-        {(
-          sectionView === 'all' ||
-          sectionView === 'live'
-        ) && (
-          <LiveMatches
-            matches={filteredLiveMatches}
-          />
-        )}
-
-
-        {/* ==================================================
-            LEAGUE / COMPETITION DATA
-        ================================================== */}
-
-        {selectedLeagueCode && (
-          <>
-
-
-
-            {/* ================================================
-                RESULTS
-            ================================================ */}
-
-            {(
-              sectionView === 'all' ||
-              sectionView === 'results'
-            ) && (
-              <Results
-                results={filteredResults}
-              />
-            )}
-
-
-            {/* ================================================
-                INLINE AD
-            ================================================ */}
-
-            <InternalAds
-              page={AdPage.HOME}
-              position={AdPosition.INLINE}
-            />
-
-
-            {/* ================================================
-                UPCOMING FIXTURES
-            ================================================ */}
-
-            {(
-              sectionView === 'all' ||
-              sectionView === 'upcoming'
-            ) && (
-              <UpcomingFixtures
-                fixtures={filteredMatches}
-              />
-            )}
-
-
-            {/* ================================================
-                LEAGUE TABLE / CUP
-            ================================================ */}
-
-            {(
-              sectionView === 'all' ||
-              sectionView === 'table'
-            ) &&
-              selectedLeague &&
-              standings && (
-                <CompetitionDisplay
-                  league={selectedLeague}
-                  competition={standings}
-                  search={search}
-                  pointsFilter={pointsFilter}
-                />
-              )
-            }
-
-          </>
-        )}
-
-
-
-
-      </div>
-
-
-      {/* ====================================================
-          POPUP AD
-      ==================================================== */}
-
-      <InternalAds
-        page={AdPage.HOME}
-        position={AdPosition.POPUP}
-      />
-
-
-  </div>
-
-  
-        {/* ==================================================
-            ARTICLES
-        ================================================== */}
-
-        <ArticlesPreview />
-
-
-        {/* ==================================================
-            COMMUNITY
-        ================================================== */}
-
-        <CommunityPreviewSection />
-
-
-        {/* ====================================================
-            BOTTOM AD
-        ==================================================== */}
-
-        <InternalAds
-          page={AdPage.HOME}
-          position={AdPosition.BOTTOM}
-        />
-</main>
+<div className="px-6">
+
+<TodaysPredictions
+  isAuthenticated={Boolean(user)}
+  maxRows={10}
+  className="w-full"
+/>
+        <FixturesTable />
+
+      <RecentWinsTable />
+      <StandingsTable />
+        <LatestArticlesSection />
+
+              <LatestHighlightsPreviewSection />
+
+      <LatestNewsPreviewSection />
+
+      <PricingSection />
+
+      <section className="px-2 py-5 sm:px-3 lg:py-7">
+        <div className="mx-auto max-w-6xl">
+          <div className="rounded-3xl border border-border/60 bg-card/40 p-3 shadow-sm backdrop-blur-sm sm:p-4">
+            <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
+              About Honest Predict
+            </h2>
+
+            <div className="mt-2 space-y-1 text-sm leading-5 text-muted-foreground sm:text-base">
+              <p>
+                Honest Predict is a football prediction and analysis platform built
+                to make match insights clearer, more transparent, and easier to
+                understand.
+              </p>
+
+              <p>
+                We combine football data, statistical analysis, match context, and
+                carefully developed prediction models to provide structured insights
+                across football fixtures and markets.
+              </p>
+
+              <p>
+                Our approach is simple: present predictions honestly, explain the
+                reasoning behind them, and let users make their own decisions. No
+                prediction is guaranteed, and every match carries uncertainty.
+              </p>
+
+              <p>
+                From match predictions and market analysis to football articles and
+                educational insights, Honest Predict aims to build a reliable
+                football intelligence platform where information comes before hype.
+              </p>
+            </div>
+
+            <div className="mt-3 border-t border-border/60 pt-3">
+              <p className="text-sm font-semibold text-foreground">
+                Honest Predict
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Clearer analysis. More informed decisions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+</div>
+      <InternalAds page={AdPage.HOME} position={AdPosition.BOTTOM} />
+    </main>
   );
 }
+

@@ -6,10 +6,18 @@ import QueryProvider from '@/providers/query-provider';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { SEO } from '@/config/seo';
+
 import { Toaster } from 'react-hot-toast';
+
 import { cn } from '@/lib/utils';
+
 import Script from 'next/script';
 
+import Navbar from '@/components/navbar/navbar';
+import Footer from '@/components/footer';
+
+import { NavbarProvider } from '@/components/navbar/NavbarContext';
+import CookieConsent from '@/components/CookieConsent';
 
 
 export const metadata: Metadata = {
@@ -142,15 +150,16 @@ export const metadata: Metadata = {
   },
 };
 
+
 export const viewport: Viewport = {
   themeColor: [
     {
       media: '(prefers-color-scheme: light)',
-      color: '#ffffff',
+      color: '#722F37',
     },
     {
       media: '(prefers-color-scheme: dark)',
-      color: '#020617',
+      color: '#98FF98',
     },
   ],
 };
@@ -161,26 +170,73 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
       data-scroll-behavior="smooth"
     >
-<body className={cn(
-  "min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300, "
-  )}
-  >
 
-              <Script async 
-                  src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}`}
-                  crossOrigin="anonymous"
-                  strategy="afterInteractive" 
-          />
+      <body
+        className={cn(
+          'min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300'
+        )}
+      >
+
+        <Script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+
+
         <QueryProvider>
+
           <AuthProvider>
+
             <ThemeProvider>
-              {children}
+
+              <NavbarProvider>
+
+                <div
+                  className="
+                    flex
+                    min-h-screen
+                    w-full
+                    flex-col
+                    overflow-x-clip
+                  "
+                >
+
+                  {/* GLOBAL NAVBAR */}
+
+                  <Navbar />
+
+
+                  {/* PAGE CONTENT */}
+
+                  <main
+                    className="
+                      flex
+                      min-h-0
+                      w-full
+                      flex-1
+                      flex-col
+                    "
+                  >
+                    {children}
+                  </main>
+
+
+                  {/* GLOBAL FOOTER */}
+
+                  <Footer />
+
+                </div>
+
+
                 <Toaster
                   position="top-right"
                   toastOptions={{
@@ -189,10 +245,19 @@ export default function RootLayout({
                       'border border-border bg-card text-foreground',
                   }}
                 />
+
+              </NavbarProvider>
+
             </ThemeProvider>
+
           </AuthProvider>
+
         </QueryProvider>
+
+              <CookieConsent />
+
       </body>
+
     </html>
   );
 }

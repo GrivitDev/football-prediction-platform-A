@@ -46,11 +46,11 @@ export default function SessionHistoryTable({
         <div className="
           flex
           items-center
-          gap-3
+          gap-2
           border-b
           border-border
-          px-6
-          py-5
+          px-4
+          py-3
         ">
 
           <div className="
@@ -98,11 +98,11 @@ export default function SessionHistoryTable({
 
             <div className="
               flex
-              min-h-[220px]
+              min-h-[172px]
               flex-col
               items-center
               justify-center
-              gap-3
+              gap-2
               text-center
             ">
 
@@ -151,8 +151,8 @@ export default function SessionHistoryTable({
 
 
                     <th className="
-                      px-6
-                      py-4
+                      px-4
+                      py-2
                     ">
                       Device
                     </th>
@@ -195,15 +195,15 @@ export default function SessionHistoryTable({
 
 
                         <td className="
-                          px-6
-                          py-4
+                          px-4
+                          py-2
                         ">
 
 
                           <div className="
                             flex
                             items-center
-                            gap-3
+                            gap-2
                           ">
 
 
@@ -246,7 +246,7 @@ export default function SessionHistoryTable({
                           <div className="
                             flex
                             items-center
-                            gap-2
+                            gap-1.5
                             text-muted-foreground
                           ">
 
@@ -280,12 +280,12 @@ export default function SessionHistoryTable({
                               <span className="
                                 inline-flex
                                 items-center
-                                gap-2
+                                gap-1.5
                                 rounded-full
                                 border
                                 border-green-500/20
                                 bg-green-500/10
-                                px-3
+                                px-2
                                 py-1
                                 text-xs
                                 text-green-500
@@ -311,12 +311,12 @@ export default function SessionHistoryTable({
                               <span className="
                                 inline-flex
                                 items-center
-                                gap-2
+                                gap-1.5
                                 rounded-full
                                 border
                                 border-red-500/20
                                 bg-red-500/10
-                                px-3
+                                px-2
                                 py-1
                                 text-xs
                                 text-red-500

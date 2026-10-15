@@ -4,7 +4,6 @@ import type { LucideIcon } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
-
 interface SectionTitleProps {
   title: string;
   description?: string;
@@ -13,7 +12,6 @@ interface SectionTitleProps {
   className?: string;
 }
 
-
 export function SectionTitle({
   title,
   description,
@@ -21,138 +19,78 @@ export function SectionTitle({
   icon: Icon,
   className,
 }: SectionTitleProps) {
-
-
   return (
-
     <div
       className={cn(
         `
           flex
           flex-col
           gap-2
-          sm:gap-2
-          md:flex-row
-          md:items-end
-          md:justify-between
+          sm:flex-row
+          sm:items-center
+          sm:justify-between
         `,
         className,
       )}
     >
-
-
       <div
         className="
           flex
           min-w-0
-          items-start
-          gap-3
+          items-center
+          gap-2
         "
       >
+        {Icon && (
+          <div
+            className="
+              flex
+              h-7
+              w-7
+              shrink-0
+              items-center
+              justify-center
+              rounded-md
+              border
+              bg-muted/50
+              text-muted-foreground
+            "
+          >
+            <Icon className="h-3.5 w-3.5" />
+          </div>
+        )}
 
-
-        {
-          Icon && (
-
-            <div
-              className="
-                flex
-                h-9
-                w-9
-                shrink-0
-                items-center
-                justify-center
-                rounded-2xl
-                border
-                border-primary/20
-                bg-primary/10
-                shadow-sm
-              "
-            >
-
-              <Icon
-                className="
-                  h-5
-                  w-5
-                  text-primary
-                "
-              />
-
-            </div>
-
-          )
-        }
-
-
-
-        <div
-          className="
-            min-w-0
-            space-y-1.5
-          "
-        >
-
+        <div className="min-w-0">
           <h2
             className="
-              text-lg
-              font-black
-              tracking-tight
-              sm:text-xl
+              truncate
+              text-sm
+              font-semibold
             "
           >
             {title}
           </h2>
 
-
-
-          {
-            description && (
-
-              <p
-                className="
-                  max-w-2xl
-                  text-sm
-                  leading-relaxed
-                  text-muted-foreground
-                  sm:text-[15px]
-                "
-              >
-                {description}
-              </p>
-
-            )
-          }
-
-
+          {description && (
+            <p
+              className="
+                mt-0.5
+                text-xs
+                leading-4
+                text-muted-foreground
+              "
+            >
+              {description}
+            </p>
+          )}
         </div>
-
-
       </div>
 
-
-
-      {
-        action && (
-
-          <div
-            className="
-              flex
-              w-full
-              sm:w-auto
-              md:shrink-0
-            "
-          >
-
-            {action}
-
-          </div>
-
-        )
-      }
-
-
+      {action && (
+        <div className="shrink-0">
+          {action}
+        </div>
+      )}
     </div>
-
   );
-
 }

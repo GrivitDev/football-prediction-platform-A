@@ -3,12 +3,12 @@
 import { useEffect, useMemo, useState } from 'react';
 
 import {
-  CheckCircle2,
   AlertTriangle,
-  Save,
-  Landmark,
+  CheckCircle2,
   Globe2,
+  Landmark,
   Loader2,
+  Save,
 } from 'lucide-react';
 
 import toast from 'react-hot-toast';
@@ -23,13 +23,6 @@ import type {
   PlanConfig,
 } from '@/types/plan-config';
 
-const emptyBankDetails: BankDetails = {
-  bankName: '',
-  accountName: '',
-  accountNumber: '',
-  instructions: '',
-};
-
 export default function BankDetailsPanel({
   token,
 }: {
@@ -39,6 +32,7 @@ export default function BankDetailsPanel({
     useState<PlanConfig | null>(null);
 
   const [loading, setLoading] = useState(true);
+
   const [saving, setSaving] = useState<
     'NGN' | 'USD' | null
   >(null);
@@ -47,11 +41,10 @@ export default function BankDetailsPanel({
     (async () => {
       try {
         const data = await getPlanConfig(token);
-
         setConfig(data);
       } catch {
         toast.error(
-          'Unable to load bank configuration',
+          'Unable to load bank configuration.',
         );
       } finally {
         setLoading(false);
@@ -59,11 +52,11 @@ export default function BankDetailsPanel({
     })();
   }, [token]);
 
-  const updateBankField = (
+  function updateBankField(
     currency: 'NGN' | 'USD',
     key: keyof BankDetails,
     value: string,
-  ) => {
+  ) {
     setConfig((prev) => {
       if (!prev) return prev;
 
@@ -80,11 +73,9 @@ export default function BankDetailsPanel({
         },
       };
     });
-  };
+  }
 
-  const save = async (
-    currency: 'NGN' | 'USD',
-  ) => {
+  async function save(currency: 'NGN' | 'USD') {
     if (!config) return;
 
     try {
@@ -101,181 +92,67 @@ export default function BankDetailsPanel({
         });
       }
 
-      toast.success(
-        currency === 'NGN'
-          ? 'Nigerian bank details updated'
-          : 'USD bank details updated',
-      );
+      toast.success('Bank details updated.');
     } catch {
       toast.error(
-        'Failed to update bank details',
+        'Failed to update bank details.',
       );
     } finally {
       setSaving(null);
     }
-  };
+  }
 
   if (loading) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          bg-card/60
-          p-6
-          backdrop-blur
-        "
-      >
-        <div
-          className="
-            h-6
-            w-48
-            animate-pulse
-            rounded-lg
-            bg-muted
-          "
-        />
-
-        <div
-          className="
-            mt-6
-            h-32
-            animate-pulse
-            rounded-xl
-            bg-muted
-          "
-        />
+      <div className="rounded-2xl border bg-card/70 p-4">
+        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+        <div className="mt-4 h-32 animate-pulse rounded-xl bg-muted" />
       </div>
     );
   }
 
   if (!config) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          bg-card/60
-          p-6
-          text-sm
-          text-muted-foreground
-        "
-      >
+      <div className="rounded-2xl border bg-card/70 p-4 text-sm text-muted-foreground">
         Bank configuration could not be loaded.
       </div>
     );
   }
 
   return (
-    <div
-      className="
-        relative
-        overflow-hidden
-        rounded-3xl
-        border
-        bg-card/70
-        p-6
-        backdrop-blur-xl
-      "
-    >
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -right-20
-          -top-20
-          h-40
-          w-40
-          rounded-full
-          bg-primary/10
-          blur-3xl
-        "
-      />
+    <div className="rounded-2xl border bg-card/70 p-4 sm:p-5">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <BankEditor
+          title="Nigeria"
+          details={config.bankDetails}
+          saving={saving === 'NGN'}
+          icon={
+            <span className="font-bold">₦</span>
+          }
+          onChange={(key, value) =>
+            updateBankField(
+              'NGN',
+              key,
+              value,
+            )
+          }
+          onSave={() => save('NGN')}
+        />
 
-      <div className="relative">
-        <div className="flex items-center gap-4">
-          <div
-            className="
-              rounded-2xl
-              bg-primary/10
-              p-4
-            "
-          >
-            <Landmark
-              className="
-                h-6
-                w-6
-                text-primary
-              "
-            />
-          </div>
-
-          <div>
-            <h3 className="text-xl font-semibold">
-              Bank Transfer Configuration
-            </h3>
-
-            <p
-              className="
-                mt-1
-                text-sm
-                text-muted-foreground
-              "
-            >
-              Configure payment instructions for
-              Nigerian and international subscribers.
-            </p>
-          </div>
-        </div>
-
-        <div
-          className="
-            mt-8
-            grid
-            gap-6
-            xl:grid-cols-2
-          "
-        >
-          <BankEditor
-            currency="NGN"
-            title="Nigeria Bank Details"
-            description="Used for ₦ Nigerian subscription payments."
-            icon={
-              <span className="text-lg font-bold">
-                ₦
-              </span>
-            }
-            details={config.bankDetails}
-            saving={saving === 'NGN'}
-            onChange={(key, value) =>
-              updateBankField(
-                'NGN',
-                key,
-                value,
-              )
-            }
-            onSave={() => save('NGN')}
-          />
-
-          <BankEditor
-            currency="USD"
-            title="International Bank Details"
-            description="Used for $ international subscription payments."
-            icon={
-              <Globe2 className="h-5 w-5" />
-            }
-            details={config.bankDetailsUSD}
-            saving={saving === 'USD'}
-            onChange={(key, value) =>
-              updateBankField(
-                'USD',
-                key,
-                value,
-              )
-            }
-            onSave={() => save('USD')}
-          />
-        </div>
+        <BankEditor
+          title="International"
+          details={config.bankDetailsUSD}
+          saving={saving === 'USD'}
+          icon={<Globe2 className="h-4 w-4" />}
+          onChange={(key, value) =>
+            updateBankField(
+              'USD',
+              key,
+              value,
+            )
+          }
+          onSave={() => save('USD')}
+        />
       </div>
     </div>
   );
@@ -283,16 +160,13 @@ export default function BankDetailsPanel({
 
 function BankEditor({
   title,
-  description,
   icon,
   details,
   saving,
   onChange,
   onSave,
 }: {
-  currency: 'NGN' | 'USD';
   title: string;
-  description: string;
   icon: React.ReactNode;
   details: BankDetails;
   saving: boolean;
@@ -302,60 +176,31 @@ function BankEditor({
   ) => void;
   onSave: () => void;
 }) {
-  const missingFields = useMemo(() => {
-    return Object.values(details).filter(
-      (value) => !value.trim(),
-    ).length;
-  }, [details]);
+  const missingFields = useMemo(
+    () =>
+      Object.values(details).filter(
+        (value) => !value.trim(),
+      ).length,
+    [details],
+  );
 
   const configured = missingFields === 0;
 
   return (
-    <div
-      className="
-        rounded-2xl
-        border
-        bg-background/50
-        p-5
-      "
-    >
-      <div
-        className="
-          flex
-          items-start
-          justify-between
-          gap-4
-        "
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className="
-              flex
-              h-10
-              w-10
-              items-center
-              justify-center
-              rounded-xl
-              bg-primary/10
-              text-primary
-            "
-          >
+    <div className="rounded-xl border bg-background/40 p-4">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
             {icon}
           </div>
 
           <div>
-            <h4 className="font-semibold">
+            <p className="text-sm font-semibold">
               {title}
-            </h4>
+            </p>
 
-            <p
-              className="
-                mt-1
-                text-xs
-                text-muted-foreground
-              "
-            >
-              {description}
+            <p className="text-[11px] text-muted-foreground">
+              Bank transfer details
             </p>
           </div>
         </div>
@@ -363,14 +208,13 @@ function BankEditor({
         <div
           className={`
             flex
-            shrink-0
             items-center
-            gap-1.5
+            gap-1
             rounded-full
             border
-            px-3
-            py-1.5
-            text-xs
+            px-2
+            py-1
+            text-[10px]
             ${
               configured
                 ? 'border-green-500/20 bg-green-500/10 text-green-600'
@@ -379,52 +223,19 @@ function BankEditor({
           `}
         >
           {configured ? (
-            <CheckCircle2 className="h-3.5 w-3.5" />
+            <CheckCircle2 className="h-3 w-3" />
           ) : (
-            <AlertTriangle className="h-3.5 w-3.5" />
+            <AlertTriangle className="h-3 w-3" />
           )}
 
-          {configured
-            ? 'Configured'
-            : 'Action Required'}
+          {configured ? 'Ready' : 'Incomplete'}
         </div>
       </div>
 
-      {!configured && (
-        <div
-          className="
-            mt-5
-            flex
-            items-center
-            gap-2
-            rounded-xl
-            border
-            border-orange-500/20
-            bg-orange-500/10
-            p-3
-            text-xs
-          "
-        >
-          <AlertTriangle
-            className="
-              h-4
-              w-4
-              shrink-0
-              text-orange-500
-            "
-          />
-
-          {missingFields} field
-          {missingFields !== 1 ? 's' : ''}{' '}
-          still required.
-        </div>
-      )}
-
-      <div className="mt-6 space-y-4">
+      <div className="mt-4 grid gap-3">
         <BankInput
-          label="Bank Name"
+          label="Bank"
           value={details.bankName}
-          placeholder="Example: First Bank"
           onChange={(value) =>
             onChange('bankName', value)
           }
@@ -433,7 +244,6 @@ function BankEditor({
         <BankInput
           label="Account Name"
           value={details.accountName}
-          placeholder="Account holder name"
           onChange={(value) =>
             onChange('accountName', value)
           }
@@ -442,7 +252,6 @@ function BankEditor({
         <BankInput
           label="Account Number"
           value={details.accountNumber}
-          placeholder="Account number"
           onChange={(value) =>
             onChange(
               'accountNumber',
@@ -451,18 +260,13 @@ function BankEditor({
           }
         />
 
-        <div className="space-y-2">
-          <label
-            className="
-              text-sm
-              font-medium
-            "
-          >
-            Payment Instructions
-          </label>
+        <label>
+          <span className="mb-1.5 block text-[11px] font-medium text-muted-foreground">
+            Instructions
+          </span>
 
           <textarea
-            rows={4}
+            rows={3}
             value={details.instructions}
             onChange={(e) =>
               onChange(
@@ -470,62 +274,59 @@ function BankEditor({
                 e.target.value,
               )
             }
-            placeholder="Explain payment steps for users..."
             className="
               w-full
               resize-none
-              rounded-xl
+              rounded-lg
               border
               bg-background
-              px-4
-              py-3
-              text-sm
+              px-3
+              py-2.5
+              text-xs
               outline-none
-              transition
               focus:border-primary
-              focus:ring-4
+              focus:ring-2
               focus:ring-primary/10
             "
           />
-        </div>
+        </label>
       </div>
 
+      {!configured && (
+        <p className="mt-3 text-[11px] text-orange-600">
+          {missingFields} field
+          {missingFields === 1 ? '' : 's'} still required.
+        </p>
+      )}
+
       <button
+        type="button"
         onClick={onSave}
         disabled={saving}
         className="
-          mt-5
+          mt-4
           inline-flex
           items-center
           gap-2
-          rounded-xl
+          rounded-lg
           bg-primary
-          px-5
-          py-2.5
-          text-sm
+          px-3
+          py-2
+          text-xs
           font-semibold
           text-primary-foreground
           transition
           hover:opacity-90
-          disabled:cursor-not-allowed
           disabled:opacity-50
         "
       >
         {saving ? (
-          <Loader2
-            className="
-              h-4
-              w-4
-              animate-spin
-            "
-          />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <Save className="h-4 w-4" />
+          <Save className="h-3.5 w-3.5" />
         )}
 
-        {saving
-          ? 'Saving...'
-          : 'Save Bank Details'}
+        {saving ? 'Saving...' : 'Save'}
       </button>
     </div>
   );
@@ -534,46 +335,37 @@ function BankEditor({
 function BankInput({
   label,
   value,
-  placeholder,
   onChange,
 }: {
   label: string;
   value: string;
-  placeholder: string;
   onChange: (value: string) => void;
 }) {
   return (
-    <div className="space-y-2">
-      <label
-        className="
-          text-sm
-          font-medium
-        "
-      >
+    <label>
+      <span className="mb-1.5 block text-[11px] font-medium text-muted-foreground">
         {label}
-      </label>
+      </span>
 
       <input
         value={value}
         onChange={(e) =>
           onChange(e.target.value)
         }
-        placeholder={placeholder}
         className="
           w-full
-          rounded-xl
+          rounded-lg
           border
           bg-background
-          px-4
-          py-3
-          text-sm
+          px-3
+          py-2.5
+          text-xs
           outline-none
-          transition
           focus:border-primary
-          focus:ring-4
+          focus:ring-2
           focus:ring-primary/10
         "
       />
-    </div>
+    </label>
   );
 }

@@ -1,286 +1,50 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
-import {
-  Skeleton,
-} from '@/components/ui/skeleton';
+function CardSkeleton() {
+  return (
+    <Card className="gap-0 rounded-lg py-0 shadow-none">
+      <CardHeader className="px-3 py-2">
+        <Skeleton className="h-2.5 w-16" />
+      </CardHeader>
+      <CardContent className="space-y-1 px-3 pb-2.5 pt-0">
+        <Skeleton className="h-4 w-16" />
+        <Skeleton className="h-2.5 w-24" />
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function DashboardSkeleton() {
   return (
-    <div className="space-y-8">
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-
-        <div className="space-y-2">
-
-          <Skeleton className="h-8 w-72" />
-
-          <Skeleton className="h-4 w-56" />
-
+    <div className="space-y-3">
+      <div className="flex items-center justify-between gap-2 border-b pb-2">
+        <Skeleton className="h-4 w-28" />
+        <div className="flex gap-1">
+          <Skeleton className="h-5 w-12 rounded-md" />
+          <Skeleton className="h-5 w-16 rounded-md" />
+          <Skeleton className="h-5 w-10 rounded-md" />
         </div>
-
-        <Skeleton className="h-10 w-32 rounded-full" />
-
       </div>
 
-      {/* Overview */}
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-
-        {Array.from({ length: 4 }).map((_, index) => (
-
-          <Card key={index}>
-
-            <CardHeader className="flex flex-row items-center justify-between pb-3">
-
-              <Skeleton className="h-4 w-24" />
-
-              <Skeleton className="h-5 w-5 rounded-md" />
-
-            </CardHeader>
-
-            <CardContent className="space-y-3">
-
-              <Skeleton className="h-8 w-28" />
-
-              <Skeleton className="h-3 w-36" />
-
-            </CardContent>
-
-          </Card>
-
-        ))}
-
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {Array.from({ length: 4 }, (_, index) => <CardSkeleton key={index} />)}
       </div>
 
-      {/* Charts */}
-      <div className="grid gap-6 lg:grid-cols-2">
-
-        {Array.from({ length: 2 }).map((_, index) => (
-
-          <Card key={index}>
-
-            <CardHeader>
-
-              <Skeleton className="h-5 w-40" />
-
-            </CardHeader>
-
-            <CardContent>
-
-              <Skeleton className="h-72 w-full rounded-xl" />
-
-            </CardContent>
-
-          </Card>
-
-        ))}
-
-      </div>
-
-      {/* Subscription Analytics */}
-      <section className="space-y-4">
-
-        <Skeleton className="h-6 w-56" />
-
-        <Skeleton className="h-4 w-72" />
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-
-          {Array.from({ length: 4 }).map((_, index) => (
-
-            <Card key={index}>
-
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-
-                <Skeleton className="h-4 w-28" />
-
-                <Skeleton className="h-5 w-5 rounded-md" />
-
-              </CardHeader>
-
-              <CardContent className="space-y-3">
-
-                <Skeleton className="h-8 w-24" />
-
-                <Skeleton className="h-3 w-32" />
-
-              </CardContent>
-
-            </Card>
-
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* Prediction Analytics */}
-      <section className="space-y-4">
-
-        <Skeleton className="h-6 w-56" />
-
-        <Skeleton className="h-4 w-72" />
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-
-          {Array.from({ length: 8 }).map((_, index) => (
-
-            <Card key={index}>
-
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-
-                <Skeleton className="h-4 w-28" />
-
-                <Skeleton className="h-5 w-5 rounded-md" />
-
-              </CardHeader>
-
-              <CardContent className="space-y-3">
-
-                <Skeleton className="h-8 w-24" />
-
-              </CardContent>
-
-            </Card>
-
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* Marketing */}
-      <section className="space-y-4">
-
-        <Skeleton className="h-6 w-40" />
-
-        <Skeleton className="h-4 w-72" />
-
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-
-          {Array.from({ length: 8 }).map((_, index) => (
-
-            <Card key={index}>
-
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-
-                <Skeleton className="h-4 w-24" />
-
-                <Skeleton className="h-5 w-5 rounded-md" />
-
-              </CardHeader>
-
-              <CardContent className="space-y-3">
-
-                <Skeleton className="h-8 w-24" />
-
-                <Skeleton className="h-3 w-32" />
-
-              </CardContent>
-
-            </Card>
-
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* Referral Program */}
-      <section className="space-y-4">
-
-        <Skeleton className="h-6 w-44" />
-
-        <Skeleton className="h-4 w-72" />
-
-        <div className="grid gap-5 md:grid-cols-3">
-
-          {Array.from({ length: 3 }).map((_, index) => (
-
-            <Card key={index}>
-
-              <CardHeader className="flex flex-row items-center justify-between pb-3">
-
-                <Skeleton className="h-4 w-24" />
-
-                <Skeleton className="h-5 w-5 rounded-md" />
-
-              </CardHeader>
-
-              <CardContent className="space-y-3">
-
-                <Skeleton className="h-8 w-24" />
-
-              </CardContent>
-
-            </Card>
-
-          ))}
-
-        </div>
-
-      </section>
-
-      {/* Leaderboards */}
-      <section className="space-y-4">
-
-        <Skeleton className="h-6 w-48" />
-
-        <div className="grid gap-6 lg:grid-cols-2">
-
-          {Array.from({ length: 5 }).map((_, index) => (
-
-            <Card key={index}>
-
-              <CardHeader>
-
-                <Skeleton className="h-5 w-44" />
-
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-
-                {Array.from({ length: 5 }).map((__, row) => (
-
-                  <div
-                    key={row}
-                    className="flex items-center justify-between"
-                  >
-
-                    <div className="flex items-center gap-3">
-
-                      <Skeleton className="h-9 w-9 rounded-full" />
-
-                      <div className="space-y-2">
-
-                        <Skeleton className="h-4 w-28" />
-
-                        <Skeleton className="h-3 w-20" />
-
-                      </div>
-
-                    </div>
-
-                    <Skeleton className="h-5 w-10" />
-
-                  </div>
-
-                ))}
-
-              </CardContent>
-
-            </Card>
-
-          ))}
-
-        </div>
-
-      </section>
-
+      {[
+        { count: 5, columns: 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-5' },
+        { count: 5, columns: 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-5' },
+        { count: 9, columns: 'grid-cols-2 min-[480px]:grid-cols-3 sm:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-9' },
+        { count: 8, columns: 'grid-cols-2 sm:grid-cols-4 xl:grid-cols-8' },
+        { count: 3, columns: 'grid-cols-2 sm:grid-cols-3' },
+      ].map(({ count, columns }, sectionIndex) => (
+        <section key={sectionIndex} className="space-y-2">
+          <Skeleton className="h-3 w-28" />
+          <div className={`grid gap-2 ${columns}`}>
+            {Array.from({ length: count }, (_, index) => <CardSkeleton key={index} />)}
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

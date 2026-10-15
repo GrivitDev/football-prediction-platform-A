@@ -1,127 +1,60 @@
 'use client';
-
 import {
   LucideIcon,
 } from 'lucide-react';
-
-
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-
-
-
-
 interface AdAnalyticsCardProps {
-
-
-  title:string;
-
-
-  value:number | string;
-
-
-  icon:LucideIcon;
-
-
-  description?:string;
-
-
+  title: string;
+  value: number | string;
+  icon: LucideIcon;
+  description?: string;
 }
-
-
-
-
-
 export function AdAnalyticsCard({
-
   title,
-
   value,
-
-  icon:Icon,
-
+  icon: Icon,
   description,
-
-}:AdAnalyticsCardProps){
-
-
-
+}: AdAnalyticsCardProps) {
   return (
-
-    <Card className="surface">
-
-
-      <CardHeader
-        className="
-          flex
-          flex-row
-          items-center
-          justify-between
-          space-y-0
-          pb-2
-        "
-      >
-
-
+    <Card className="surface py-0">
+      <CardHeader className="px-3 pt-3 pb-1.5 flex flex-row items-center justify-between space-y-0">
         <CardTitle
           className="
-            text-sm
+            text-xs
             font-medium
           "
         >
-
           {title}
-
         </CardTitle>
-
-
-
-
         <Icon
           className="
-            size-5
+            size-4
             text-muted-foreground
           "
         />
-
-
-
       </CardHeader>
-
-
-
-
-      <CardContent>
-
-
+      <CardContent className="px-3 pb-3 pt-0">
         <div
           className="
-            text-2xl
+            text-lg
             font-bold
           "
         >
-
           {
             typeof value === 'number'
-            ?
-            value.toLocaleString()
-            :
-            value
+              ?
+              value.toLocaleString()
+              :
+              value
           }
-
         </div>
-
-
-
-
         {
           description && (
-
             <p
               className="
                 mt-1
@@ -129,21 +62,11 @@ export function AdAnalyticsCard({
                 text-muted-foreground
               "
             >
-
               {description}
-
             </p>
-
           )
         }
-
-
-
       </CardContent>
-
-
     </Card>
-
   );
-
 }

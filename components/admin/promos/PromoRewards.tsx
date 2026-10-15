@@ -83,7 +83,7 @@ export default function PromoRewards({
       <Card>
 
 
-        <CardHeader>
+        <CardHeader className="px-4 py-3">
 
           <CardTitle>
 
@@ -94,7 +94,7 @@ export default function PromoRewards({
         </CardHeader>
 
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
 
 
           <Skeleton className="h-12 w-full"/>
@@ -122,7 +122,7 @@ export default function PromoRewards({
     <Card>
 
 
-      <CardHeader>
+      <CardHeader className="px-4 py-3">
 
 
         <CardTitle>
@@ -138,7 +138,7 @@ export default function PromoRewards({
 
 
 
-      <CardContent>
+      <CardContent className="px-4 pb-4 pt-0">
 
 
         {
@@ -153,7 +153,7 @@ export default function PromoRewards({
           ) : (
 
 
-            <div className="space-y-4">
+            <div className="space-y-3">
 
 
               {
@@ -171,7 +171,7 @@ export default function PromoRewards({
                       justify-between
                       rounded-lg
                       border
-                      p-4
+                      p-3
                       "
 
                     >
@@ -206,7 +206,7 @@ export default function PromoRewards({
 
 
 
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
 
 
                         {

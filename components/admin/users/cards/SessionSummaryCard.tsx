@@ -46,7 +46,7 @@ export default function SessionSummaryCard({
       rounded-3xl
       border
       bg-card/60
-      p-6
+      p-4
       shadow-xl
       backdrop-blur-xl
       transition
@@ -69,7 +69,7 @@ export default function SessionSummaryCard({
 
       <div className="
         relative
-        space-y-6
+        space-y-3
       ">
 
 
@@ -79,7 +79,7 @@ export default function SessionSummaryCard({
         <div className="
           flex
           items-center
-          gap-3
+          gap-2
         ">
 
 
@@ -134,7 +134,7 @@ export default function SessionSummaryCard({
         <div className="
           grid
           grid-cols-2
-          gap-4
+          gap-3
         ">
 
 
@@ -183,14 +183,14 @@ export default function SessionSummaryCard({
           rounded-2xl
           border
           bg-background/40
-          p-4
+          p-3
         ">
 
 
           <div className="
             flex
             items-center
-            gap-2
+            gap-1.5
             text-xs
             text-muted-foreground
           ">
@@ -204,7 +204,7 @@ export default function SessionSummaryCard({
 
 
           <p className="
-            mt-2
+            mt-1
             text-sm
             font-semibold
           ">
@@ -228,11 +228,11 @@ export default function SessionSummaryCard({
         <div className="
           flex
           items-center
-          gap-2
+          gap-1.5
           rounded-xl
           bg-blue-500/10
-          px-3
-          py-2
+          px-2
+          py-1.5
           text-xs
           text-blue-500
         ">
@@ -280,14 +280,14 @@ function Stat({
       rounded-xl
       border
       bg-background/30
-      p-3
+      p-2
     ">
 
 
       <div className="
         flex
         items-center
-        gap-2
+        gap-1.5
         text-xs
         text-muted-foreground
       ">
@@ -301,7 +301,7 @@ function Stat({
 
 
       <p className="
-        mt-2
+        mt-1
         text-xl
         font-bold
       ">

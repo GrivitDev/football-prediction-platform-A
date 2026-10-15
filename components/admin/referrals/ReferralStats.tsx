@@ -108,7 +108,7 @@ export default function ReferralStats({
 
   return (
 
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
 
 
       {
@@ -125,7 +125,7 @@ export default function ReferralStats({
               className="surface-card"
             >
 
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
 
 
                 <CardTitle className="text-sm font-medium">
@@ -142,7 +142,7 @@ export default function ReferralStats({
 
 
 
-              <CardContent>
+              <CardContent className="px-4 pb-4 pt-0">
 
 
                 <div className="text-2xl font-bold">

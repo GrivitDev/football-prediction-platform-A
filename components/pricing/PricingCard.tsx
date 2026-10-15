@@ -11,28 +11,20 @@ import {
 import type { PaymentCurrency } from '@/services/payment-gateway.service';
 
 interface PricingPlan {
-  id: 'free' | 'regular' | 'vip';
-
+  id: 'free' | 'regular' | 'vip' | 'premium';
   name: string;
-
   price: number;
-
   description: string;
-
   features: string[];
-
-  popular?: boolean;
 }
 
 interface PricingCardProps {
   plan: PricingPlan;
-
   currency: PaymentCurrency;
-
   subscriptionDurationDays: number;
-
+  premiumDurationDays: number;
   onSelect: (
-    id: 'free' | 'regular' | 'vip'
+    id: 'free' | 'regular' | 'vip' | 'premium',
   ) => void;
 }
 
@@ -40,12 +32,12 @@ export default function PricingCard({
   plan,
   currency,
   subscriptionDurationDays,
+  premiumDurationDays,
   onSelect,
 }: PricingCardProps) {
   const handleSelectPlan = () => {
     if (plan.id === 'free') {
       window.location.href = '/register';
-
       return;
     }
 
@@ -56,6 +48,7 @@ export default function PricingCard({
     free: ShieldCheck,
     regular: Trophy,
     vip: Crown,
+    premium: Sparkles,
   };
 
   const cardStyles = {
@@ -65,14 +58,13 @@ export default function PricingCard({
     `,
 
     regular: `
-      border-blue-500
+      border-blue-500/40
       bg-gradient-to-br
       from-blue-500/10
       via-blue-500/5
       to-background
-      shadow-xl
-      shadow-blue-500/20
-      lg:scale-105
+      shadow-lg
+      shadow-blue-500/10
     `,
 
     vip: `
@@ -81,8 +73,18 @@ export default function PricingCard({
       from-yellow-500/10
       via-background
       to-background
-      shadow-xl
-      shadow-yellow-500/15
+      shadow-lg
+      shadow-yellow-500/10
+    `,
+
+    premium: `
+      border-amber-500/40
+      bg-gradient-to-b
+      from-amber-500/12
+      via-background
+      to-background
+      shadow-lg
+      shadow-amber-500/10
     `,
   };
 
@@ -103,210 +105,180 @@ export default function PricingCard({
       bg-yellow-500/15
       text-yellow-500
     `,
+
+    premium: `
+      bg-amber-500/15
+      text-amber-500
+      ring-2
+      ring-amber-500/20
+    `,
+  };
+
+  const buttonStyles = {
+    free: `
+      bg-primary
+      text-primary-foreground
+      hover:opacity-90
+    `,
+
+    regular: `
+      bg-primary
+      text-primary-foreground
+      hover:opacity-90
+    `,
+
+    vip: `
+      bg-yellow-500
+      text-black
+      hover:bg-yellow-400
+    `,
+
+    premium: `
+      bg-amber-500
+      text-black
+      hover:bg-amber-400
+    `,
   };
 
   const buttonText = {
     free: 'Create Free Account',
-
-    regular: 'Subscribe Now',
-
-    vip: 'Become VIP Member',
+    regular: 'Subscribe',
+    vip: 'Subscribe',
+    premium: 'Get Premium',
   };
 
   const Icon = icons[plan.id];
 
   const currencySymbol =
-    currency === 'USD'
-      ? '$'
-      : '₦';
+    currency === 'USD' ? '$' : '₦';
+
+  const duration =
+    plan.id === 'premium'
+      ? premiumDurationDays === 0
+        ? 'Lifetime'
+        : `${premiumDurationDays} Days`
+      : plan.id === 'free'
+        ? null
+        : `${subscriptionDurationDays} Days`;
 
   return (
     <div
       className={`
         relative
-        rounded-3xl
+        rounded-2xl
         border
-        p-8
+        p-5
         transition-all
-        duration-500
-        hover:-translate-y-2
-        hover:shadow-2xl
+        duration-300
+        hover:-translate-y-1
+        hover:shadow-xl
         ${cardStyles[plan.id]}
       `}
     >
-      {plan.id === 'vip' && (
-        <div
-          className="
-            pointer-events-none
-            absolute
-            inset-0
-            bg-gradient-to-br
-            from-yellow-500/5
-            via-transparent
-            to-yellow-300/10
-          "
-        />
-      )}
-
-      {plan.popular && (
-        <div
-          className="
-            absolute
-            left-1/2
-            top-0
-            flex
-            -translate-x-1/2
-            -translate-y-1/2
-            items-center
-            gap-2
-            rounded-full
-            bg-blue-600
-            px-5
-            py-2
-            text-xs
-            font-bold
-            tracking-wider
-            text-white
-            shadow-xl
-            shadow-blue-500/30
-          "
-        >
-          <Sparkles size={14} />
-
-          MOST POPULAR
-        </div>
-      )}
-
-      <div className="relative">
-
-        {/* Plan Header */}
-
-        <div className="flex items-center gap-4">
-
+      <div className="space-y-5">
+        <div className="flex items-center gap-3">
           <div
             className={`
               flex
-              h-16
-              w-16
+              h-11
+              w-11
+              shrink-0
               items-center
               justify-center
-              rounded-2xl
+              rounded-xl
               ${iconStyles[plan.id]}
             `}
           >
-            <Icon size={30} />
+            <Icon size={21} />
           </div>
 
-          <div>
-
-            <h2 className="text-2xl font-black">
+          <div className="min-w-0">
+            <h2 className="truncate text-lg font-bold">
               {plan.name}
             </h2>
 
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-0.5 text-xs leading-5 text-muted-foreground">
               {plan.description}
             </p>
-
           </div>
-
         </div>
 
-        {/* Price */}
-
-        <div className="mt-8">
-
+        <div>
           {plan.price === 0 ? (
-            <div>
-              <span className="text-5xl font-black">
-                {currencySymbol}0
-              </span>
-            </div>
+            <span className="text-4xl font-black">
+              {currencySymbol}0
+            </span>
           ) : (
-            <div className="flex items-end gap-2">
-
-              <span className="text-5xl font-black">
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-black tracking-tight">
                 {currencySymbol}
                 {plan.price.toLocaleString()}
               </span>
 
-              <span className="mb-2 text-muted-foreground">
-                /{subscriptionDurationDays} Days
-              </span>
-
+              {duration && (
+                <span className="text-xs text-muted-foreground">
+                  / {duration}
+                </span>
+              )}
             </div>
           )}
 
+          {plan.id === 'premium' &&
+            premiumDurationDays === 0 && (
+              <p className="mt-1 text-xs font-medium text-amber-600 dark:text-amber-400">
+                Lifetime access
+              </p>
+            )}
         </div>
 
-        {/* Features */}
-
-        <div className="mt-10">
-
-          <ul className="space-y-4">
-
-            {plan.features.map((feature) => (
-              <li
-                key={feature}
-                className="flex items-start gap-3"
+        <ul className="space-y-2.5">
+          {plan.features.map((feature) => (
+            <li
+              key={feature}
+              className="flex items-start gap-2.5"
+            >
+              <span
+                className="
+                  mt-0.5
+                  flex
+                  h-5
+                  w-5
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-green-500/10
+                "
               >
-                <div
-                  className="
-                    mt-0.5
-                    rounded-full
-                    bg-green-500/10
-                    p-1
-                  "
-                >
-                  <Check
-                    size={14}
-                    className="text-green-500"
-                  />
-                </div>
+                <Check
+                  size={12}
+                  className="text-green-500"
+                />
+              </span>
 
-                <span className="text-sm leading-6">
-                  {feature}
-                </span>
-              </li>
-            ))}
-
-          </ul>
-
-        </div>
-
-        {/* Action */}
+              <span className="text-xs leading-5 sm:text-sm">
+                {feature}
+              </span>
+            </li>
+          ))}
+        </ul>
 
         <button
+          type="button"
           onClick={handleSelectPlan}
           className={`
-            mt-10
-            flex
             w-full
-            items-center
-            justify-center
             rounded-xl
-            py-3.5
+            px-4
+            py-3
+            text-sm
             font-bold
-            transition-all
-            duration-300
-
-            ${
-              plan.id === 'vip'
-                ? `
-                  bg-yellow-500
-                  text-black
-                  hover:bg-yellow-400
-                `
-                : `
-                  bg-primary
-                  text-primary-foreground
-                  hover:opacity-90
-                `
-            }
+            transition
+            ${buttonStyles[plan.id]}
           `}
         >
           {buttonText[plan.id]}
         </button>
-
       </div>
     </div>
   );

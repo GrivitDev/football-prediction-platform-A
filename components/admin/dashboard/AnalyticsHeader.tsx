@@ -1,57 +1,30 @@
+import { Badge } from '@/components/ui/badge';
+import { TrendingUp, Users, Wallet } from 'lucide-react';
+import type { AnalyticsDashboardResponse } from '@/types/analytics.types';
 
-
-import {
-  Badge,
-} from '@/components/ui/badge';
-
-
-import {
-  TrendingUp,
-  Users,
-  Wallet,
-} from 'lucide-react';
-
-import {
-  AnalyticsDashboardResponse,
-} from '@/types/analytics.types';
-
-interface Props {
+interface AnalyticsHeaderProps {
   data: AnalyticsDashboardResponse;
 }
 
-export default function AnalyticsHeader({
-  data,
-}: Props) {
+export default function AnalyticsHeader({ data }: AnalyticsHeaderProps) {
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Admin Analytics
-        </h1>
-      </div>
+    <header className="flex min-w-0 flex-wrap items-center justify-between gap-x-3 gap-y-2 border-b pb-2">
+      <h1 className="text-base font-semibold tracking-tight">Admin Analytics</h1>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge
-          variant="secondary"
-          className="gap-2 px-3 py-1"
-        >
-          <Users size={14} />
-          {data.users.totalUsers.toLocaleString()} Users
+      <div className="flex flex-wrap items-center gap-1">
+        <Badge variant="secondary" className="h-5 gap-1 rounded-md px-1.5 text-[9px] font-medium">
+          <Users size={11} aria-hidden="true" />
+          <span>{data.users.totalUsers.toLocaleString()}</span>
         </Badge>
-
-        <Badge
-          variant="secondary"
-          className="gap-2 px-3 py-1"
-        >
-          <Wallet size={14} />
-          ₦{data.revenue.totalRevenue.NGN.toLocaleString()}
+        <Badge variant="secondary" className="h-5 gap-1 rounded-md px-1.5 text-[9px] font-medium">
+          <Wallet size={11} aria-hidden="true" />
+          <span>₦{data.revenue.totalRevenue.NGN.toLocaleString()}</span>
         </Badge>
-
-        <Badge className="gap-2 px-3 py-1">
-          <TrendingUp size={14} />
-          Live Metrics
+        <Badge className="h-5 gap-1 rounded-md px-1.5 text-[9px] font-medium">
+          <TrendingUp size={11} aria-hidden="true" />
+          Live
         </Badge>
       </div>
-    </div>
+    </header>
   );
 }

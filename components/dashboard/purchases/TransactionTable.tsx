@@ -1,704 +1,149 @@
 'use client';
 
 import {
-  Wallet,
-  Crown,
-  ShoppingBag,
   CreditCard,
+  Crown,
+  Sparkles,
+  Wallet,
 } from 'lucide-react';
 
-import {
-  StatusBadge,
-} from '@/components/dashboard/shared/StatusBadge';
-
-import {
-  EmptyState,
-} from '@/components/dashboard/shared/EmptyState';
-
-import {
-  useAuth,
-} from '@/providers/auth-provider';
-
-
-// ============================================================
-// TYPES
-// ============================================================
+import { StatusBadge } from '@/components/dashboard/shared/StatusBadge';
+import { EmptyState } from '@/components/dashboard/shared/EmptyState';
 
 interface Props {
   loading: boolean;
   payments: any[];
 }
 
+function isSubscriptionPayment(payment: any) {
+  return payment?.type === 'subscription' || payment?.type === 'vip_upgrade';
+}
 
-// ============================================================
-// COMPONENT
-// ============================================================
+export default function TransactionTable({ loading, payments }: Props) {
+  if (loading) return null;
 
-export default function TransactionTable({
-  loading,
-  payments,
-}: Props) {
+  // Protect the payment history UI from old records created under the removed
+  // single-prediction purchase model, even if a caller passes them in.
+  const visiblePayments = (Array.isArray(payments) ? payments : []).filter(
+    isSubscriptionPayment,
+  );
 
-  // ==========================================================
-  // AUTH
-  // ==========================================================
-
-  const {
-    user,
-  } = useAuth();
-
-
-  // ==========================================================
-  // CURRENCY
-  // ==========================================================
-
-  const currency =
-    user?.currency ?? 'NGN';
-
-
-  // ==========================================================
-  // LOADING
-  // ==========================================================
-
-  if (loading) {
-
-    return null;
-
-  }
-
-
-  // ==========================================================
-  // EMPTY
-  // ==========================================================
-
-  if (!payments.length) {
-
+  if (!visiblePayments.length) {
     return (
-
       <EmptyState
         icon={Wallet}
         title="No transactions yet"
-        description="
-          Your payments will appear here after submission.
-        "
+        description="Your subscription payments will appear here after submission."
       />
-
     );
-
   }
 
-
-  // ==========================================================
-  // PAYMENT TYPE
-  // ==========================================================
-
-  function getType(
-    payment: any,
-  ) {
-
-    switch (payment.type) {
-
-      case 'subscription':
-        return 'Subscription';
-
-      case 'vip_upgrade':
-        return 'VIP Upgrade';
-
-      case 'prediction':
-        return 'Prediction Purchase';
-
-      default:
-        return payment.type;
-
-    }
-
+  function getType(payment: any) {
+    return payment.type === 'subscription' ? 'Subscription' : 'VIP Upgrade';
   }
 
-
-  // ==========================================================
-  // PAYMENT ITEM
-  // ==========================================================
-
-  function getItem(
-    payment: any,
-  ) {
-
-    switch (payment.type) {
-
-      case 'subscription':
-
-        return `${
-          payment.target?.toUpperCase()
-        } Plan`;
-
-
-      case 'prediction':
-
-        return (
-          payment.prediction?.match ||
-          payment.target ||
-          'Prediction'
-        );
-
-
-      default:
-
-        return '-';
-
-    }
-
+  function getItem(payment: any) {
+    return payment.type === 'subscription'
+      ? `${payment.target?.toUpperCase() || 'SUBSCRIPTION'} Plan`
+      : 'VIP Plan';
   }
 
-
-  // ==========================================================
-  // FORMAT AMOUNT
-  // ==========================================================
-
-  function formatAmount(
-    amount: number,
-  ) {
-
-    return new Intl.NumberFormat(
-      currency === 'USD'
-        ? 'en-US'
-        : 'en-NG',
-      {
-        style: 'currency',
-        currency,
-        maximumFractionDigits: 0,
-      },
-    ).format(amount);
-
-  }
-
-
-  // ==========================================================
-  // FORMAT DATE
-  // ==========================================================
-
-  function formatDate(
-    date: string,
-  ) {
-
-    return new Date(
-      date,
-    ).toLocaleDateString(
-      'en-GB',
-      {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-      },
-    );
-
-  }
-
-
-  // ==========================================================
-  // ICON
-  // ==========================================================
-
-  function getIcon(
-    type: string,
-  ) {
-
-    if (
-      type === 'VIP Upgrade'
-    ) {
-
-      return Crown;
-
-    }
-
-
-    if (
-      type === 'Prediction Purchase'
-    ) {
-
-      return ShoppingBag;
-
-    }
-
-
+  function getPlanIcon(payment: any) {
+    if (payment.target === 'premium') return Sparkles;
+    if (payment.target === 'vip' || payment.type === 'vip_upgrade') return Crown;
     return CreditCard;
-
   }
 
+  function formatAmount(amount: number, currency: 'NGN' | 'USD') {
+    return new Intl.NumberFormat(currency === 'USD' ? 'en-US' : 'en-NG', {
+      style: 'currency',
+      currency,
+      maximumFractionDigits: 0,
+    }).format(amount);
+  }
 
-  // ==========================================================
-  // RENDER
-  // ==========================================================
+  function formatDate(date: string) {
+    const parsed = new Date(date);
+    return Number.isNaN(parsed.getTime())
+      ? '—'
+      : parsed.toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+        });
+  }
 
   return (
-
-    <div
-      className="
-        space-y-5
-      "
-    >
-
-      {/* ================================================== */}
-      {/* DESKTOP */}
-      {/* ================================================== */}
-
-      <div
-        className="
-          hidden
-          overflow-hidden
-          rounded-3xl
-          border
-          border-border/60
-          bg-card/50
-          backdrop-blur-xl
-          md:block
-        "
-      >
-
-        <table
-          className="
-            w-full
-            text-sm
-          "
-        >
-
-          {/* HEADER */}
-
+    <div className="space-y-3">
+      <div className="hidden overflow-hidden rounded-lg border border-border bg-card md:block">
+        <table className="w-full text-xs">
           <thead>
-
-            <tr
-              className="
-                border-b
-                bg-muted/30
-                text-muted-foreground
-              "
-            >
-
-              {
-                [
-                  'Type',
-                  'Item',
-                  'Amount',
-                  'Status',
-                  'Date',
-                ].map(
-                  (header) => (
-
-                    <th
-                      key={header}
-                      className="
-                        px-6
-                        py-5
-                        text-left
-                        font-medium
-                      "
-                    >
-
-                      {header}
-
-                    </th>
-
-                  ),
-                )
-              }
-
+            <tr className="border-b bg-muted/30 text-muted-foreground">
+              {['Type', 'Item', 'Amount', 'Status', 'Date'].map((header) => (
+                <th key={header} className="px-3 py-2.5 text-left text-[11px] font-medium">
+                  {header}
+                </th>
+              ))}
             </tr>
-
           </thead>
-
-
-          {/* BODY */}
-
           <tbody>
-
-            {
-              payments.map(
-                (payment) => (
-
-                  <tr
-                    key={
-                      payment._id
-                    }
-                    className="
-                      border-b
-                      transition-all
-                      hover:bg-muted/20
-                    "
-                  >
-
-                    {/* TYPE */}
-
-                    <td
-                      className="
-                        px-6
-                        py-5
-                        font-semibold
-                      "
-                    >
-
-                      {
-                        getType(
-                          payment,
-                        )
-                      }
-
-                    </td>
-
-
-                    {/* ITEM */}
-
-                    <td
-                      className="
-                        px-6
-                        py-5
-                        text-muted-foreground
-                      "
-                    >
-
-                      {
-                        getItem(
-                          payment,
-                        )
-                      }
-
-                    </td>
-
-
-                    {/* AMOUNT */}
-
-                    <td
-                      className="
-                        px-6
-                        py-5
-                        font-bold
-                      "
-                    >
-
-                      {
-                        formatAmount(
-                          Number(
-                            payment.amount || 0,
-                          ),
-                        )
-                      }
-
-                    </td>
-
-
-                    {/* STATUS */}
-
-                    <td
-                      className="
-                        px-6
-                        py-5
-                      "
-                    >
-
-                      <StatusBadge
-                        status={
-                          payment.status
-                        }
-                      />
-
-                    </td>
-
-
-                    {/* DATE */}
-
-                    <td
-                      className="
-                        px-6
-                        py-5
-                        text-muted-foreground
-                      "
-                    >
-
-                      {
-                        formatDate(
-                          payment.createdAt,
-                        )
-                      }
-
-                    </td>
-
-                  </tr>
-
-                ),
-              )
-            }
-
-          </tbody>
-
-        </table>
-
-      </div>
-
-
-      {/* ================================================== */}
-      {/* MOBILE */}
-      {/* ================================================== */}
-
-      <div
-        className="
-          space-y-4
-          md:hidden
-        "
-      >
-
-        {
-          payments.map(
-            (payment) => {
-
-              const Icon =
-                getIcon(
-                  getType(
-                    payment,
-                  ),
-                );
-
-
+            {visiblePayments.map((payment) => {
+              const currency = payment.currency === 'USD' ? 'USD' : 'NGN';
               return (
-
-                <div
-                  key={
-                    payment._id
-                  }
-                  className="
-                    group
-                    relative
-                    mb-8
-                    overflow-hidden
-                    rounded-3xl
-                    border
-                    border-border/60
-                    bg-gradient-to-br
-                    from-primary/10
-                    via-background
-                    to-background
-                    p-5
-                    transition-all
-                    duration-300
-                    hover:-translate-y-1
-                    hover:shadow-xl
-                  "
-                >
-
-                  {/* DECORATIVE GLOW */}
-
-                  <div
-                    className="
-                      absolute
-                      -right-10
-                      -top-10
-                      h-32
-                      w-32
-                      rounded-full
-                      bg-primary/20
-                      blur-3xl
-                    "
-                  />
-
-
-                  <div
-                    className="
-                      relative
-                      space-y-5
-                    "
-                  >
-
-                    {/* TYPE + STATUS */}
-
-                    <div
-                      className="
-                        flex
-                        items-center
-                        justify-between
-                      "
-                    >
-
-                      <div
-                        className="
-                          flex
-                          items-center
-                          gap-3
-                        "
-                      >
-
-                        {/* ICON */}
-
-                        <div
-                          className="
-                            flex
-                            h-11
-                            w-11
-                            items-center
-                            justify-center
-                            rounded-xl
-                            bg-primary/10
-                            text-primary
-                          "
-                        >
-
-                          <Icon
-                            className="
-                              h-5
-                              w-5
-                            "
-                          />
-
-                        </div>
-
-
-                        {/* DETAILS */}
-
-                        <div>
-
-                          <p
-                            className="
-                              font-bold
-                            "
-                          >
-
-                            {
-                              getType(
-                                payment,
-                              )
-                            }
-
-                          </p>
-
-
-                          <p
-                            className="
-                              text-xs
-                              text-muted-foreground
-                            "
-                          >
-
-                            {
-                              getItem(
-                                payment,
-                              )
-                            }
-
-                          </p>
-
-                        </div>
-
-                      </div>
-
-
-                      {/* STATUS */}
-
-                      <StatusBadge
-                        status={
-                          payment.status
-                        }
-                      />
-
-                    </div>
-
-
-                    {/* AMOUNT + DATE */}
-
-                    <div
-                      className="
-                        flex
-                        items-end
-                        justify-between
-                      "
-                    >
-
-                      {/* AMOUNT */}
-
-                      <div>
-
-                        <p
-                          className="
-                            text-xs
-                            text-muted-foreground
-                          "
-                        >
-
-                          Amount
-
-                        </p>
-
-
-                        <p
-                          className="
-                            mt-1
-                            text-2xl
-                            font-black
-                          "
-                        >
-
-                          {
-                            formatAmount(
-                              Number(
-                                payment.amount ||
-                                0,
-                              ),
-                            )
-                          }
-
-                        </p>
-
-                      </div>
-
-
-                      {/* DATE */}
-
-                      <div
-                        className="
-                          text-right
-                        "
-                      >
-
-                        <p
-                          className="
-                            text-xs
-                            text-muted-foreground
-                          "
-                        >
-
-                          Date
-
-                        </p>
-
-
-                        <p
-                          className="
-                            mt-1
-                            font-medium
-                          "
-                        >
-
-                          {
-                            formatDate(
-                              payment.createdAt,
-                            )
-                          }
-
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
+                <tr key={payment._id} className="border-b last:border-0 hover:bg-muted/20">
+                  <td className="px-3 py-2.5 font-medium">{getType(payment)}</td>
+                  <td className="px-3 py-2.5 text-muted-foreground">{getItem(payment)}</td>
+                  <td className="px-3 py-2.5 font-semibold">
+                    {formatAmount(Number(payment.amount || 0), currency)}
+                  </td>
+                  <td className="px-3 py-2.5">
+                    <StatusBadge status={payment.status} />
+                  </td>
+                  <td className="px-3 py-2.5 text-muted-foreground">
+                    {formatDate(payment.createdAt)}
+                  </td>
+                </tr>
               );
-
-            },
-          )
-        }
-
+            })}
+          </tbody>
+        </table>
       </div>
 
+      <div className="space-y-2 md:hidden">
+        {visiblePayments.map((payment) => {
+          const Icon = getPlanIcon(payment);
+          const currency = payment.currency === 'USD' ? 'USD' : 'NGN';
+
+          return (
+            <div key={payment._id} className="rounded-lg border border-border bg-card p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+                    <Icon className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{getType(payment)}</p>
+                    <p className="truncate text-[11px] text-muted-foreground">{getItem(payment)}</p>
+                  </div>
+                </div>
+                <StatusBadge status={payment.status} />
+              </div>
+              <div className="mt-3 flex items-end justify-between gap-3 border-t pt-2.5">
+                <div>
+                  <p className="text-[10px] text-muted-foreground">Amount</p>
+                  <p className="mt-0.5 text-base font-semibold">
+                    {formatAmount(Number(payment.amount || 0), currency)}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-muted-foreground">Date</p>
+                  <p className="mt-0.5 text-xs font-medium">{formatDate(payment.createdAt)}</p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
-
   );
-
 }

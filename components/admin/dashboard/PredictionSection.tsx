@@ -6,110 +6,57 @@ import {
   XCircle,
   ShieldAlert,
   Clock,
+  Sparkles,
 } from 'lucide-react';
-
 import AnalyticsCard from './AnalyticsCard';
-
-import {
-  AnalyticsPredictions,
-} from '@/types/analytics.types';
+import type { AnalyticsPredictions } from '@/types/analytics.types';
 
 interface Props {
   predictions: AnalyticsPredictions;
 }
 
-export default function PredictionSection({
-  predictions,
-}: Props) {
+type ExtendedPredictions = AnalyticsPredictions & {
+  premiumPredictions?: number;
+};
+
+const numberClass = 'text-base font-semibold leading-5 tracking-tight tabular-nums';
+
+export default function PredictionSection({ predictions }: Props) {
+  const extended = predictions as ExtendedPredictions;
+
   return (
-    <section className="space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">
-          Prediction Performance
-        </h2>
-      </div>
+    <section className="space-y-2">
+      <h2 className="text-xs font-semibold tracking-tight">Prediction Performance</h2>
 
-      <div
-        className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-4
-          gap-5
-        "
-      >
-        <AnalyticsCard
-          title="Total Predictions"
-          icon={Target}
-          highlight
-        >
-          <p className="text-3xl font-bold">
-            {predictions.totalPredictions.toLocaleString()}
-          </p>
+      <div className="grid grid-cols-2 gap-2 min-[480px]:grid-cols-3 sm:grid-cols-4 xl:grid-cols-6 2xl:grid-cols-9">
+        <AnalyticsCard title="Total" icon={Target} highlight>
+          <p className={numberClass}>{predictions.totalPredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="VIP Predictions"
-          icon={Crown}
-        >
-          <p className="text-3xl font-bold">
-            {predictions.vipPredictions.toLocaleString()}
-          </p>
+        <AnalyticsCard title="Free" icon={Target}>
+          <p className={numberClass}>{predictions.freePredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="Regular Predictions"
-          icon={Users}
-        >
-          <p className="text-3xl font-bold">
-            {predictions.regularPredictions.toLocaleString()}
-          </p>
+        <AnalyticsCard title="Regular" icon={Users}>
+          <p className={numberClass}>{predictions.regularPredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="Free Predictions"
-          icon={Target}
-        >
-          <p className="text-3xl font-bold">
-            {predictions.freePredictions.toLocaleString()}
-          </p>
+        <AnalyticsCard title="VIP" icon={Crown}>
+          <p className={numberClass}>{predictions.vipPredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="Won"
-          icon={CheckCircle}
-          highlight
-        >
-          <p className="text-3xl font-bold">
-            {predictions.wonPredictions.toLocaleString()}
-          </p>
+        {typeof extended.premiumPredictions === 'number' && (
+          <AnalyticsCard title="Premium" icon={Sparkles}>
+            <p className={numberClass}>{extended.premiumPredictions.toLocaleString()}</p>
+          </AnalyticsCard>
+        )}
+        <AnalyticsCard title="Won" icon={CheckCircle} highlight>
+          <p className={numberClass}>{predictions.wonPredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="Lost"
-          icon={XCircle}
-        >
-          <p className="text-3xl font-bold">
-            {predictions.lostPredictions.toLocaleString()}
-          </p>
+        <AnalyticsCard title="Lost" icon={XCircle}>
+          <p className={numberClass}>{predictions.lostPredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="Void"
-          icon={ShieldAlert}
-        >
-          <p className="text-3xl font-bold">
-            {predictions.voidPredictions.toLocaleString()}
-          </p>
+        <AnalyticsCard title="Void" icon={ShieldAlert}>
+          <p className={numberClass}>{predictions.voidPredictions.toLocaleString()}</p>
         </AnalyticsCard>
-
-        <AnalyticsCard
-          title="Pending"
-          icon={Clock}
-        >
-          <p className="text-3xl font-bold">
-            {predictions.pendingPredictions.toLocaleString()}
-          </p>
+        <AnalyticsCard title="Pending" icon={Clock}>
+          <p className={numberClass}>{predictions.pendingPredictions.toLocaleString()}</p>
         </AnalyticsCard>
       </div>
     </section>

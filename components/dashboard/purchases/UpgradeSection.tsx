@@ -1,30 +1,41 @@
 'use client';
 
 import type { PlanConfig } from '@/types/plan-config';
-import type { UpgradePriceResponse } from '@/services/subscription.service';
+
+import type {
+  UpgradePriceResponse,
+} from '@/services/subscription.service';
+
+import type {
+  PaymentCurrency,
+} from '@/services/payment-gateway.service';
+
+import { useAuth } from '@/providers/auth-provider';
 
 import UpgradeCard from './UpgradeCard';
-
-import type { PaymentCurrency } from '@/services/payment-gateway.service';
-import { useAuth } from '@/providers/auth-provider';
 
 type CurrentPlan =
   | 'free'
   | 'regular'
-  | 'vip';
+  | 'vip'
+  | 'premium';
+
+type UpgradeTarget =
+  | 'regular'
+  | 'vip'
+  | 'premium';
 
 interface UpgradeSectionProps {
   plan: CurrentPlan;
   config: PlanConfig;
   currency?: PaymentCurrency;
-
   upgradePrice?: UpgradePriceResponse | null;
   upgradeLoading?: boolean;
-
   onUpgrade: (
-    target: 'regular' | 'vip',
+    target: UpgradeTarget,
   ) => void;
 }
+
 export default function UpgradeSection({
   plan,
   config,
@@ -36,7 +47,9 @@ export default function UpgradeSection({
   const { user } = useAuth();
 
   const selectedCurrency: PaymentCurrency =
-    user?.currency ?? currency ?? 'USD';
+    user?.currency ??
+    currency ??
+    'USD';
 
   return (
     <UpgradeCard

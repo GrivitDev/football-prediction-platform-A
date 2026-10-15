@@ -60,7 +60,7 @@ return (
 <Card>
 
 
-<CardHeader>
+<CardHeader className="px-4 py-3">
 
 <CardTitle>
 
@@ -71,7 +71,7 @@ All Claimed Rewards
 </CardHeader>
 
 
-<CardContent>
+<CardContent className="px-4 pb-4 pt-0">
 
 
 <div className="overflow-x-auto">
@@ -84,27 +84,27 @@ All Claimed Rewards
 
 <tr className="border-b">
 
-<th className="p-3 text-left">
+<th className="p-2 text-left">
 User
 </th>
 
 
-<th className="p-3">
+<th className="p-2">
 Campaign
 </th>
 
 
-<th className="p-3">
+<th className="p-2">
 Reward
 </th>
 
 
-<th className="p-3">
+<th className="p-2">
 Claim
 </th>
 
 
-<th className="p-3">
+<th className="p-2">
 Status
 </th>
 
@@ -129,7 +129,7 @@ className="border-b"
 >
 
 
-<td className="p-3">
+<td className="p-2">
 
 <div>
 
@@ -156,7 +156,7 @@ reward.userId?.email
 
 </td>
 
-<td className="p-3">
+<td className="p-2">
 
 {
 reward.promoId?.campaignType
@@ -169,7 +169,7 @@ reward.promoId?.campaignType
 
 
 
-<td className="p-3">
+<td className="p-2">
 
 
 {
@@ -191,7 +191,7 @@ reward.type==='subscription'
 
 
 
-<td className="p-3">
+<td className="p-2">
 
 #
 {reward.claimNumber}
@@ -201,7 +201,7 @@ reward.type==='subscription'
 
 
 
-<td className="p-3">
+<td className="p-2">
 
 
 <Badge>

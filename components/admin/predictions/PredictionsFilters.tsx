@@ -1,17 +1,8 @@
 'use client';
 
-import {
-  Search,
-  SlidersHorizontal,
-  Trophy,
-  CircleDot,
-  Crown,
-} from 'lucide-react';
-
-import {
-  Input,
-} from '@/components/ui/input';
-
+import { Search } from 'lucide-react';
+import type { ReactNode } from 'react';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -23,20 +14,13 @@ import {
 interface Props {
   search: string;
   setSearch: (value: string) => void;
-
   status: string;
   setStatus: (value: string) => void;
-
   access: string;
   setAccess: (value: string) => void;
-
   league: string;
   setLeague: (value: string) => void;
-
-  leagues: {
-    code: string;
-    name: string;
-  }[];
+  leagues: { code: string; name: string }[];
 }
 
 export default function PredictionsFilters({
@@ -51,217 +35,64 @@ export default function PredictionsFilters({
   leagues,
 }: Props) {
   return (
-    <section
-      className="
-        rounded-3xl
-        border
-        border-border
-        bg-card
-        p-4
-        shadow-sm
-        sm:p-5
-      "
-    >
-      <div
-        className="
-          mb-4
-          flex
-          items-start
-          gap-3
-        "
-      >
-        <div
-          className="
-            flex
-            h-10
-            w-10
-            shrink-0
-            items-center
-            justify-center
-            rounded-xl
-            bg-primary/10
-            text-primary
-          "
-        >
-          <SlidersHorizontal className="h-5 w-5" />
-        </div>
-
-        <div>
-          <h2 className="font-bold">
-            Filter Predictions
-          </h2>
-
-          <p className="mt-1 text-sm text-muted-foreground">
-            Find fixtures by team, status, access level, or league.
-          </p>
-        </div>
-      </div>
-
-      <div
-        className="
-          grid
-          gap-3
-          sm:grid-cols-2
-          xl:grid-cols-4
-        "
-      >
+    <div className="rounded-lg border bg-card p-2.5">
+      <div className="grid gap-2 md:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
         <div className="relative">
-          <Search
-            className="
-              pointer-events-none
-              absolute
-              left-3.5
-              top-1/2
-              h-4
-              w-4
-              -translate-y-1/2
-              text-muted-foreground
-            "
-          />
-
+          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search teams..."
             value={search}
-            onChange={(event) =>
-              setSearch(event.target.value)
-            }
-            className="
-              h-11
-              rounded-xl
-              border-input
-              bg-background
-              pl-10
-              text-sm
-              shadow-none
-              focus-visible:ring-primary/30
-            "
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Search teams or league"
+            className="h-8 rounded-md pl-8 text-xs shadow-none"
           />
         </div>
 
-        <Select
-          value={status}
-          onValueChange={setStatus}
-        >
-          <SelectTrigger
-            className="
-              h-11
-              rounded-xl
-              border-input
-              bg-background
-              text-sm
-              shadow-none
-              focus:ring-primary/30
-            "
-          >
-            <div className="flex min-w-0 items-center gap-2">
-              <CircleDot className="h-4 w-4 shrink-0 text-primary" />
+        <FilterSelect value={status} onChange={setStatus} placeholder="Status">
+          <SelectItem value="all">All status</SelectItem>
+          <SelectItem value="Upcoming">Upcoming</SelectItem>
+          <SelectItem value="In Play">In Play</SelectItem>
+          <SelectItem value="Needs Settlement">Needs settlement</SelectItem>
+          <SelectItem value="Settled">Settled</SelectItem>
+        </FilterSelect>
 
-              <SelectValue placeholder="Status" />
-            </div>
-          </SelectTrigger>
+        <FilterSelect value={access} onChange={setAccess} placeholder="Access">
+          <SelectItem value="all">All access</SelectItem>
+          <SelectItem value="free">Free</SelectItem>
+          <SelectItem value="regular">Regular</SelectItem>
+          <SelectItem value="vip">VIP</SelectItem>
+          <SelectItem value="premium">Premium</SelectItem>
+        </FilterSelect>
 
-          <SelectContent>
-            <SelectItem value="all">
-              All Status
+        <FilterSelect value={league} onChange={setLeague} placeholder="League">
+          <SelectItem value="all">All leagues</SelectItem>
+          {leagues.map((item) => (
+            <SelectItem key={item.code} value={item.code}>
+              {item.name}
             </SelectItem>
-
-            <SelectItem value="Upcoming">
-              Upcoming
-            </SelectItem>
-
-            <SelectItem value="In Play">
-              In Play
-            </SelectItem>
-
-            <SelectItem value="Needs Settlement">
-              Needs Settlement
-            </SelectItem>
-
-            <SelectItem value="Settled">
-              Settled
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={access}
-          onValueChange={setAccess}
-        >
-          <SelectTrigger
-            className="
-              h-11
-              rounded-xl
-              border-input
-              bg-background
-              text-sm
-              shadow-none
-              focus:ring-primary/30
-            "
-          >
-            <div className="flex min-w-0 items-center gap-2">
-              <Crown className="h-4 w-4 shrink-0 text-primary" />
-
-              <SelectValue placeholder="Access" />
-            </div>
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value="all">
-              All Access
-            </SelectItem>
-
-            <SelectItem value="free">
-              Free
-            </SelectItem>
-
-            <SelectItem value="regular">
-              Regular
-            </SelectItem>
-
-            <SelectItem value="vip">
-              VIP
-            </SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select
-          value={league}
-          onValueChange={setLeague}
-        >
-          <SelectTrigger
-            className="
-              h-11
-              rounded-xl
-              border-input
-              bg-background
-              text-sm
-              shadow-none
-              focus:ring-primary/30
-            "
-          >
-            <div className="flex min-w-0 items-center gap-2">
-              <Trophy className="h-4 w-4 shrink-0 text-primary" />
-
-              <SelectValue placeholder="League" />
-            </div>
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectItem value="all">
-              All Leagues
-            </SelectItem>
-
-            {leagues.map((item) => (
-              <SelectItem
-                key={item.code}
-                value={item.code}
-              >
-                {item.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+          ))}
+        </FilterSelect>
       </div>
-    </section>
+    </div>
+  );
+}
+
+function FilterSelect({
+  value,
+  onChange,
+  placeholder,
+  children,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  children: ReactNode;
+}) {
+  return (
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="h-8 rounded-md text-xs shadow-none">
+        <SelectValue placeholder={placeholder} />
+      </SelectTrigger>
+      <SelectContent>{children}</SelectContent>
+    </Select>
   );
 }

@@ -65,7 +65,7 @@ export default function EditPromoPage(){
 
     return (
 
-      <div className="space-y-6">
+      <div className="space-y-3">
 
 
         <Skeleton className="h-10 w-64"/>
@@ -106,7 +106,7 @@ export default function EditPromoPage(){
 
   return (
 
-    <div className="space-y-8">
+    <div className="space-y-4">
 
 
       <div>

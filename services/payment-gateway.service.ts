@@ -4,13 +4,16 @@ import api from '@/lib/axios';
 // TYPES
 // =====================================================
 
-export type PaymentGateway = 'paystack' | 'opay';
+export type PaymentGateway =
+  | 'paystack'
+  | 'opay';
 
-export type PaymentCurrency = 'NGN' | 'USD';
+export type PaymentCurrency =
+  | 'NGN'
+  | 'USD';
 
 export type PaymentType =
   | 'subscription'
-  | 'prediction'
   | 'vip_upgrade';
 
 // =====================================================
@@ -22,22 +25,8 @@ export interface InitializePaymentPayload {
 
   type: PaymentType;
 
-  /**
-   * Currency being used for the payment.
-   *
-   * NGN = Nigerian Naira
-   * USD = United States Dollar
-   */
   currency: PaymentCurrency;
 
-  /**
-   * Identifies what the payment is for.
-   *
-   * Examples:
-   * - subscription plan ID
-   * - prediction ID
-   * - VIP upgrade ID
-   */
   target: string;
 }
 
@@ -72,13 +61,6 @@ export interface VerifyPaymentResponse {
 // =====================================================
 
 const paymentGatewayService = {
-  /**
-   * Initialize a payment with Paystack or OPay.
-   *
-   * The backend creates the pending payment record,
-   * initializes the selected gateway, and returns the
-   * gateway authorization URL.
-   */
   async initializePayment(
     payload: InitializePaymentPayload,
   ): Promise<InitializePaymentResponse> {
@@ -91,13 +73,6 @@ const paymentGatewayService = {
     return response.data;
   },
 
-  /**
-   * Verify a payment after the user returns from
-   * Paystack or OPay.
-   *
-   * The backend verifies the transaction with the
-   * selected payment gateway.
-   */
   async verifyPayment(
     gateway: PaymentGateway,
     reference: string,

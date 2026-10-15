@@ -1,8 +1,7 @@
 'use client';
 
 import {
-  useEffect,
-  useState,
+  useSyncExternalStore,
 } from 'react';
 
 import {
@@ -29,13 +28,11 @@ export default function ThemeSwitcher() {
     setTheme,
   } = useTheme();
 
-  const [mounted, setMounted] =
-    useState(false);
-
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
 
   if (!mounted) {
@@ -72,94 +69,68 @@ export default function ThemeSwitcher() {
 
   return (
     <DropdownMenu>
-
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
+          size="icon"
+          aria-label="Change theme"
           className="
-            group
             h-10
             w-10
             rounded-xl
             border
             border-border/50
             bg-background/40
-            p-0
             backdrop-blur-md
             transition-all
-            duration-300
+            duration-200
             hover:border-primary/30
             hover:bg-primary/10
+            hover:text-primary
           "
         >
-          <span
-            className="
-              flex
-              h-7
-              w-7
-              items-center
-              justify-center
-              rounded-lg
-              bg-primary/10
-              text-primary
-              transition-transform
-              duration-300
-              group-hover:scale-110
-            "
-          >
-            <ActiveIcon
-              className="
-                h-4
-                w-4
-              "
-            />
-          </span>
+          <ActiveIcon className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
 
 
       <DropdownMenuContent
-        align="start"
+        align="end"
         sideOffset={8}
         className="
           w-56
           rounded-2xl
           border
           border-border/50
-          bg-background/90
+          bg-background/95
           p-2
-          shadow-lg
+          shadow-xl
           backdrop-blur-xl
         "
       >
-
         <div
           className="
             mb-2
             h-px
             w-full
             bg-gradient-to-r
-            from-indigo-500/30
-            via-sky-500/30
-            to-emerald-500/30
+            from-primary/50
+            via-emerald-500/50
+            to-transparent
           "
         />
 
 
         {themes.map((item) => {
-
           const Icon = item.icon;
 
           const active =
             theme === item.value;
 
-
           return (
             <DropdownMenuItem
               key={item.value}
-              onClick={() =>
-                setTheme(item.value)
-              }
+              onClick={() => setTheme(item.value)}
               className="
                 flex
                 cursor-pointer
@@ -173,7 +144,6 @@ export default function ThemeSwitcher() {
                 hover:bg-muted
               "
             >
-
               <div
                 className="
                   flex
@@ -181,7 +151,6 @@ export default function ThemeSwitcher() {
                   gap-3
                 "
               >
-
                 <span
                   className={`
                     flex
@@ -204,12 +173,7 @@ export default function ThemeSwitcher() {
                     }
                   `}
                 >
-                  <Icon
-                    className="
-                      h-4
-                      w-4
-                    "
-                  />
+                  <Icon className="h-4 w-4" />
                 </span>
 
 
@@ -221,7 +185,6 @@ export default function ThemeSwitcher() {
                 >
                   {item.name}
                 </span>
-
               </div>
 
 
@@ -234,14 +197,10 @@ export default function ThemeSwitcher() {
                   "
                 />
               )}
-
             </DropdownMenuItem>
           );
-
         })}
-
       </DropdownMenuContent>
-
     </DropdownMenu>
   );
 }

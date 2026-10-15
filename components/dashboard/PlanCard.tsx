@@ -1,8 +1,11 @@
+'use client';
+
 import {
-  CalendarDays,
   BadgeCheck,
-  Crown,
+  CalendarDays,
   CircleDollarSign,
+  Crown,
+  Sparkles,
   UserRound,
 } from 'lucide-react';
 
@@ -14,8 +17,6 @@ import {
 
 import { fmtDate } from './dashboard.utils';
 
-
-
 function MiniStat({
   icon: Icon,
   label,
@@ -25,91 +26,31 @@ function MiniStat({
   label: string;
   value: ReactNode;
 }) {
-
   return (
-    <div
-      className="
-        rounded-2xl
-        border
-        border-border
-        bg-background/60
-        p-4
-      "
-    >
-
-      <div
-        className="
-          flex
-          items-center
-          gap-3
-        "
-      >
-
-        <div
-          className="
-            rounded-2xl
-            border
-            border-border
-            bg-muted/40
-            p-2.5
-          "
-        >
-
-          <Icon
-            className="
-              h-4
-              w-4
-            "
-          />
-
+    <div className="min-w-0 rounded-md border border-border bg-background/50 p-2.5">
+      <div className="flex items-center gap-2">
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-muted text-muted-foreground">
+          <Icon className="h-3.5 w-3.5" />
         </div>
 
-
-
-        <div>
-
-          <p
-            className="
-              text-xs
-              text-muted-foreground
-            "
-          >
+        <div className="min-w-0">
+          <p className="truncate text-[9px] text-muted-foreground">
             {label}
           </p>
 
-
-
-          <p
-            className="
-              mt-1
-              text-base
-              font-semibold
-            "
-          >
+          <p className="mt-0.5 truncate text-xs font-medium">
             {value}
           </p>
-
-
         </div>
-
-
       </div>
-
-
     </div>
   );
 }
 
-
-
-
-
 function useCountdown(
   expiryDate?: string | Date | null,
 ) {
-
   const calculate = () => {
-
     if (!expiryDate) {
       return {
         days: 0,
@@ -119,239 +60,130 @@ function useCountdown(
       };
     }
 
-
-
     const difference =
-      new Date(expiryDate).getTime() -
+      new Date(
+        expiryDate,
+      ).getTime() -
       Date.now();
 
-
-
     if (difference <= 0) {
-
       return {
         days: 0,
         hours: 0,
         minutes: 0,
         seconds: 0,
       };
-
     }
 
-
-
     return {
-
-      days:
-        Math.floor(
-          difference /
+      days: Math.floor(
+        difference /
           (1000 * 60 * 60 * 24),
-        ),
+      ),
 
-
-      hours:
-        Math.floor(
-          (difference /
-            (1000 * 60 * 60)) %
+      hours: Math.floor(
+        (difference /
+          (1000 * 60 * 60)) %
           24,
-        ),
+      ),
 
-
-      minutes:
-        Math.floor(
-          (difference /
-            (1000 * 60)) %
+      minutes: Math.floor(
+        (difference /
+          (1000 * 60)) %
           60,
-        ),
+      ),
 
-
-      seconds:
-        Math.floor(
-          (difference /
-            1000) %
+      seconds: Math.floor(
+        (difference / 1000) %
           60,
-        ),
-
+      ),
     };
-
   };
 
-
-
-  const [
-    time,
-    setTime,
-  ] = useState(
-    calculate,
-  );
-
-
+  const [time, setTime] =
+    useState(calculate);
 
   useEffect(() => {
-
     const timer =
-      setInterval(
-        () => {
-          setTime(
-            calculate(),
-          );
-        },
-        1000,
-      );
-
-
+      setInterval(() => {
+        setTime(calculate());
+      }, 1000);
 
     return () =>
       clearInterval(timer);
-
-
-  }, [
-    expiryDate,
-  ]);
-
-
+  }, [expiryDate]);
 
   return time;
-
 }
-
-
-
-
-
 
 function getPlanTheme(
   plan?: string | null,
 ) {
-
   const current =
     plan?.toLowerCase();
 
-
+  if (current === 'premium') {
+    return {
+      title: 'Premium Membership',
+      icon: Sparkles,
+      label: 'Premium',
+      iconClass:
+        'text-violet-500',
+      wrapper:
+        'border-violet-500/25 bg-violet-500/5',
+      iconWrapper:
+        'bg-violet-500/10 border-violet-500/15',
+      labelClass:
+        'text-violet-500',
+    };
+  }
 
   if (current === 'vip') {
-
     return {
-
-      title:
-        'VIP Membership',
-
-      icon:
-        Crown,
-
-      label:
-        'VIP',
-
+      title: 'VIP Membership',
+      icon: Crown,
+      label: 'VIP',
       iconClass:
-        'text-amber-400',
-
+        'text-amber-500',
       wrapper:
-        `
-        border-amber-500/20
-        bg-gradient-to-br
-        from-amber-500/10
-        via-background
-        to-background
-        `,
-
+        'border-amber-500/25 bg-amber-500/5',
       iconWrapper:
-        `
-        bg-amber-500/10
-        border-amber-500/20
-        `,
-
+        'bg-amber-500/10 border-amber-500/15',
       labelClass:
-        'text-amber-400',
-
+        'text-amber-500',
     };
-
   }
-
-
-
 
   if (current === 'regular') {
-
     return {
-
-      title:
-        'Regular Membership',
-
-      icon:
-        BadgeCheck,
-
-      label:
-        'Regular',
-
+      title: 'Regular Membership',
+      icon: BadgeCheck,
+      label: 'Regular',
       iconClass:
-        'text-blue-400',
-
+        'text-primary',
       wrapper:
-        `
-        border-blue-500/20
-        bg-gradient-to-br
-        from-blue-500/10
-        via-background
-        to-background
-        `,
-
+        'border-primary/25 bg-primary/5',
       iconWrapper:
-        `
-        bg-blue-500/10
-        border-blue-500/20
-        `,
-
+        'bg-primary/10 border-primary/15',
       labelClass:
-        'text-blue-400',
-
+        'text-primary',
     };
-
   }
 
-
-
-
-
   return {
-
-    title:
-      'Free Membership',
-
-    icon:
-      UserRound,
-
-    label:
-      'Free',
-
+    title: 'Free Membership',
+    icon: UserRound,
+    label: 'Free',
     iconClass:
       'text-muted-foreground',
-
     wrapper:
-      `
-      border-border
-      bg-gradient-to-br
-      from-muted/30
-      via-background
-      to-background
-      `,
-
+      'border-border bg-muted/20',
     iconWrapper:
-      `
-      bg-muted
-      border-border
-      `,
-
+      'bg-muted border-border',
     labelClass:
       'text-muted-foreground',
-
   };
-
 }
-
-
-
-
-
 
 export function PlanCard({
   plan,
@@ -364,321 +196,151 @@ export function PlanCard({
   expiresAt?: string | Date | null;
   revenue?: number | null;
 }) {
-
-
   const countdown =
-    useCountdown(
-      expiresAt,
-    );
-
+    useCountdown(expiresAt);
 
   const theme =
-    getPlanTheme(
-      plan,
-    );
-
+    getPlanTheme(plan);
 
   const PlanIcon =
     theme.icon;
 
-
+  const isLifetime =
+    plan?.toLowerCase() ===
+      'premium' &&
+    !expiresAt;
 
   return (
-
-    <div
-      className="
-        space-y-5
-        rounded-3xl
-        border
-        border-border
-        bg-card
-        p-5
-        shadow-sm
-      "
-    >
-
-
-      {/* MEMBERSHIP HEADER */}
-
+    <div className="space-y-3 rounded-lg border border-border bg-card p-3">
       <div
         className={`
-          rounded-3xl
+          rounded-md
           border
-          p-5
+          p-3
           ${theme.wrapper}
         `}
       >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
+        <div className="flex items-center gap-2.5">
           <div
             className={`
               flex
-              h-14
-              w-14
+              h-9
+              w-9
+              shrink-0
               items-center
               justify-center
-              rounded-2xl
+              rounded-md
               border
               ${theme.iconWrapper}
             `}
           >
-
             <PlanIcon
               className={`
-                h-7
-                w-7
+                h-4
+                w-4
                 ${theme.iconClass}
               `}
             />
-
           </div>
 
-
-
-
-          <div>
-
-            <div
+          <div className="min-w-0">
+            <p
               className={`
-                text-sm
+                text-[9px]
                 font-semibold
                 uppercase
-                tracking-wider
+                tracking-wide
                 ${theme.labelClass}
               `}
             >
               {theme.label}
-            </div>
+            </p>
 
-
-
-            <h3
-              className="
-                text-xl
-                font-bold
-              "
-            >
+            <h3 className="truncate text-sm font-semibold">
               {theme.title}
             </h3>
 
-
-
-            <p
-              className="
-                text-sm
-                text-muted-foreground
-              "
-            >
+            <p className="text-[9px] text-muted-foreground">
               Started {fmtDate(startDate)}
             </p>
-
-
           </div>
-
-
         </div>
-
-
       </div>
 
-
-
-
-
-      {/* EXPIRY */}
-
-
-      <div
-        className="
-          rounded-3xl
-          border
-          border-border
-          bg-background/60
-          p-5
-        "
-      >
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-          "
-        >
-
-          <CalendarDays
-            className="
-              h-5
-              w-5
-            "
-          />
-
-
+      <div className="rounded-md border border-border bg-background/50 p-3">
+        <div className="flex items-center gap-2">
+          <CalendarDays className="h-3.5 w-3.5 text-muted-foreground" />
 
           <div>
-
-            <p
-              className="
-                text-xs
-                text-muted-foreground
-              "
-            >
-              Expires
+            <p className="text-[9px] text-muted-foreground">
+              {isLifetime
+                ? 'Membership'
+                : 'Expires'}
             </p>
 
-
-
-            <p
-              className="
-                font-semibold
-              "
-            >
-              {fmtDate(expiresAt)}
+            <p className="text-xs font-medium">
+              {isLifetime
+                ? 'Lifetime'
+                : fmtDate(expiresAt)}
             </p>
-
-
           </div>
-
-
         </div>
 
-
-
-
-
-        <div
-          className="
-            mt-5
-            grid
-            grid-cols-4
-            gap-2
-          "
-        >
-
-          {
-            [
-              {
-                value:
-                  countdown.days,
-                label:
-                  'Days',
-              },
-
-              {
-                value:
-                  countdown.hours,
-                label:
-                  'Hours',
-              },
-
-              {
-                value:
-                  countdown.minutes,
-                label:
-                  'Minutes',
-              },
-
-              {
-                value:
-                  countdown.seconds,
-                label:
-                  'Seconds',
-              },
-
-            ].map((item)=>(
-
-              <div
-                key={item.label}
-                className="
-                  rounded-2xl
-                  border
-                  border-border
-                  bg-card
-                  p-3
-                  text-center
-                "
-              >
-
-                <p
-                  className="
-                    text-xl
-                    font-bold
-                    tabular-nums
-                  "
+        {!isLifetime &&
+          expiresAt && (
+            <div className="mt-3 grid grid-cols-4 gap-1.5">
+              {[
+                {
+                  value: countdown.days,
+                  label: 'Days',
+                },
+                {
+                  value: countdown.hours,
+                  label: 'Hours',
+                },
+                {
+                  value: countdown.minutes,
+                  label: 'Minutes',
+                },
+                {
+                  value: countdown.seconds,
+                  label: 'Seconds',
+                },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-md border border-border bg-card p-1.5 text-center"
                 >
-                  {String(item.value).padStart(2,'0')}
-                </p>
+                  <p className="text-sm font-semibold tabular-nums">
+                    {String(
+                      item.value,
+                    ).padStart(2, '0')}
+                  </p>
 
-
-
-                <p
-                  className="
-                    text-xs
-                    text-muted-foreground
-                  "
-                >
-                  {item.label}
-                </p>
-
-
-              </div>
-
-
-            ))
-          }
-
-
-        </div>
-
-
+                  <p className="text-[8px] text-muted-foreground">
+                    {item.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
       </div>
 
-
-
-
-
-      {/* STATS */}
-
-
-      <div
-        className="
-          grid
-          gap-3
-          sm:grid-cols-2
-        "
-      >
-
+      <div className="grid gap-2 sm:grid-cols-2">
         <MiniStat
           icon={CircleDollarSign}
           label="Subscription Value"
-          value={
-            `₦${(
-              revenue ?? 0
-            ).toLocaleString('en-GB')}`
-          }
+          value={`₦${(
+            revenue ?? 0
+          ).toLocaleString('en-GB')}`}
         />
-
-
 
         <MiniStat
           icon={BadgeCheck}
           label="Status"
           value="Active"
         />
-
       </div>
-
-
-
     </div>
-
   );
-
 }

@@ -2,18 +2,10 @@
 
 import Image from 'next/image';
 
-import type {
-  AdminPrediction,
-} from '@/types/prediction.types';
+import type { AdminPrediction } from '@/types/prediction.types';
 
-import {
-  getLeagueName,
-} from '@/constants/leagues';
-
-import {
-  getMatchStatus,
-  getPredictionLabel,
-} from '@/utils/prediction.utils';
+import { getLeagueName } from '@/constants/leagues';
+import { getMatchStatus } from '@/utils/prediction.utils';
 
 interface Props {
   predictions: AdminPrediction[];
@@ -27,521 +19,289 @@ const statusOrder: Record<string, number> = {
   Settled: 3,
 };
 
-function formatAdminDate(date: string) {
-  const matchDate = new Date(date);
+const statusTone = (status: string) =>
+  status === 'Settled'
+    ? 'bg-emerald-500/10 text-emerald-600'
+    : status === 'In Play'
+      ? 'bg-blue-500/10 text-blue-600'
+      : status === 'Needs Settlement'
+        ? 'bg-amber-500/10 text-amber-600'
+        : 'bg-muted text-muted-foreground';
+
+const accessTone = (access: string) =>
+  access === 'premium'
+    ? 'bg-violet-500/10 text-violet-700'
+    : access === 'vip'
+      ? 'bg-yellow-500/10 text-yellow-700'
+      : access === 'regular'
+        ? 'bg-blue-500/10 text-blue-700'
+        : 'bg-emerald-500/10 text-emerald-700';
+
+const formatDate = (value: string) => {
+  const date = new Date(value);
 
   return {
-    day: matchDate.toLocaleDateString('en-US', {
-      weekday: 'short',
-    }),
-
-    date: matchDate.toLocaleDateString('en-US', {
+    date: date.toLocaleDateString('en-NG', {
       day: 'numeric',
       month: 'short',
-      year: 'numeric',
     }),
-
-    time: matchDate.toLocaleTimeString('en-US', {
+    time: date.toLocaleTimeString('en-NG', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
     }),
   };
+};
+
+function predictionLabel(prediction: AdminPrediction) {
+  const market = prediction.prediction.market.replace(/_/g, ' ');
+  const selection = prediction.prediction.selection.replace(/_/g, ' ');
+
+  return `${selection} · ${market}`;
 }
 
-function getStatusClasses(status: string) {
-  if (status === 'Settled') {
-    return 'bg-emerald-500/10 text-emerald-600';
+function PredictionIcon({
+  prediction,
+  size = 20,
+}: {
+  prediction: AdminPrediction;
+  size?: number;
+}) {
+  const selection = prediction.prediction.selection.toUpperCase();
+
+  const src =
+    selection === 'HOME'
+      ? prediction.homeTeamBadge
+      : selection === 'AWAY'
+        ? prediction.awayTeamBadge
+        : undefined;
+
+  if (src) {
+    return (
+      <Image
+        src={src}
+        alt=""
+        width={size}
+        height={size}
+        className="shrink-0 object-contain"
+        unoptimized
+      />
+    );
   }
 
-  if (status === 'In Play') {
-    return 'bg-blue-500/10 text-blue-600';
-  }
-
-  if (status === 'Needs Settlement') {
-    return 'bg-amber-500/10 text-amber-600';
-  }
-
-  return 'bg-muted text-muted-foreground';
-}
-
-function getAccessClasses(accessType: string) {
-  if (accessType === 'vip') {
-    return 'bg-yellow-500/15 text-yellow-700';
-  }
-
-  if (accessType === 'regular') {
-    return 'bg-blue-500/15 text-blue-700';
-  }
-
-  return 'bg-emerald-500/15 text-emerald-700';
-}
-
-function getPredictionHero(prediction: AdminPrediction) {
-  switch (prediction.prediction) {
-    case 'HOME':
-      return {
-        badge: prediction.homeTeamBadge,
-        title: `${prediction.homeTeam} To Win`,
-      };
-
-    case 'AWAY':
-      return {
-        badge: prediction.awayTeamBadge,
-        title: `${prediction.awayTeam} To Win`,
-      };
-
-    case 'DRAW':
-      return {
-        badge: undefined,
-        title: 'Draw',
-      };
-
-    default:
-      return {
-        badge: undefined,
-        title: getPredictionLabel(prediction),
-      };
-  }
+  return (
+    <span
+      className="grid shrink-0 place-items-center rounded-full bg-primary/10 text-[8px] font-bold text-primary"
+      style={{ width: size, height: size }}
+    >
+      P
+    </span>
+  );
 }
 
 export default function PredictionsTable({
   predictions,
   onSelect,
 }: Props) {
-  const sortedPredictions = [...predictions].sort(
-    (first, second) =>
-      (statusOrder[getMatchStatus(first)] ?? 99) -
-      (statusOrder[getMatchStatus(second)] ?? 99),
+  const sorted = [...predictions].sort(
+    (a, b) =>
+      (statusOrder[getMatchStatus(a)] ?? 99) -
+      (statusOrder[getMatchStatus(b)] ?? 99),
   );
 
-  if (!sortedPredictions.length) {
+  if (!sorted.length) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-dashed
-          border-border
-          bg-card
-          p-10
-          text-center
-        "
-      >
-        <p className="font-semibold">
-          No predictions found
-        </p>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          Create a prediction or adjust the active filters.
-        </p>
+      <div className="rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground">
+        No predictions found.
       </div>
     );
   }
 
   return (
-    <div
-      className="
-        w-full
-        overflow-hidden
-        rounded-3xl
-        border
-        border-border
-        bg-card
-        shadow-sm
-      "
-    >
-      {/* Mobile cards */}
-
-      <div className="space-y-3 p-3 lg:hidden">
-        {sortedPredictions.map((prediction) => {
-          const date = formatAdminDate(prediction.matchDate);
+    <div className="overflow-hidden rounded-lg border bg-card">
+      <div className="divide-y lg:hidden">
+        {sorted.map((prediction) => {
+          const date = formatDate(prediction.matchDate);
           const status = getMatchStatus(prediction);
-          const predictionHero = getPredictionHero(prediction);
-
-          const leagueName =
-            prediction.league?.name ||
-            getLeagueName(prediction.leagueCode);
+          const league =
+            prediction.league?.name ?? getLeagueName(prediction.leagueCode);
 
           return (
             <button
               key={prediction._id}
               type="button"
               onClick={() => onSelect(prediction)}
-              className="
-                w-full
-                rounded-2xl
-                border
-                border-border
-                bg-background
-                p-4
-                text-left
-                shadow-sm
-                transition
-                active:scale-[0.99]
-              "
+              className="w-full p-2.5 text-left hover:bg-muted/30"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="flex min-w-0 items-center gap-2">
-                    {prediction.league?.emblem && (
-                      <Image
-                        src={prediction.league.emblem}
-                        alt={`${leagueName} emblem`}
-                        width={22}
-                        height={22}
-                        className="shrink-0 object-contain"
-                      />
-                    )}
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  {prediction.league?.emblem && (
+                    <Image
+                      src={prediction.league.emblem}
+                      alt=""
+                      width={18}
+                      height={18}
+                      className="shrink-0 object-contain"
+                      unoptimized
+                    />
+                  )}
 
-                    <p className="truncate text-sm font-bold">
-                      {leagueName}
-                    </p>
-                  </div>
-
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {date.day}, {date.date} · {date.time}
-                  </p>
+                  <span className="truncate text-xs font-semibold">
+                    {league}
+                  </span>
                 </div>
 
                 <span
-                  className={`
-                    shrink-0
-                    rounded-full
-                    px-2.5
-                    py-1
-                    text-xs
-                    font-semibold
-                    ${getStatusClasses(status)}
-                  `}
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold ${statusTone(
+                    status,
+                  )}`}
                 >
                   {status}
                 </span>
               </div>
 
-              <div
-                className="
-                  my-5
-                  grid
-                  grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
-                  items-center
-                  gap-3
-                "
-              >
-                <div className="flex min-w-0 items-center justify-end gap-2">
-                  <span className="truncate text-right text-sm font-semibold">
-                    {prediction.homeTeam}
-                  </span>
-
-                  {prediction.homeTeamBadge && (
-                    <Image
-                      src={prediction.homeTeamBadge}
-                      alt={prediction.homeTeam}
-                      width={26}
-                      height={26}
-                      className="shrink-0 object-contain"
-                    />
-                  )}
-                </div>
-
-                <span
-                  className="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-                    rounded-full
-                    border
-                    border-border
-                    bg-muted/50
-                    text-[10px]
-                    font-black
-                    text-muted-foreground
-                  "
-                >
+              <div className="mt-2 flex items-center justify-center gap-2.5">
+                <Team
+                  name={prediction.homeTeam}
+                  badge={prediction.homeTeamBadge}
+                />
+                <span className="text-[9px] font-bold text-muted-foreground">
                   VS
                 </span>
-
-                <div className="flex min-w-0 items-center gap-2">
-                  {prediction.awayTeamBadge && (
-                    <Image
-                      src={prediction.awayTeamBadge}
-                      alt={prediction.awayTeam}
-                      width={26}
-                      height={26}
-                      className="shrink-0 object-contain"
-                    />
-                  )}
-
-                  <span className="truncate text-sm font-semibold">
-                    {prediction.awayTeam}
-                  </span>
-                </div>
+                <Team
+                  name={prediction.awayTeam}
+                  badge={prediction.awayTeamBadge}
+                  reverse
+                />
               </div>
 
-              <div
-                className="
-                  grid
-                  grid-cols-[minmax(0,1fr)_auto]
-                  gap-3
-                  border-t
-                  border-border
-                  pt-3
-                "
-              >
-                <div className="min-w-0">
-                  <p className="text-xs text-muted-foreground">
-                    Prediction
-                  </p>
-
-                  <div className="mt-1 flex min-w-0 items-center gap-2 text-primary">
-                    {predictionHero.badge && (
-                      <Image
-                        src={predictionHero.badge}
-                        alt={predictionHero.title}
-                        width={22}
-                        height={22}
-                        className="shrink-0 object-contain"
-                      />
-                    )}
-
-                    <p className="truncate text-sm font-bold">
-                      {predictionHero.title}
-                    </p>
-                  </div>
+              <div className="mt-2 flex items-center justify-between gap-2 border-t pt-2">
+                <div className="flex min-w-0 items-center gap-1.5">
+                  <PredictionIcon prediction={prediction} />
+                  <span className="truncate text-[11px] font-semibold text-primary">
+                    {predictionLabel(prediction)}
+                  </span>
                 </div>
 
-                <span
-                  className={`
-                    h-fit
-                    rounded-full
-                    px-2.5
-                    py-1
-                    text-xs
-                    font-semibold
-                    capitalize
-                    ${getAccessClasses(prediction.accessType)}
-                  `}
-                >
-                  {prediction.accessType}
-                </span>
+                <div className="text-right text-[9px] text-muted-foreground">
+                  {prediction.confidence}% · {date.date} · {date.time}
+                </div>
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Desktop table */}
-
-      <div className="hidden overflow-hidden lg:block">
-        <table className="w-full table-fixed border-collapse text-left">
-          <colgroup>
-            <col className="w-[12%]" />
-            <col className="w-[20%]" />
-            <col className="w-[20%]" />
-            <col className="w-[20%]" />
-            <col className="w-[10%]" />
-            <col className="w-[12%]" />
-          </colgroup>
-          <thead
-            className="
-              border-b
-              border-border
-              bg-muted/50
-            "
-          >
+      <div className="hidden overflow-x-auto lg:block">
+        <table className="w-full border-collapse text-left">
+          <thead className="border-b bg-muted/40">
             <tr>
-              <TableHeader>Date & Time</TableHeader>
-              <TableHeader>League</TableHeader>
-              <TableHeader>Fixture</TableHeader>
-              <TableHeader>Prediction</TableHeader>
-              <TableHeader>Access</TableHeader>
-              <TableHeader>Status</TableHeader>
+              {[
+                'Match',
+                'League',
+                'Selection',
+                'Support',
+                'Access',
+                'Status',
+              ].map((label) => (
+                <th
+                  key={label}
+                  className="px-3 py-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"
+                >
+                  {label}
+                </th>
+              ))}
             </tr>
           </thead>
 
           <tbody>
-            {sortedPredictions.map((prediction) => {
-              const date = formatAdminDate(prediction.matchDate);
+            {sorted.map((prediction) => {
               const status = getMatchStatus(prediction);
-              const predictionHero = getPredictionHero(prediction);
-
-              const leagueName =
-                prediction.league?.name ||
+              const league =
+                prediction.league?.name ??
                 getLeagueName(prediction.leagueCode);
+              const date = formatDate(prediction.matchDate);
 
               return (
                 <tr
                   key={prediction._id}
                   onClick={() => onSelect(prediction)}
-                  className="
-                    cursor-pointer
-                    border-b
-                    border-border/70
-                    transition-colors
-                    last:border-0
-                    hover:bg-primary/[0.04]
-                  "
+                  className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
                 >
-                  <td className="px-5 py-4">
-                    <div className="text-sm font-semibold">
-                      {date.day}
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <Team
+                        name={prediction.homeTeam}
+                        badge={prediction.homeTeamBadge}
+                        compact
+                      />
+                      <span className="text-[8px] font-bold text-muted-foreground">
+                        VS
+                      </span>
+                      <Team
+                        name={prediction.awayTeam}
+                        badge={prediction.awayTeamBadge}
+                        compact
+                        reverse
+                      />
                     </div>
-
-                    <div className="mt-1 text-sm text-muted-foreground">
-                      {date.date}
-                    </div>
-
-                    <div className="mt-1 text-xs text-muted-foreground">
-                      {date.time}
-                    </div>
+                    <p className="mt-1 text-[9px] text-muted-foreground">
+                      {date.date} · {date.time}
+                    </p>
                   </td>
 
-                  <td className="max-w-[190px] px-4 py-4">
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div
-                        className="
-                          flex
-                          h-9
-                          w-9
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-xl
-                          border
-                          border-border
-                          bg-background
-                        "
-                      >
-                        {prediction.league?.emblem ? (
-                          <Image
-                            src={prediction.league.emblem}
-                            alt={`${leagueName} emblem`}
-                            width={24}
-                            height={24}
-                            className="object-contain"
-                          />
-                        ) : (
-                          <span className="text-xs font-black text-primary">
-                            L
-                          </span>
-                        )}
-                      </div>
+                  <td className="max-w-[180px] px-3 py-2.5">
+                    <div className="flex items-center gap-1.5">
+                      {prediction.league?.emblem ? (
+                        <Image
+                          src={prediction.league.emblem}
+                          alt=""
+                          width={18}
+                          height={18}
+                          className="shrink-0 object-contain"
+                          unoptimized
+                        />
+                      ) : (
+                        <span className="grid h-[18px] w-[18px] place-items-center rounded bg-muted text-[8px] font-bold">
+                          L
+                        </span>
+                      )}
 
-                      <span className="truncate text-sm font-semibold">
-                        {leagueName}
+                      <span className="truncate text-[11px] font-medium">
+                        {league}
                       </span>
                     </div>
                   </td>
 
-                  <td className="min-w-[220px] px-4 py-4">
-                    <div className="space-y-2">
-                      <TeamRow
-                        name={prediction.homeTeam}
-                        badge={prediction.homeTeamBadge}
-                      />
-
-                      <div className="pl-8 text-[10px] font-bold tracking-widest text-muted-foreground">
-                        VS
-                      </div>
-
-                      <TeamRow
-                        name={prediction.awayTeam}
-                        badge={prediction.awayTeamBadge}
-                      />
+                  <td className="px-3 py-2.5">
+                    <div className="flex items-center gap-1.5">
+                      <PredictionIcon prediction={prediction} />
+                      <span className="max-w-[180px] truncate text-[11px] font-semibold text-primary">
+                        {predictionLabel(prediction)}
+                      </span>
                     </div>
                   </td>
 
-                  <td className="max-w-[230px] px-4 py-4">
-                    <div
-                      className="
-                        flex
-                        min-w-0
-                        items-center
-                        gap-3
-                        rounded-xl
-                        border
-                        border-primary/15
-                        bg-primary/[0.06]
-                        px-3
-                        py-2.5
-                      "
-                    >
-                      <div
-                        className="
-                          flex
-                          h-8
-                          w-8
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-lg
-                          bg-background
-                        "
-                      >
-                        {predictionHero.badge ? (
-                          <Image
-                            src={predictionHero.badge}
-                            alt={predictionHero.title}
-                            width={22}
-                            height={22}
-                            className="object-contain"
-                          />
-                        ) : (
-                          <span className="text-xs font-black text-primary">
-                            P
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-primary">
-                          {predictionHero.title}
-                        </p>
-
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          {prediction.confidence}% confidence
-                        </p>
-                      </div>
-                    </div>
+                  <td className="px-3 py-2.5 text-[11px] font-semibold">
+                    {prediction.confidence}%
                   </td>
 
-                  <td className="px-4 py-4">
+                  <td className="px-3 py-2.5">
                     <span
-                      className={`
-                        inline-flex
-                        rounded-full
-                        px-3
-                        py-1.5
-                        text-xs
-                        font-semibold
-                        capitalize
-                        ${getAccessClasses(prediction.accessType)}
-                      `}
+                      className={`rounded-full px-2 py-0.5 text-[9px] font-semibold capitalize ${accessTone(
+                        prediction.accessType,
+                      )}`}
                     >
                       {prediction.accessType}
                     </span>
                   </td>
 
-                  <td className="px-5 py-4">
+                  <td className="px-3 py-2.5">
                     <span
-                      className={`
-                        inline-flex
-                        items-center
-                        gap-2
-                        rounded-full
-                        px-3
-                        py-1.5
-                        text-xs
-                        font-semibold
-                        ${getStatusClasses(status)}
-                      `}
+                      className={`rounded-full px-2 py-0.5 text-[9px] font-semibold ${statusTone(
+                        status,
+                      )}`}
                     >
-                      {status === 'In Play' && (
-                        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />
-                      )}
-
                       {status}
                     </span>
                   </td>
@@ -555,68 +315,37 @@ export default function PredictionsTable({
   );
 }
 
-function TableHeader({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <th
-      className="
-        whitespace-nowrap
-        px-4
-        py-4
-        text-xs
-        font-bold
-        uppercase
-        tracking-wider
-        text-muted-foreground
-        first:px-5
-        last:px-5
-      "
-    >
-      {children}
-    </th>
-  );
-}
-
-function TeamRow({
+function Team({
   name,
   badge,
+  reverse = false,
+  compact = false,
 }: {
   name: string;
   badge?: string;
+  reverse?: boolean;
+  compact?: boolean;
 }) {
   return (
-    <div className="flex min-w-0 items-center gap-2">
-      <div
-        className="
-          flex
-          h-6
-          w-6
-          shrink-0
-          items-center
-          justify-center
-        "
-      >
-        {badge ? (
-          <Image
-            src={badge}
-            alt={name}
-            width={20}
-            height={20}
-            className="object-contain"
-          />
-        ) : (
-          <span className="text-[10px] font-bold text-muted-foreground">
-            •
-          </span>
-        )}
-      </div>
+    <div
+      className={`flex min-w-0 items-center gap-1.5 ${
+        reverse ? 'flex-row-reverse text-right' : ''
+      }`}
+    >
+      {badge ? (
+        <Image
+          src={badge}
+          alt=""
+          width={compact ? 18 : 22}
+          height={compact ? 18 : 22}
+          className="shrink-0 object-contain"
+          unoptimized
+        />
+      ) : (
+        <span className="h-4 w-4 shrink-0 rounded-full bg-muted" />
+      )}
 
-      <span className="truncate text-sm font-medium">
-        {name}
-      </span>
+      <span className="truncate text-[11px] font-medium">{name}</span>
     </div>
   );
 }

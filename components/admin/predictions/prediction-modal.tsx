@@ -1,1621 +1,418 @@
 'use client';
 
-import {
-  useState,
-} from 'react';
-
 import Image from 'next/image';
-
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   AlertCircle,
-  BarChart3,
-  CheckCircle2,
-  Crown,
+  History,
   LoaderCircle,
   Plus,
-  ShieldCheck,
   Target,
   Trash2,
   Trophy,
   X,
 } from 'lucide-react';
 
+import { PredictionMarketOptions } from '@/lib/prediction-market-config';
 import {
-  PredictionMarkets,
-} from '@/lib/prediction-enums';
+  calculatePrediction,
+  getPredictionContext,
+  type CalculatedPrediction,
+  type CreatePredictionPayload,
+  type PredictionCalculationContext,
+  type PredictionFormGame,
+} from '@/services/prediction.service';
+import type { PredictionPlan } from '@/types/prediction.types';
 
-import {
-  PredictionMarketOptions,
-} from '@/lib/prediction-market-config';
+interface PredictionModalMatch {
+  eventId: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeTeamBadge?: string;
+  awayTeamBadge?: string;
+  fixtureDate: string;
+  status: string;
+}
 
 interface MarketItem {
   market: string;
   selection: string;
-  playerName?: string;
-  line?: string;
-  customValue?: string;
 }
 
 interface PredictionModalProps {
-  match: any;
+  match: PredictionModalMatch;
   onClose: () => void;
-  onSubmit: (payload: any) => void;
+  onSubmit: (payload: CreatePredictionPayload) => Promise<void>;
   loading: boolean;
 }
 
-const calculateConfidence = (
-  home: number,
-  draw: number,
-  away: number,
-) => {
-  const probabilities = [home, draw, away].sort(
-    (first, second) => second - first,
-  );
-
-  const highest = probabilities[0];
-  const second = probabilities[1];
-  const gap = highest - second;
-
-  return Math.min(
-    95,
-    Math.round(55 + gap + highest * 0.3),
-  );
-};
-
-const getAutoPrediction = (
-  home: number,
-  draw: number,
-  away: number,
-) => {
-  const highest = Math.max(home, draw, away);
-
-  if (highest === draw) {
-    return 'DRAW';
-  }
-
-  if (highest === home) {
-    return 'HOME';
-  }
-
-  return 'AWAY';
-};
-
-const getMarketConfig = (market: string) => {
-  return PredictionMarketOptions.find(
-    (item) => item.value === market,
-  );
-};
-
-const dynamicPlayerMarkets: string[] = [
-  PredictionMarkets.ANYTIME_GOALSCORER,
-  PredictionMarkets.FIRST_GOALSCORER,
-  PredictionMarkets.PLAYER_SHOTS,
-  PredictionMarkets.PLAYER_SHOTS_ON_TARGET,
-  PredictionMarkets.PLAYER_ASSISTS,
+const accessOptions: Array<{ value: PredictionPlan; label: string }> = [
+  { value: 'free', label: 'Free' },
+  { value: 'regular', label: 'Regular' },
+  { value: 'vip', label: 'VIP' },
+  { value: 'premium', label: 'Premium' },
 ];
 
-const isDynamicPlayerMarket = (market: string) => {
-  return dynamicPlayerMarkets.includes(market);
-};
+const getMarketConfig = (market: string) =>
+  PredictionMarketOptions.find((item) => item.value === market);
 
-export default function PredictionModal({
-  match,
-  onClose,
-  onSubmit,
-  loading,
-}: PredictionModalProps) {
-  const [homeProb, setHomeProb] = useState('');
-  const [drawProb, setDrawProb] = useState('');
-  const [awayProb, setAwayProb] = useState('');
+const getMarketLabel = (market: string) =>
+  getMarketConfig(market)?.label ?? market.replace(/_/g, ' ');
 
-  const [markets, setMarkets] = useState<MarketItem[]>([]);
+const selectionKey = (value: string) =>
+  value.trim().toUpperCase().replace(/(\d+)\.(\d+)/g, '$1_$2').replace(/[\s]+/g, '_');
 
-  const [accessType, setAccessType] = useState<
-    'free' | 'regular' | 'vip'
-  >('free');
+const getSelectionLabel = (market: string, selection: string) =>
+  getMarketConfig(market)?.selections.find((item) => selectionKey(item.value) === selectionKey(selection))?.label ??
+  selection.replace(/_/g, ' ');
 
-  const [price, setPrice] = useState('');
+const money = (value?: number) =>
+  typeof value === 'number' && Number.isFinite(value) ? value.toFixed(2) : '—';
+
+const percent = (value?: number) =>
+  typeof value === 'number' && Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
+
+function getErrorMessage(error: unknown): string {
+  if (!error || typeof error !== 'object') return 'Unable to calculate this prediction.';
+  const value = error as { response?: { data?: { message?: unknown; error?: unknown } }; message?: unknown };
+  const message = value.response?.data?.message;
+  if (Array.isArray(message)) {
+    return message.filter((item): item is string => typeof item === 'string').join(', ');
+  }
+  if (typeof message === 'string') return message;
+  if (typeof value.response?.data?.error === 'string') return value.response.data.error;
+  return typeof value.message === 'string' ? value.message : 'Unable to calculate this prediction.';
+}
+
+function dateLabel(value: string): string {
+  const date = new Date(value);
+  return Number.isFinite(date.getTime())
+    ? date.toLocaleDateString('en-NG', { day: 'numeric', month: 'short' })
+    : '—';
+}
+
+export default function PredictionModal({ match, onClose, onSubmit, loading }: PredictionModalProps) {
+  const [markets, setMarkets] = useState<MarketItem[]>([{ market: '', selection: '' }]);
+  const [accessType, setAccessType] = useState<PredictionPlan>('free');
+  const [preview, setPreview] = useState<CalculatedPrediction | null>(null);
+  const [context, setContext] = useState<PredictionCalculationContext | null>(null);
+  const [contextLoading, setContextLoading] = useState(true);
+  const [calculating, setCalculating] = useState(false);
   const [error, setError] = useState('');
 
-  const home = Number(homeProb) || 0;
-  const draw = Number(drawProb) || 0;
-  const away = Number(awayProb) || 0;
+  const cleanMarkets = useMemo(
+    () => markets.map(({ market, selection }) => ({ market, selection })),
+    [markets],
+  );
+  const marketSignature = JSON.stringify(cleanMarkets);
+  const completeMarkets = cleanMarkets.length > 0 && cleanMarkets.every((item) => item.market && item.selection);
+  const duplicateSelection = useMemo(() => {
+    const keys = cleanMarkets.map((item) => `${item.market}:${item.selection}`);
+    return new Set(keys).size !== keys.length;
+  }, [marketSignature]);
 
-  const total = home + draw + away;
+  // Load the compact form, standings, H2H and odds context once when the modal opens.
+  useEffect(() => {
+    let active = true;
+    setContext(null);
+    setContextLoading(true);
+    setError('');
+    getPredictionContext(match.eventId)
+      .then((result) => {
+        if (active) setContext(result);
+      })
+      .catch((caughtError: unknown) => {
+        if (active) setError(getErrorMessage(caughtError));
+      })
+      .finally(() => {
+        if (active) setContextLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [match.eventId]);
 
-  const confidence =
-    total === 100
-      ? calculateConfidence(home, draw, away)
-      : 0;
+  // Recalculate automatically whenever complete selections change. The backend
+  // owns the calculation and uses a deterministic fallback when odds are absent.
+  useEffect(() => {
+    let active = true;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const currentMarkets = JSON.parse(marketSignature) as MarketItem[];
 
-  const autoPrediction =
-    total > 0
-      ? getAutoPrediction(home, draw, away)
-      : null;
-
-  const predictionHero = (() => {
-    if (!autoPrediction) {
-      return {
-        badge: undefined,
-        title: 'Waiting for probabilities',
-        description:
-          'Enter probability values to generate a prediction.',
+    if (!context || !currentMarkets.length || currentMarkets.some((item) => !item.market || !item.selection) || duplicateSelection) {
+      setPreview(null);
+      setCalculating(false);
+      return () => {
+        active = false;
+        if (timeout) clearTimeout(timeout);
       };
     }
 
-    switch (autoPrediction) {
-      case 'HOME':
-        return {
-          badge: match.homeTeamBadge,
-          title: `${match.homeTeam} To Win`,
-          description: 'Home victory predicted',
-        };
+    setPreview(null);
+    setError('');
+    timeout = setTimeout(() => {
+      setCalculating(true);
+      calculatePrediction({
+        matchId: match.eventId,
+        accessType,
+        markets: currentMarkets,
+      })
+        .then((result) => {
+          if (active) setPreview(result);
+        })
+        .catch((caughtError: unknown) => {
+          if (active) {
+            setPreview(null);
+            setError(getErrorMessage(caughtError));
+          }
+        })
+        .finally(() => {
+          if (active) setCalculating(false);
+        });
+    }, 300);
 
-      case 'AWAY':
-        return {
-          badge: match.awayTeamBadge,
-          title: `${match.awayTeam} To Win`,
-          description: 'Away victory predicted',
-        };
+    return () => {
+      active = false;
+      if (timeout) clearTimeout(timeout);
+    };
+  }, [match.eventId, accessType, marketSignature, context, duplicateSelection]);
 
-      default:
-        return {
-          badge: undefined,
-          title: 'Draw',
-          description: 'Draw predicted',
-        };
-    }
-  })();
-
-  const addMarket = () => {
-    setMarkets((currentMarkets) => [
-      ...currentMarkets,
-      {
-        market: '',
-        selection: '',
-      },
-    ]);
+  const updateMarket = (index: number, patch: Partial<MarketItem>) => {
+    setMarkets((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item));
+    setPreview(null);
+    setError('');
   };
 
-  const updateMarket = (
-    index: number,
-    updates: Partial<MarketItem>,
-  ) => {
-    setMarkets((currentMarkets) =>
-      currentMarkets.map((market, marketIndex) =>
-        marketIndex === index
-          ? {
-              ...market,
-              ...updates,
-            }
-          : market,
-      ),
-    );
+  const addMarket = () => {
+    setMarkets((current) => [...current, { market: '', selection: '' }]);
+    setPreview(null);
+    setError('');
   };
 
   const removeMarket = (index: number) => {
-    setMarkets((currentMarkets) =>
-      currentMarkets.filter(
-        (_, marketIndex) => marketIndex !== index,
-      ),
-    );
-  };
-
-  const handleAccessChange = (
-    value: 'free' | 'regular' | 'vip',
-  ) => {
-    setAccessType(value);
-
-    if (value === 'free') {
-      setPrice('0');
-      return;
-    }
-
-    if (price === '0') {
-      setPrice('');
-    }
-  };
-
-  const handleSubmit = () => {
+    setMarkets((current) => current.filter((_, itemIndex) => itemIndex !== index));
+    setPreview(null);
     setError('');
+  };
 
-    if (total !== 100) {
-      setError(
-        'The home, draw, and away probabilities must equal exactly 100%.',
-      );
-
-      return;
+  const validate = () => {
+    if (!completeMarkets) {
+      setError('Complete every market row before creating the prediction.');
+      return false;
     }
-
-    const incompleteMarket = markets.some(
-      (market) =>
-        market.market &&
-        !market.selection,
-    );
-
-    if (incompleteMarket) {
-      setError(
-        'Please select a prediction for every market you add.',
-      );
-
-      return;
+    if (duplicateSelection) {
+      setError('Each market selection must be unique.');
+      return false;
     }
-
-    const numericPrice = Number(price);
-
-    if (
-      accessType !== 'free' &&
-      (!price || numericPrice <= 0)
-    ) {
-      setError(
-        'Enter a valid price for Regular or VIP predictions.',
-      );
-
-      return;
+    if (!context) {
+      setError('Match data is not ready. Check that the ESPN Summary has been collected.');
+      return false;
     }
+    if (!preview || calculating) {
+      setError('The calculation is still running. Please wait for the preview to update.');
+      return false;
+    }
+    return true;
+  };
 
-    const cleanedMarkets = markets
-      .filter((market) => market.market)
-      .map((market) => {
-        let finalSelection = market.selection;
-
-        if (
-          isDynamicPlayerMarket(market.market) &&
-          market.playerName
-        ) {
-          const selectedOption = getMarketConfig(
-            market.market,
-          )?.selections.find(
-            (item) => item.value === market.selection,
-          );
-
-          const selectionText =
-            market.customValue ||
-            selectedOption?.label ||
-            '';
-
-          finalSelection =
-            `${market.playerName} ${selectionText}`.trim();
-        }
-
-        return {
-          market: market.market,
-          selection: finalSelection,
-        };
-      });
-
-    onSubmit({
-      prediction: autoPrediction,
-      confidence,
-      probabilities: {
-        home,
-        draw,
-        away,
-      },
-      markets: cleanedMarkets,
+  const handleCreate = async () => {
+    setError('');
+    if (!validate()) return;
+    await onSubmit({
+      matchId: match.eventId,
       accessType,
-      price:
-        accessType === 'free'
-          ? 0
-          : numericPrice,
+      markets: cleanMarkets,
     });
   };
 
+  const predictionLabel = preview
+    ? `${getMarketLabel(preview.prediction.market)} · ${getSelectionLabel(preview.prediction.market, preview.prediction.selection)}`
+    : 'Waiting for selections';
+  const displayContext = preview?.calculationContext ?? context;
+
   return (
-    <div
-      className="
-        fixed
-        inset-0
-        z-50
-        flex
-        items-end
-        justify-center
-        bg-slate-950/70
-        p-0
-        backdrop-blur-md
-        sm:items-center
-        sm:p-4
-      "
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Create prediction"
-        className="
-          flex
-          h-[100dvh]
-          w-full
-          max-w-6xl
-          flex-col
-          overflow-hidden
-          border
-          border-border
-          bg-background
-          shadow-2xl
-          sm:h-auto
-          sm:max-h-[92vh]
-          sm:rounded-3xl
-        "
-      >
-        <header
-          className="
-            shrink-0
-            border-b
-            border-border
-            bg-background/95
-            px-4
-            py-3
-            backdrop-blur-xl
-            sm:px-6
-          "
-        >
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2">
-                <div
-                  className="
-                    flex
-                    h-9
-                    w-9
-                    items-center
-                    justify-center
-                    rounded-xl
-                    bg-primary/10
-                    text-primary
-                  "
-                >
-                  <Target className="h-5 w-5" />
-                </div>
-
-                <div>
-                  <h2 className="text-base font-bold sm:text-lg">
-                    Create Prediction
-                  </h2>
-
-                  <p className="mt-0.5 text-sm text-muted-foreground">
-                    Configure markets, probabilities, access, and price.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={loading}
-              aria-label="Close prediction modal"
-              className="
-                inline-flex
-                h-10
-                w-10
-                shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                border
-                border-border
-                text-muted-foreground
-                transition
-                hover:bg-muted
-                hover:text-foreground
-                disabled:opacity-50
-              "
-            >
-              <X className="h-5 w-5" />
-            </button>
+    <div className="fixed inset-0 z-[90000] flex items-center justify-center bg-slate-950/60 p-2 backdrop-blur-sm">
+      <div role="dialog" aria-modal="true" aria-label="Create prediction" className="flex max-h-[96dvh] w-full max-w-6xl flex-col overflow-hidden rounded-xl border bg-background shadow-2xl">
+        <header className="flex shrink-0 items-center gap-2 border-b px-3 py-2.5">
+          <div className="flex min-w-0 items-center gap-2">
+            {match.homeTeamBadge ? <Image src={match.homeTeamBadge} alt="" width={24} height={24} className="h-6 w-6 shrink-0 object-contain" unoptimized /> : <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-muted text-[9px] font-bold">H</span>}
+            <span className="truncate text-xs font-semibold">
+              {match.homeTeam} <span className="text-muted-foreground">vs</span> {match.awayTeam}
+            </span>
+            {match.awayTeamBadge ? <Image src={match.awayTeamBadge} alt="" width={24} height={24} className="h-6 w-6 shrink-0 object-contain" unoptimized /> : <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-muted text-[9px] font-bold">A</span>}
+            <span className="hidden text-[10px] text-muted-foreground sm:inline">
+              {new Date(match.fixtureDate).toLocaleString('en-NG', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}
+            </span>
           </div>
+          <span className="ml-auto hidden rounded-md bg-muted px-2 py-1 text-[10px] text-muted-foreground sm:inline">{contextLoading ? 'Loading match data…' : context ? 'Match data loaded' : 'Match data unavailable'}</span>
+          <button type="button" onClick={onClose} disabled={loading || calculating} className="grid h-7 w-7 place-items-center rounded-md border text-muted-foreground hover:bg-muted disabled:opacity-50" aria-label="Close">
+            <X className="h-3.5 w-3.5" />
+          </button>
         </header>
 
-        <main
-          className="
-            min-h-0
-            flex-1
-            overflow-x-hidden
-            overflow-y-auto
-            scrollbar-hide
-          "
-        >
-          <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
-            {error && (
-              <div
-                role="alert"
-                className="
-                  flex
-                  items-start
-                  gap-3
-                  rounded-2xl
-                  border
-                  border-destructive/25
-                  bg-destructive/10
-                  p-4
-                  text-sm
-                  text-destructive
-                "
-              >
-                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+        <main className="min-h-0 flex-1 overflow-y-auto">
+          <div className="space-y-3 p-3">
+            {error && <div className="flex items-start gap-2 rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-2 text-[11px] text-destructive"><AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /><span>{error}</span></div>}
 
-                <p>{error}</p>
-              </div>
-            )}
+            {contextLoading && <div className="flex items-center gap-2 rounded-lg border bg-muted/30 px-3 py-2 text-xs text-muted-foreground"><LoaderCircle className="h-4 w-4 animate-spin" />Loading odds, recent form, standings and H2H data…</div>}
 
-            {/* Match hero */}
-
-            <section
-              className="
-                overflow-hidden
-                rounded-3xl
-                border
-                border-border
-                bg-gradient-to-br
-                from-primary/[0.10]
-                via-background
-                to-background
-              "
-            >
-              <div
-                className="
-                  flex
-                  items-center
-                  justify-between
-                  border-b
-                  border-border/70
-                  px-4
-                  py-3
-                  sm:px-6
-                "
-              >
-                <span
-                  className="
-                    inline-flex
-                    items-center
-                    gap-2
-                    text-xs
-                    font-bold
-                    uppercase
-                    tracking-[0.16em]
-                    text-primary
-                  "
-                >
-                  <Trophy className="h-4 w-4" />
-                  Match Prediction
-                </span>
-
-                <span
-                  className="
-                    rounded-full
-                    bg-muted
-                    px-3
-                    py-1
-                    text-xs
-                    font-semibold
-                    text-muted-foreground
-                  "
-                >
-                  Draft
-                </span>
-              </div>
-
-              <div className="p-5 sm:p-7">
-                <div
-                  className="
-                    grid
-                    grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]
-                    items-center
-                    gap-3
-                    sm:gap-6
-                  "
-                >
-                  <TeamDisplay
-                    name={match.homeTeam}
-                    badge={match.homeTeamBadge}
-                    label="Home"
-                    align="right"
-                  />
-
-                  <span
-                    className="
-                      flex
-                      h-12
-                      w-12
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-full
-                      border
-                      border-primary/30
-                      bg-primary/10
-                      text-xs
-                      font-black
-                      tracking-wider
-                      text-primary
-                    "
-                  >
-                    VS
-                  </span>
-
-                  <TeamDisplay
-                    name={match.awayTeam}
-                    badge={match.awayTeamBadge}
-                    label="Away"
-                    align="left"
-                  />
-                </div>
-
-                <div
-                  className="
-                    mx-auto
-                    mt-7
-                    max-w-2xl
-                    rounded-2xl
-                    border
-                    border-primary/20
-                    bg-primary/[0.06]
-                    p-4
-                  "
-                >
-                  <div className="flex items-center gap-2 text-primary">
-                    <Target className="h-4 w-4" />
-
-                    <span
-                      className="
-                        text-xs
-                        font-bold
-                        uppercase
-                        tracking-[0.16em]
-                      "
-                    >
-                      Auto prediction
-                    </span>
+            <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_330px]">
+              <div className="space-y-3">
+                <section className="rounded-lg border">
+                  <div className="flex items-center justify-between border-b px-3 py-2">
+                    <span className="text-xs font-semibold">Selected markets</span>
+                    <button type="button" onClick={addMarket} disabled={loading || contextLoading} className="inline-flex h-7 items-center gap-1 rounded-md bg-primary/10 px-2 text-[10px] font-semibold text-primary disabled:opacity-40"><Plus className="h-3 w-3" />Add market</button>
                   </div>
-
-                  <div
-                    className="
-                      mt-4
-                      flex
-                      flex-col
-                      gap-4
-                      sm:flex-row
-                      sm:items-center
-                      sm:justify-between
-                    "
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div
-                        className="
-                          flex
-                          h-12
-                          w-12
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-xl
-                          bg-background
-                          shadow-sm
-                        "
-                      >
-                        {predictionHero.badge ? (
-                          <Image
-                            src={predictionHero.badge}
-                            alt={predictionHero.title}
-                            width={34}
-                            height={34}
-                            className="object-contain"
-                          />
-                        ) : (
-                          <Target className="h-5 w-5 text-primary" />
-                        )}
-                      </div>
-
-                      <div className="min-w-0">
-                        <h3 className="truncate font-bold">
-                          {predictionHero.title}
-                        </h3>
-
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {predictionHero.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="min-w-[150px]">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">
-                          Confidence
-                        </span>
-
-                        <span
-                          className={`
-                            text-sm
-                            font-bold
-                            ${
-                              total === 100
-                                ? 'text-primary'
-                                : 'text-muted-foreground'
-                            }
-                          `}
-                        >
-                          {confidence}%
-                        </span>
-                      </div>
-
-                      <div
-                        className="
-                          mt-2
-                          h-2
-                          overflow-hidden
-                          rounded-full
-                          bg-primary/15
-                        "
-                      >
-                        <div
-                          className="
-                            h-full
-                            rounded-full
-                            bg-gradient-to-r
-                            from-primary
-                            to-cyan-400
-                            transition-all
-                          "
-                          style={{
-                            width: `${confidence}%`,
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-              <div className="space-y-6">
-                <SectionCard
-                  title="Probability Engine"
-                  description="Set the expected outcome probabilities. Their total must equal 100%."
-                  icon={<BarChart3 className="h-5 w-5" />}
-                >
-                  <div
-                    className={`
-                      mb-4
-                      flex
-                      items-center
-                      justify-between
-                      rounded-2xl
-                      border
-                      p-4
-                      ${
-                        total === 100
-                          ? 'border-emerald-500/20 bg-emerald-500/5'
-                          : 'border-destructive/20 bg-destructive/5'
-                      }
-                    `}
-                  >
-                    <div>
-                      <p className="font-semibold">
-                        Probability Total
-                      </p>
-
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {total === 100
-                          ? 'Ready to create this prediction.'
-                          : 'Adjust the values until the total is 100%.'}
-                      </p>
-                    </div>
-
-                    <span
-                      className={`
-                        text-2xl
-                        font-black
-                        ${
-                          total === 100
-                            ? 'text-emerald-600'
-                            : 'text-destructive'
-                        }
-                      `}
-                    >
-                      {total}%
-                    </span>
-                  </div>
-
-                  <div className="grid gap-3">
-                    <ProbabilityInput
-                      label={`${match.homeTeam} Win`}
-                      value={homeProb}
-                      onChange={setHomeProb}
-                    />
-
-                    <ProbabilityInput
-                      label="Draw"
-                      value={drawProb}
-                      onChange={setDrawProb}
-                    />
-
-                    <ProbabilityInput
-                      label={`${match.awayTeam} Win`}
-                      value={awayProb}
-                      onChange={setAwayProb}
-                    />
-                  </div>
-                </SectionCard>
-
-                <SectionCard
-                  title="Markets"
-                  description="Add the betting markets included in this prediction."
-                  icon={<Target className="h-5 w-5" />}
-                  action={
-                    <button
-                      type="button"
-                      onClick={addMarket}
-                      className="
-                        inline-flex
-                        h-9
-                        items-center
-                        gap-2
-                        rounded-xl
-                        bg-primary/10
-                        px-3
-                        text-xs
-                        font-semibold
-                        text-primary
-                        transition
-                        hover:bg-primary/15
-                      "
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Market
-                    </button>
-                  }
-                >
-                  {markets.length === 0 ? (
-                    <div
-                      className="
-                        rounded-2xl
-                        border
-                        border-dashed
-                        border-border
-                        bg-muted/20
-                        p-7
-                        text-center
-                      "
-                    >
-                      <Target className="mx-auto h-6 w-6 text-muted-foreground" />
-
-                      <p className="mt-3 text-sm font-semibold">
-                        No markets added yet
-                      </p>
-
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Add a market to build this prediction.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {markets.map((market, index) => {
-                        const marketConfig = getMarketConfig(
-                          market.market,
-                        );
-
-                        const isPlayerMarket =
-                          isDynamicPlayerMarket(
-                            market.market,
-                          );
-
-                        return (
-                          <div
-                            key={index}
-                            className="
-                              rounded-2xl
-                              border
-                              border-border
-                              bg-muted/20
-                              p-4
-                            "
-                          >
-                            <div className="mb-4 flex items-center justify-between gap-3">
-                              <span
-                                className="
-                                  flex
-                                  h-7
-                                  w-7
-                                  shrink-0
-                                  items-center
-                                  justify-center
-                                  rounded-full
-                                  bg-primary/10
-                                  text-xs
-                                  font-bold
-                                  text-primary
-                                "
-                              >
-                                {index + 1}
-                              </span>
-
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  removeMarket(index)
-                                }
-                                className="
-                                  inline-flex
-                                  items-center
-                                  gap-2
-                                  text-xs
-                                  font-semibold
-                                  text-destructive
-                                  transition
-                                  hover:underline
-                                "
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                                Remove
-                              </button>
-                            </div>
-
-                            <div className="grid gap-3 sm:grid-cols-2">
-                              <label className="block">
-                                <span
-                                  className="
-                                    text-xs
-                                    font-semibold
-                                    uppercase
-                                    tracking-wider
-                                    text-muted-foreground
-                                  "
-                                >
-                                  Market
-                                </span>
-
-                                <select
-                                  value={market.market}
-                                  onChange={(event) =>
-                                    updateMarket(index, {
-                                      market:
-                                        event.target.value,
-                                      selection: '',
-                                      playerName: '',
-                                      customValue: '',
-                                    })
-                                  }
-                                  className="
-                                    mt-2
-                                    h-11
-                                    w-full
-                                    rounded-xl
-                                    border
-                                    border-input
-                                    bg-background
-                                    px-3
-                                    text-sm
-                                    outline-none
-                                    focus-visible:ring-2
-                                    focus-visible:ring-primary/30
-                                  "
-                                >
-                                  <option value="">
-                                    Select market
-                                  </option>
-
-                                  {PredictionMarketOptions.map(
-                                    (item) => (
-                                      <option
-                                        key={item.value}
-                                        value={item.value}
-                                      >
-                                        {item.label}
-                                      </option>
-                                    ),
-                                  )}
-                                </select>
-                              </label>
-
-                              <label className="block">
-                                <span
-                                  className="
-                                    text-xs
-                                    font-semibold
-                                    uppercase
-                                    tracking-wider
-                                    text-muted-foreground
-                                  "
-                                >
-                                  Selection
-                                </span>
-
-                                <select
-                                  value={market.selection}
-                                  disabled={!market.market}
-                                  onChange={(event) =>
-                                    updateMarket(index, {
-                                      selection:
-                                        event.target.value,
-                                    })
-                                  }
-                                  className="
-                                    mt-2
-                                    h-11
-                                    w-full
-                                    rounded-xl
-                                    border
-                                    border-input
-                                    bg-background
-                                    px-3
-                                    text-sm
-                                    outline-none
-                                    focus-visible:ring-2
-                                    focus-visible:ring-primary/30
-                                    disabled:cursor-not-allowed
-                                    disabled:opacity-50
-                                  "
-                                >
-                                  <option value="">
-                                    Select prediction
-                                  </option>
-
-                                  {marketConfig?.selections.map(
-                                    (option) => (
-                                      <option
-                                        key={option.value}
-                                        value={option.value}
-                                      >
-                                        {option.label}
-                                      </option>
-                                    ),
-                                  )}
-                                </select>
-                              </label>
-                            </div>
-
-                            {isPlayerMarket && (
-                              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                                <label className="block">
-                                  <span
-                                    className="
-                                      text-xs
-                                      font-semibold
-                                      uppercase
-                                      tracking-wider
-                                      text-muted-foreground
-                                    "
-                                  >
-                                    Player Name
-                                  </span>
-
-                                  <input
-                                    type="text"
-                                    placeholder="e.g. Erling Haaland"
-                                    value={
-                                      market.playerName || ''
-                                    }
-                                    onChange={(event) =>
-                                      updateMarket(index, {
-                                        playerName:
-                                          event.target.value,
-                                      })
-                                    }
-                                    className="
-                                      mt-2
-                                      h-11
-                                      w-full
-                                      rounded-xl
-                                      border
-                                      border-input
-                                      bg-background
-                                      px-3
-                                      text-sm
-                                      outline-none
-                                      placeholder:text-muted-foreground
-                                      focus-visible:ring-2
-                                      focus-visible:ring-primary/30
-                                    "
-                                  />
-                                </label>
-
-                                <label className="block">
-                                  <span
-                                    className="
-                                      text-xs
-                                      font-semibold
-                                      uppercase
-                                      tracking-wider
-                                      text-muted-foreground
-                                    "
-                                  >
-                                    Override Text
-                                  </span>
-
-                                  <input
-                                    type="text"
-                                    placeholder="Optional"
-                                    value={
-                                      market.customValue || ''
-                                    }
-                                    onChange={(event) =>
-                                      updateMarket(index, {
-                                        customValue:
-                                          event.target.value,
-                                      })
-                                    }
-                                    className="
-                                      mt-2
-                                      h-11
-                                      w-full
-                                      rounded-xl
-                                      border
-                                      border-input
-                                      bg-background
-                                      px-3
-                                      text-sm
-                                      outline-none
-                                      placeholder:text-muted-foreground
-                                      focus-visible:ring-2
-                                      focus-visible:ring-primary/30
-                                    "
-                                  />
-                                </label>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </SectionCard>
-              </div>
-
-              <div className="space-y-6">
-                <SectionCard
-                  title="Access & Pricing"
-                  description="Control who can access this prediction."
-                  icon={<Crown className="h-5 w-5" />}
-                >
-                  <div className="grid gap-3">
-                    {(
-                      [
-                        {
-                          value: 'free',
-                          label: 'Free',
-                          description:
-                            'Available to every user.',
-                        },
-                        {
-                          value: 'regular',
-                          label: 'Regular',
-                          description:
-                            'Available to Regular members.',
-                        },
-                        {
-                          value: 'vip',
-                          label: 'VIP',
-                          description:
-                            'Exclusive VIP access.',
-                        },
-                      ] as const
-                    ).map((option) => (
-                      <label
-                        key={option.value}
-                        className={`
-                          flex
-                          cursor-pointer
-                          items-center
-                          gap-3
-                          rounded-2xl
-                          border
-                          p-4
-                          transition
-                          ${
-                            accessType === option.value
-                              ? 'border-primary/30 bg-primary/[0.06]'
-                              : 'border-border bg-muted/20 hover:bg-muted/40'
-                          }
-                        `}
-                      >
-                        <input
-                          type="radio"
-                          name="accessType"
-                          value={option.value}
-                          checked={
-                            accessType === option.value
-                          }
-                          onChange={() =>
-                            handleAccessChange(option.value)
-                          }
-                          className="accent-primary"
-                        />
-
-                        <div>
-                          <p className="font-semibold">
-                            {option.label}
-                          </p>
-
-                          <p className="mt-1 text-sm text-muted-foreground">
-                            {option.description}
-                          </p>
+                  <div className="space-y-1.5 p-3">
+                    {markets.map((item, index) => {
+                      const config = getMarketConfig(item.market);
+                      return (
+                        <div key={`${index}-${item.market}`} className="grid grid-cols-[22px_minmax(0,1fr)_minmax(0,1fr)_28px] gap-1.5">
+                          <span className="grid h-8 place-items-center rounded-md bg-muted text-[9px] font-bold">{index + 1}</span>
+                          <select value={item.market} disabled={loading || contextLoading} onChange={(event) => updateMarket(index, { market: event.target.value, selection: '' })} className="h-8 min-w-0 rounded-md border bg-background px-2 text-[11px] outline-none focus:ring-1 focus:ring-primary/30">
+                            <option value="">Market</option>
+                            {PredictionMarketOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                          </select>
+                          <select value={item.selection} disabled={loading || contextLoading || !item.market} onChange={(event) => updateMarket(index, { selection: event.target.value })} className="h-8 min-w-0 rounded-md border bg-background px-2 text-[11px] outline-none focus:ring-1 focus:ring-primary/30 disabled:opacity-60">
+                            <option value="">Selection</option>
+                            {config?.selections.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                          </select>
+                          <button type="button" onClick={() => removeMarket(index)} disabled={markets.length === 1 || loading || contextLoading} className="grid h-8 w-7 place-items-center rounded-md text-destructive hover:bg-destructive/10 disabled:opacity-30" aria-label={`Remove market ${index + 1}`}><Trash2 className="h-3.5 w-3.5" /></button>
                         </div>
-                      </label>
-                    ))}
+                      );
+                    })}
+                    {duplicateSelection && <p className="text-[10px] text-destructive">Duplicate market selection. Each selection must be unique.</p>}
                   </div>
+                </section>
 
-                  <label className="mt-5 block">
-                    <span
-                      className="
-                        text-xs
-                        font-semibold
-                        uppercase
-                        tracking-wider
-                        text-muted-foreground
-                      "
-                    >
-                      Individual Price
-                    </span>
-
-                    <div className="relative mt-2">
-                      <span
-                        className="
-                          pointer-events-none
-                          absolute
-                          left-4
-                          top-1/2
-                          -translate-y-1/2
-                          text-sm
-                          font-semibold
-                          text-muted-foreground
-                        "
-                      >
-                        ₦
-                      </span>
-
-                      <input
-                        type="number"
-                        min="0"
-                        disabled={accessType === 'free'}
-                        placeholder={
-                          accessType === 'free'
-                            ? 'Included with free access'
-                            : 'Enter price'
-                        }
-                        value={
-                          accessType === 'free'
-                            ? '0'
-                            : price
-                        }
-                        onChange={(event) =>
-                          setPrice(event.target.value)
-                        }
-                        className="
-                          h-12
-                          w-full
-                          rounded-xl
-                          border
-                          border-input
-                          bg-background
-                          pl-8
-                          pr-4
-                          text-sm
-                          font-semibold
-                          outline-none
-                          focus-visible:ring-2
-                          focus-visible:ring-primary/30
-                          disabled:cursor-not-allowed
-                          disabled:bg-muted/50
-                          disabled:text-muted-foreground
-                        "
-                      />
+                {preview && (
+                  <section className="rounded-lg border">
+                    <div className="flex items-center gap-2 border-b bg-muted/20 px-3 py-2">
+                      <Target className="h-4 w-4 text-primary" />
+                      <span className="min-w-0 flex-1 truncate text-xs font-bold text-primary">{predictionLabel}</span>
+                      <span className="text-[10px] text-muted-foreground">Support confidence</span>
+                      <span className="rounded-md bg-primary/10 px-2 py-1 text-xs font-bold text-primary">{preview.confidence}%</span>
                     </div>
-                  </label>
-                </SectionCard>
+                    <div className="grid grid-cols-3 gap-2 p-3 sm:grid-cols-4">
+                      <Metric label="Selection probability" value={percent(preview.predictionProbability)} />
+                      <Metric label="Bookmaker odds" value={money(preview.predictionOdds)} />
+                      <Metric label="Fair odds" value={money(preview.predictionFairOdds)} />
+                      <Metric label="Probability source" value={preview.probabilitySource.replace(/_/g, ' ')} />
+                    </div>
+                    <div className="border-t px-3 py-2">
+                      <p className="mb-2 text-[10px] font-semibold text-muted-foreground">Overall Home / Draw / Away</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        <OutcomeMetric label={preview.homeTeam} value={preview.generalPrediction.home.probability} fairOdds={preview.generalPrediction.home.fairOdds} />
+                        <OutcomeMetric label="Draw" value={preview.generalPrediction.draw.probability} fairOdds={preview.generalPrediction.draw.fairOdds} />
+                        <OutcomeMetric label={preview.awayTeam} value={preview.generalPrediction.away.probability} fairOdds={preview.generalPrediction.away.fairOdds} />
+                      </div>
+                    </div>
+                    <div className="border-t">
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] gap-2 bg-muted/20 px-3 py-1.5 text-[9px] font-semibold uppercase text-muted-foreground">
+                        <span>Market / selection</span><span>Prob.</span><span>Odds</span><span>Fair</span>
+                      </div>
+                      {preview.markets.map((item, index) => (
+                        <div key={`${item.market}-${item.selection}-${index}`} className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto] items-center gap-2 border-t px-3 py-2">
+                          <div className="min-w-0"><p className="truncate text-[10px] text-muted-foreground">{getMarketLabel(item.market)}</p><p className="truncate text-[11px] font-semibold">{getSelectionLabel(item.market, item.selection)}</p><p className="truncate text-[9px] text-muted-foreground">{item.probabilitySource.replace(/_/g, ' ')}</p></div>
+                          <Metric label="" value={percent(item.probability)} /><Metric label="" value={money(item.odds)} /><Metric label="" value={money(item.fairOdds)} />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
-                <SectionCard
-                  title="Prediction Summary"
-                  description="This is what will be saved with the fixture."
-                  icon={<CheckCircle2 className="h-5 w-5" />}
-                >
-                  <div className="space-y-3">
-                    <SummaryRow
-                      label="Prediction"
-                      value={
-                        autoPrediction
-                          ? predictionHero.title
-                          : 'Not ready'
-                      }
-                      highlighted
-                    />
-
-                    <SummaryRow
-                      label="Confidence"
-                      value={
-                        total === 100
-                          ? `${confidence}%`
-                          : 'Waiting for 100% total'
-                      }
-                    />
-
-                    <SummaryRow
-                      label="Markets"
-                      value={`${markets.length} added`}
-                    />
-
-                    <SummaryRow
-                      label="Access"
-                      value={accessType}
-                      capitalize
-                    />
-
-                    <SummaryRow
-                      label="Price"
-                      value={
-                        accessType === 'free'
-                          ? 'Free'
-                          : `₦${Number(
-                              price || 0,
-                            ).toLocaleString()}`
-                      }
-                    />
-                  </div>
-                </SectionCard>
+                {displayContext && <ContextData context={displayContext} homeTeam={preview?.homeTeam ?? match.homeTeam} awayTeam={preview?.awayTeam ?? match.awayTeam} />}
               </div>
+
+              <aside className="space-y-3">
+                <section className="rounded-lg border p-3">
+                  <div className="mb-2 flex items-center justify-between"><span className="text-xs font-semibold">Access settings</span><span className="text-[10px] capitalize text-muted-foreground">{accessType}</span></div>
+                  <div className="grid grid-cols-4 gap-1">
+                    {accessOptions.map((option) => <button key={option.value} type="button" disabled={loading} onClick={() => setAccessType(option.value)} className={`h-7 rounded-md border text-[9px] font-semibold ${accessType === option.value ? 'border-primary/30 bg-primary/10 text-primary' : 'bg-muted/30 text-muted-foreground'} disabled:opacity-40`}>{option.label}</button>)}
+                  </div>
+                  <div className="mt-3 rounded-md bg-muted/30 p-2 text-[10px] text-muted-foreground">
+                    {contextLoading ? 'Loading match data…' : calculating ? 'Updating probabilities…' : preview ? 'Preview is up to date. The backend will recalculate before saving.' : 'Choose complete markets to calculate the preview automatically.'}
+                  </div>
+                </section>
+                <section className="rounded-lg border p-3">
+                  <p className="mb-1 text-[10px] font-semibold">Calculation notes</p>
+                  <p className="text-[10px] leading-relaxed text-muted-foreground">Market probability uses matching bookmaker odds when available. If no matching price exists, a stable fallback estimate is clearly labelled. Home/Draw/Away probabilities are calculated separately and are not copied from ESPN predictor data.</p>
+                </section>
+              </aside>
             </div>
           </div>
         </main>
 
-        <footer
-          className="
-            shrink-0
-            border-t
-            border-border
-            bg-background/95
-            px-4
-            py-3
-            backdrop-blur-xl
-            sm:px-6
-            sm:py-4
-          "
-        >
-          <div
-            className="
-              flex
-              flex-col
-              gap-3
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-            "
-          >
-            <p className="text-xs text-muted-foreground">
-              The prediction can only be created when probabilities total 100%.
-            </p>
-
-            <div className="grid grid-cols-2 gap-3 sm:flex">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={loading}
-                className="
-                  inline-flex
-                  h-11
-                  items-center
-                  justify-center
-                  rounded-xl
-                  border
-                  border-border
-                  px-5
-                  text-sm
-                  font-semibold
-                  transition
-                  hover:bg-muted
-                  disabled:opacity-50
-                "
-              >
-                Cancel
-              </button>
-
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={loading || total !== 100}
-                className="
-                  inline-flex
-                  h-11
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-primary
-                  px-5
-                  text-sm
-                  font-semibold
-                  text-primary-foreground
-                  shadow-sm
-                  transition
-                  hover:brightness-110
-                  disabled:cursor-not-allowed
-                  disabled:opacity-40
-                "
-              >
-                {loading ? (
-                  <>
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Plus className="h-4 w-4" />
-                    Create Prediction
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+        <footer className="flex shrink-0 justify-end gap-2 border-t px-3 py-2.5">
+          <button type="button" onClick={onClose} disabled={loading || calculating} className="h-8 rounded-md border px-3 text-[11px] font-semibold disabled:opacity-40">Cancel</button>
+          <button type="button" onClick={handleCreate} disabled={loading || contextLoading || calculating || !preview || !completeMarkets || duplicateSelection} className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary px-3 text-[11px] font-semibold text-primary-foreground disabled:opacity-40">
+            {loading ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Target className="h-3.5 w-3.5" />}
+            {loading ? 'Creating…' : calculating ? 'Calculating…' : 'Create prediction'}
+          </button>
         </footer>
       </div>
     </div>
   );
 }
 
-function TeamDisplay({
-  name,
-  badge,
-  label,
-  align,
-}: {
-  name: string;
-  badge?: string;
-  label: string;
-  align: 'left' | 'right';
-}) {
-  const isRight = align === 'right';
-
+function ContextData({ context, homeTeam, awayTeam }: { context: PredictionCalculationContext; homeTeam: string; awayTeam: string }) {
   return (
-    <div
-      className={`
-        flex
-        min-w-0
-        items-center
-        gap-3
-        ${isRight ? 'justify-end text-right' : 'text-left'}
-      `}
-    >
-      {isRight && (
-        <div className="min-w-0">
-          <p className="truncate text-sm font-bold sm:text-base">
-            {name}
-          </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
-            {label}
-          </p>
+    <div className="space-y-3">
+      <section className="rounded-lg border">
+        <div className="flex items-center gap-2 border-b px-3 py-2"><Trophy className="h-3.5 w-3.5 text-primary" /><span className="text-xs font-semibold">Standings and last five games</span></div>
+        <div className="grid gap-2 p-2 sm:grid-cols-2">
+          <TeamSnapshotCard name={homeTeam} side="home" snapshot={context.teamContext.home} />
+          <TeamSnapshotCard name={awayTeam} side="away" snapshot={context.teamContext.away} />
         </div>
-      )}
+      </section>
 
-      <div
-        className="
-          flex
-          h-12
-          w-12
-          shrink-0
-          items-center
-          justify-center
-          rounded-2xl
-          border
-          border-border
-          bg-background
-          shadow-sm
-        "
-      >
-        {badge ? (
-          <Image
-            src={badge}
-            alt={name}
-            width={32}
-            height={32}
-            className="object-contain"
-          />
-        ) : (
-          <ShieldCheck className="h-5 w-5 text-muted-foreground" />
-        )}
-      </div>
-
-      {!isRight && (
-        <div className="min-w-0">
-          <p className="truncate text-sm font-bold sm:text-base">
-            {name}
-          </p>
-
-          <p className="mt-1 text-xs text-muted-foreground">
-            {label}
-          </p>
+      <section className="rounded-lg border">
+        <div className="flex items-center gap-2 border-b px-3 py-2"><History className="h-3.5 w-3.5 text-primary" /><span className="text-xs font-semibold">Head-to-head</span><span className="ml-auto text-[10px] text-muted-foreground">{context.headToHead.matchesCount} completed matches</span></div>
+        <div className="grid grid-cols-3 gap-2 p-3">
+          <Metric label={`${homeTeam} wins`} value={context.headToHead.homeTeamWins} />
+          <Metric label="Draws" value={context.headToHead.draws} />
+          <Metric label={`${awayTeam} wins`} value={context.headToHead.awayTeamWins} />
         </div>
-      )}
+        {context.headToHead.matches.length > 0 ? <div className="border-t">
+          {context.headToHead.matches.map((game, index) => <div key={`${game.date}-${index}`} className="flex items-center gap-2 border-t px-3 py-1.5 first:border-0 text-[10px]"><span className="w-14 shrink-0 text-muted-foreground">{dateLabel(game.date)}</span><span className="min-w-0 flex-1 truncate">{game.homeScore} – {game.awayScore}</span><span className="truncate text-muted-foreground">{game.homeTeamId === context.match.homeTeam.id ? homeTeam : game.homeTeamId === context.match.awayTeam.id ? awayTeam : 'Historical home'} vs {game.awayTeamId === context.match.homeTeam.id ? homeTeam : game.awayTeamId === context.match.awayTeam.id ? awayTeam : 'Historical away'}</span></div>)}
+        </div> : <p className="px-3 py-2 text-[10px] text-muted-foreground">No completed H2H matches found before this kickoff.</p>}
+      </section>
+
+      <section className="rounded-lg border">
+        <div className="border-b px-3 py-2"><span className="text-xs font-semibold">Available bookmaker odds</span></div>
+        {context.odds.length ? <div className="divide-y">
+          {context.odds.slice(0, 8).map((odd, index) => <div key={`${odd.source}-${odd.market}-${odd.selection}-${index}`} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2 px-3 py-2 text-[10px]"><div className="min-w-0"><p className="truncate font-medium">{odd.market} · {odd.selection}</p><p className="truncate text-[9px] text-muted-foreground">{odd.provider ?? odd.source.replace(/_/g, ' ')}</p></div><span className="text-muted-foreground">{odd.line !== undefined ? `Line ${odd.line}` : ''}</span><span className="font-semibold">{odd.decimalOdds.toFixed(2)}</span></div>)}
+        </div> : <p className="px-3 py-2 text-[10px] text-muted-foreground">No normalized bookmaker odds found. Selected markets will use the labelled fallback when no matching price is available.</p>}
+        <div className="border-t px-3 py-1.5 text-[9px] text-muted-foreground">Collected — fixture: {context.collectedAt.fixture ? dateLabel(context.collectedAt.fixture) : 'unknown'} · Summary: {context.collectedAt.summary ? dateLabel(context.collectedAt.summary) : 'unknown'} · odds: {context.collectedAt.odds ? dateLabel(context.collectedAt.odds) : 'none'}</div>
+      </section>
     </div>
   );
 }
 
-function ProbabilityInput({
-  label,
-  value,
-  onChange,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-}) {
+function TeamSnapshotCard({ name, side, snapshot }: { name: string; side: 'home' | 'away'; snapshot: { tablePosition?: number; lastFiveGames: PredictionFormGame[] } }) {
+  const results = snapshot.lastFiveGames;
   return (
-    <label
-      className="
-        flex
-        items-center
-        justify-between
-        gap-4
-        rounded-2xl
-        border
-        border-border
-        bg-muted/20
-        p-3
-      "
-    >
-      <span className="min-w-0 truncate text-sm font-semibold">
-        {label}
-      </span>
-
-      <div className="relative w-24 shrink-0">
-        <input
-          type="number"
-          min="0"
-          max="100"
-          value={value}
-          onChange={(event) =>
-            onChange(event.target.value)
-          }
-          placeholder="0"
-          className="
-            h-10
-            w-full
-            rounded-xl
-            border
-            border-input
-            bg-background
-            px-3
-            pr-7
-            text-right
-            text-sm
-            font-bold
-            outline-none
-            focus-visible:ring-2
-            focus-visible:ring-primary/30
-          "
-        />
-
-        <span
-          className="
-            pointer-events-none
-            absolute
-            right-3
-            top-1/2
-            -translate-y-1/2
-            text-xs
-            text-muted-foreground
-          "
-        >
-          %
-        </span>
+    <div className="rounded-md border bg-muted/10 p-2.5">
+      <div className="flex items-center justify-between gap-2"><p className="truncate text-[11px] font-semibold">{name}</p><span className="text-[9px] text-muted-foreground">{side === 'home' ? 'Home' : 'Away'}</span></div>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <Metric label="Table position" value={snapshot.tablePosition !== undefined ? `#${snapshot.tablePosition}` : 'Not listed'} />
+        <Metric label="Recent games" value={`${results.length}/5`} />
       </div>
-    </label>
-  );
-}
-
-function SectionCard({
-  title,
-  description,
-  icon,
-  action,
-  children,
-}: {
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  action?: React.ReactNode;
-  children: React.ReactNode;
-}) {
-  return (
-    <section
-      className="
-        rounded-3xl
-        border
-        border-border
-        bg-card
-        p-4
-        shadow-sm
-        sm:p-5
-      "
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div
-            className="
-              flex
-              h-10
-              w-10
-              shrink-0
-              items-center
-              justify-center
-              rounded-xl
-              bg-primary/10
-              text-primary
-            "
-          >
-            {icon}
-          </div>
-
-          <div>
-            <h3 className="font-bold">
-              {title}
-            </h3>
-
-            <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              {description}
-            </p>
-          </div>
-        </div>
-
-        {action}
+      <div className="mt-2 flex flex-wrap gap-1">
+        {results.length ? results.map((game, index) => <span key={`${game.date}-${index}`} title={`${game.opponent}: ${game.goalsFor}-${game.goalsAgainst}`} className={`grid h-6 min-w-6 place-items-center rounded px-1.5 text-[9px] font-bold ${game.result === 'W' ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300' : game.result === 'D' ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300' : 'bg-rose-500/15 text-rose-700 dark:text-rose-300'}`}>{game.result}</span>) : <span className="text-[10px] text-muted-foreground">No recent form available</span>}
       </div>
-
-      <div className="mt-5">
-        {children}
-      </div>
-    </section>
-  );
-}
-
-function SummaryRow({
-  label,
-  value,
-  highlighted = false,
-  capitalize = false,
-}: {
-  label: string;
-  value: string;
-  highlighted?: boolean;
-  capitalize?: boolean;
-}) {
-  return (
-    <div
-      className={`
-        flex
-        items-center
-        justify-between
-        gap-4
-        rounded-xl
-        border
-        px-4
-        py-3
-        ${
-          highlighted
-            ? 'border-primary/20 bg-primary/[0.06]'
-            : 'border-border bg-muted/20'
-        }
-      `}
-    >
-      <span className="text-sm text-muted-foreground">
-        {label}
-      </span>
-
-      <span
-        className={`
-          max-w-[60%]
-          truncate
-          text-right
-          text-sm
-          font-semibold
-          ${
-            highlighted
-              ? 'text-primary'
-              : 'text-foreground'
-          }
-          ${capitalize ? 'capitalize' : ''}
-        `}
-      >
-        {value}
-      </span>
+      {results.length > 0 && <div className="mt-2 space-y-1 border-t pt-2">
+        {results.map((game, index) => <div key={`${game.date}-details-${index}`} className="flex items-center gap-2 text-[9px]"><span className="w-14 shrink-0 text-muted-foreground">{dateLabel(game.date)}</span><span className="min-w-0 flex-1 truncate">vs {game.opponent}</span><span className="font-semibold">{game.goalsFor}–{game.goalsAgainst}</span><span className="w-3 font-bold">{game.result}</span></div>)}
+      </div>}
     </div>
   );
 }
+
+function OutcomeMetric({ label, value, fairOdds }: { label: string; value: number; fairOdds: number }) {
+  return <div className="rounded-md border bg-muted/10 p-2"><p className="truncate text-[9px] text-muted-foreground">{label}</p><p className="mt-1 text-sm font-bold">{percent(value)}</p><p className="text-[9px] text-muted-foreground">Fair odds {money(fairOdds)}</p></div>;
+}
+
+function Metric({ label, value }: { label: string; value: ReactNode }) {
+  return <div className="min-w-[44px]"><p className="truncate text-[8px] uppercase tracking-wide text-muted-foreground">{label || ' '}</p><p className="truncate text-[11px] font-semibold">{value}</p></div>;
+}
+

@@ -9,20 +9,24 @@ export interface PlanLabels {
   free: string;
   regular: string;
   vip: string;
+  premium: string;
 }
 
 export interface PlanConfig {
-  // Nigeria
   regularPrice: number;
   vipPrice: number;
+  premiumPrice: number;
+
   bankDetails: BankDetails;
 
-  // International
   regularPriceUSD: number;
   vipPriceUSD: number;
+  premiumPriceUSD: number;
+
   bankDetailsUSD: BankDetails;
 
-  // Common
   subscriptionDurationDays: number;
+  premiumDurationDays: number;
+
   planLabels: PlanLabels;
 }

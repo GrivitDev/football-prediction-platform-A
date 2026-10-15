@@ -103,7 +103,7 @@ export default function PromoTable(){
 
       <Card>
 
-        <CardContent className="space-y-4 p-6">
+        <CardContent className="space-y-3 p-4">
 
           {
             [1,2,3,4].map(
@@ -135,7 +135,7 @@ export default function PromoTable(){
     <Card>
 
 
-      <CardHeader>
+      <CardHeader className="px-4 py-3">
 
         <CardTitle>
 
@@ -148,7 +148,7 @@ export default function PromoTable(){
 
 
 
-      <CardContent>
+      <CardContent className="px-4 pb-4 pt-0">
 
 
         <div className="overflow-x-auto">

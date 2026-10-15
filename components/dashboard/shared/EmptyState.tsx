@@ -1,6 +1,6 @@
 'use client';
 
-import { LucideIcon } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
 import {
   Card,
@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/card';
 
 import { cn } from '@/lib/utils';
-
 
 interface EmptyStateProps {
   title: string;
@@ -18,7 +17,6 @@ interface EmptyStateProps {
   className?: string;
 }
 
-
 export function EmptyState({
   title,
   description,
@@ -26,182 +24,66 @@ export function EmptyState({
   action,
   className,
 }: EmptyStateProps) {
-
-
   return (
-
     <Card
       className={cn(
         `
-          surface-card
-          group
-          relative
-          overflow-hidden
-          border-border/50
-          bg-card/80
-          backdrop-blur-xl
-          transition-all
-          duration-500
-          hover:shadow-2xl
+          border-border/70
+          bg-card
+          shadow-none
         `,
         className,
       )}
     >
-
-      {/* Ambient background */}
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          -right-24
-          -top-24
-          h-56
-          w-56
-          rounded-full
-          bg-primary/20
-          blur-3xl
-          transition-transform
-          duration-700
-          group-hover:scale-110
-        "
-      />
-
-
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          bg-gradient-to-br
-          from-primary/10
-          via-transparent
-          to-transparent
-        "
-      />
-
-
       <CardContent
         className="
-          relative
-          z-10
           flex
           flex-col
           items-center
           justify-center
-          px-5
-          py-12
+          px-4
+          py-8
           text-center
-          sm:px-8
-          sm:py-16
         "
       >
-
-        {/* Icon */}
-
         <div
           className="
-            relative
-            mb-6
             flex
-            h-16
-            w-16
+            h-10
+            w-10
             items-center
             justify-center
-            rounded-3xl
+            rounded-lg
             border
-            border-primary/20
-            bg-gradient-to-br
-            from-primary/15
-            via-primary/5
-            to-transparent
-            shadow-lg
-            transition-transform
-            duration-500
-            group-hover:-translate-y-1
-            sm:h-20
-            sm:w-20
+            bg-muted/50
+            text-muted-foreground
           "
         >
-
-          <div
-            className="
-              absolute
-              inset-0
-              rounded-3xl
-              bg-primary/20
-              blur-xl
-              opacity-40
-            "
-          />
-
-
-          <Icon
-            className="
-              relative
-              h-8
-              w-8
-              text-primary
-              sm:h-9
-              sm:w-9
-            "
-          />
-
+          <Icon className="h-5 w-5" />
         </div>
 
-
-
-        <h3
-          className="
-            text-lg
-            font-bold
-            tracking-tight
-            sm:text-xl
-          "
-        >
+        <h3 className="mt-3 text-sm font-semibold">
           {title}
         </h3>
 
-
-
         <p
           className="
-            mt-3
-            max-w-md
-            text-sm
-            leading-relaxed
+            mt-1
+            max-w-sm
+            text-xs
+            leading-5
             text-muted-foreground
-            sm:text-base
           "
         >
           {description}
         </p>
 
-
-
-        {
-          action && (
-
-            <div
-              className="
-                mt-6
-                w-full
-                sm:w-auto
-              "
-            >
-
-              {action}
-
-            </div>
-
-          )
-        }
-
-
+        {action && (
+          <div className="mt-4">
+            {action}
+          </div>
+        )}
       </CardContent>
-
     </Card>
-
   );
-
 }

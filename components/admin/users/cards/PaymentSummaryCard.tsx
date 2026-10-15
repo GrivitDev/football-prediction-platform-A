@@ -58,7 +58,7 @@ export default function PaymentSummaryCard({
       rounded-3xl
       border
       bg-card/60
-      p-6
+      p-4
       shadow-xl
       backdrop-blur-xl
       transition
@@ -82,7 +82,7 @@ export default function PaymentSummaryCard({
 
       <div className="
         relative
-        space-y-6
+        space-y-3
       ">
 
 
@@ -98,7 +98,7 @@ export default function PaymentSummaryCard({
           <div className="
             flex
             items-center
-            gap-3
+            gap-2
           ">
 
             <div className="
@@ -151,7 +151,7 @@ export default function PaymentSummaryCard({
           rounded-2xl
           border
           bg-background/40
-          p-4
+          p-3
         ">
 
           <p className="
@@ -166,7 +166,7 @@ export default function PaymentSummaryCard({
             mt-1
             flex
             items-center
-            gap-2
+            gap-1.5
           ">
 
             <p className="
@@ -198,7 +198,7 @@ export default function PaymentSummaryCard({
         <div className="
           grid
           grid-cols-2
-          gap-4
+          gap-3
         ">
 
 
@@ -252,7 +252,7 @@ export default function PaymentSummaryCard({
         <div className="
           grid
           grid-cols-3
-          gap-3
+          gap-2
         ">
 
 
@@ -334,7 +334,7 @@ function Stat({
       rounded-xl
       border
       bg-background/30
-      p-3
+      p-2
     ">
 
       <p className="
@@ -381,7 +381,7 @@ function Status({
 
     <div className={`
       rounded-xl
-      p-3
+      p-2
       ${className}
     `}>
 
@@ -389,7 +389,7 @@ function Status({
       <div className="
         flex
         items-center
-        gap-2
+        gap-1.5
         text-xs
       ">
 
@@ -401,7 +401,7 @@ function Status({
 
 
       <p className="
-        mt-2
+        mt-1
         text-lg
         font-bold
       ">

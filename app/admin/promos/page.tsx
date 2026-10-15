@@ -67,7 +67,7 @@ export default async function AdminPromosPage(){
 
   return (
 
-    <div className="space-y-8">
+    <div className="space-y-4">
 
 
       <div className="flex items-center justify-between">
@@ -99,7 +99,7 @@ export default async function AdminPromosPage(){
           <Link href="/admin/promos/create">
 
 
-            <Plus className="mr-2 h-4 w-4"/>
+            <Plus className="mr-1 h-4 w-4"/>
 
             Create Promo
 
@@ -118,12 +118,12 @@ export default async function AdminPromosPage(){
 
 
 
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-4">
 
 
         <Card>
 
-          <CardContent className="p-6">
+          <CardContent className="p-4">
 
 
             <p className="text-sm text-muted-foreground">
@@ -133,7 +133,7 @@ export default async function AdminPromosPage(){
             </p>
 
 
-            <p className="mt-2 text-3xl font-bold">
+            <p className="mt-1 text-3xl font-bold">
 
               {total}
 
@@ -151,7 +151,7 @@ export default async function AdminPromosPage(){
 
         <Card>
 
-          <CardContent className="p-6">
+          <CardContent className="p-4">
 
 
             <p className="text-sm text-muted-foreground">
@@ -161,7 +161,7 @@ export default async function AdminPromosPage(){
             </p>
 
 
-            <p className="mt-2 text-3xl font-bold">
+            <p className="mt-1 text-3xl font-bold">
 
               {active}
 
@@ -179,7 +179,7 @@ export default async function AdminPromosPage(){
 
         <Card>
 
-          <CardContent className="p-6">
+          <CardContent className="p-4">
 
 
             <p className="text-sm text-muted-foreground">
@@ -189,7 +189,7 @@ export default async function AdminPromosPage(){
             </p>
 
 
-            <p className="mt-2 text-3xl font-bold">
+            <p className="mt-1 text-3xl font-bold">
 
               {referral}
 
@@ -207,7 +207,7 @@ export default async function AdminPromosPage(){
 
         <Card>
 
-          <CardContent className="p-6">
+          <CardContent className="p-4">
 
 
             <p className="text-sm text-muted-foreground">
@@ -217,7 +217,7 @@ export default async function AdminPromosPage(){
             </p>
 
 
-            <p className="mt-2 text-3xl font-bold">
+            <p className="mt-1 text-3xl font-bold">
 
               {direct}
 

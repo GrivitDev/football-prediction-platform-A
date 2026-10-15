@@ -16,30 +16,19 @@ import type { PaymentCurrency } from '@/services/payment-gateway.service';
 
 import PaymentProofUpload from './PaymentProofUpload';
 
-
-
 interface PaymentModalProps {
   type:
     | 'subscription'
-    | 'vip_upgrade'
-    | 'prediction';
+    | 'vip_upgrade';
 
   target: string;
-
   amount: number;
-
   currency: PaymentCurrency;
-
   config: PlanConfig;
-
   title?: string;
-
   description?: string;
-
   onClose: () => void;
 }
-
-
 
 export default function PaymentModal({
   type,
@@ -51,761 +40,352 @@ export default function PaymentModal({
   description,
   onClose,
 }: PaymentModalProps) {
-
-
-  const [transferReference,setTransferReference] =
+  const [transferReference, setTransferReference] =
     useState('');
 
-
-  const [proofMessage,setProofMessage] =
+  const [proofMessage, setProofMessage] =
     useState('');
 
+  const [proof, setProof] = useState<{
+    url: string;
+    publicId: string;
+  } | null>(null);
 
-  const [proof,setProof] =
-    useState<{
-      url:string;
-      publicId:string;
-    } | null>(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
+  const bankDetails =
+    currency === 'USD'
+      ? config.bankDetailsUSD
+      : config.bankDetails;
 
+  const paymentLabel =
+    target === 'premium'
+      ? config.planLabels.premium
+      : target === 'vip'
+        ? config.planLabels.vip
+        : config.planLabels.regular;
 
-  const [error,setError] =
-    useState('');
+  const duration =
+    target === 'premium'
+      ? config.premiumDurationDays === 0
+        ? 'Lifetime'
+        : `${config.premiumDurationDays} days`
+      : `${config.subscriptionDurationDays} days`;
 
-
-  const [loading,setLoading] =
-    useState(false);
-
-
-  const [success,setSuccess] =
-    useState(false);
-
-
-const bankDetails =
-  currency === 'USD'
-    ? config.bankDetailsUSD
-    : config.bankDetails;
-
-  async function submitPayment(){
-
-
+  async function submitPayment() {
     setError('');
 
-
-
-    if(!transferReference.trim()){
-
+    if (!transferReference.trim()) {
       setError(
-        'Please enter your payment reference or account name used for transfer.',
+        'Please enter your payment reference or sender name.',
       );
-
       return;
-
     }
 
-
-
-    if(!proof){
-
+    if (!proof) {
       setError(
         'Please upload your payment screenshot before submitting.',
       );
-
       return;
-
     }
 
-
-
-    try{
-
-
+    try {
       setLoading(true);
 
-
-
-await api.post(
-  '/payments',
-  {
-    type,
-
-    target,
-
-    currency,
-
-    transferReference:
-      transferReference.trim(),
-
-    proofMessage:
-      proofMessage.trim(),
-
-    proofImageUrl:
-      proof.url,
-
-    proofPublicId:
-      proof.publicId,
-  },
-);
-
-
+      await api.post('/payments', {
+        type,
+        target,
+        currency,
+        transferReference:
+          transferReference.trim(),
+        proofMessage:
+          proofMessage.trim(),
+        proofImageUrl: proof.url,
+        proofPublicId: proof.publicId,
+      });
 
       setSuccess(true);
-
-
-
-    }catch(error:any){
-
-
+    } catch (error: any) {
       const message =
         error.response?.data?.message ||
-        'Something went wrong while submitting payment. Please try again.';
-
-
+        'Unable to submit payment. Please try again.';
 
       setError(
         Array.isArray(message)
           ? message[0]
           : message,
       );
-
-
-    }finally{
-
-
+    } finally {
       setLoading(false);
-
-
     }
-
-
   }
 
-
-
-
-
-  const paymentLabel =
-    type === 'prediction'
-      ? 'Prediction Purchase'
-      : (target || '').toUpperCase();
-
-
-
-
-
   return (
-
     <div
       className="
         fixed
         inset-0
         z-50
+        flex
+        items-start
+        justify-center
         overflow-y-auto
         bg-black/60
-        p-4
-        pt-8
-        pb-8
+        p-3
         backdrop-blur-md
-        sm:flex
         sm:items-center
-        sm:justify-center
       "
     >
-
-
       <div
         className="
           relative
-          mx-auto
+          my-2
           flex
-          max-h-[calc(100vh-4rem)]
+          max-h-[calc(100vh-1.5rem)]
           w-full
+          max-w-lg
           flex-col
           overflow-hidden
-          rounded-3xl
+          rounded-2xl
           border
-          border-border/60
           bg-background
           shadow-2xl
-          sm:max-w-2xl
+          sm:my-0
         "
       >
-
-
-
         <button
+          type="button"
           onClick={onClose}
           className="
             absolute
-            right-5
-            top-5
+            right-3
+            top-3
             z-10
             flex
-            h-10
-            w-10
+            h-8
+            w-8
             items-center
             justify-center
             rounded-full
             border
-            bg-background/70
-            backdrop-blur
-            transition-all
-            hover:scale-105
+            bg-background/90
             hover:bg-muted
           "
         >
-
-          <X size={20}/>
-
+          <X size={15} />
         </button>
 
-
-
-
-        <div
-          className="
-            overflow-y-auto
-            px-5
-            pb-8
-            pt-16
-            sm:px-8
-            sm:pt-8
-          "
-        >
-
-                  {
-          success ? (
-
-            <div
-              className="
-                flex
-                flex-col
-                items-center
-                py-10
-                text-center
-              "
-            >
-
-              <div
-                className="
-                  flex
-                  h-24
-                  w-24
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-green-500/10
-                  ring-8
-                  ring-green-500/5
-                "
-              >
-
+        <div className="min-h-0 overflow-y-auto p-5">
+          {success ? (
+            <div className="flex flex-col items-center py-8 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
                 <CheckCircle2
-                  size={45}
+                  size={34}
                   className="text-green-500"
                 />
-
               </div>
 
-
-
-              <h2
-                className="
-                  mt-6
-                  text-3xl
-                  font-black
-                "
-              >
-
+              <h2 className="mt-4 text-xl font-bold">
                 Payment Submitted
-
               </h2>
 
-
-
-              <p
-                className="
-                  mt-3
-                  max-w-sm
-                  text-muted-foreground
-                "
-              >
-
-                Your payment has been received and is
-                waiting for admin approval. Your account
-                will automatically update once approved.
-
+              <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+                Your payment is waiting for admin approval.
+                Your account will update after approval.
               </p>
 
-
-
               <button
+                type="button"
                 onClick={onClose}
-                className="
-                  mt-8
-                  w-full
-                  rounded-2xl
-                  bg-primary
-                  py-3
-                  font-bold
-                  text-primary-foreground
-                  shadow-lg
-                  shadow-primary/20
-                  transition
-                  hover:opacity-90
-                "
+                className="mt-6 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground"
               >
-
                 Continue
-
               </button>
-
-
             </div>
-
-
           ) : (
-
-
             <>
-
-
-              <div
-                className="
-                  rounded-3xl
-                  border-b
-                  border-border/50
-                  bg-gradient-to-b
-                  from-primary/10
-                  via-primary/5
-                  to-transparent
-                  px-6
-                  py-7
-                "
-              >
-
-                <p
-                  className="
-                    text-sm
-                    font-semibold
-                    text-primary
-                  "
-                >
-
+              <div className="border-b pb-5 pr-8">
+                <p className="text-xs font-semibold text-primary">
                   {paymentLabel}
-
                 </p>
 
-
-
-                <h2
-                  className="
-                    mt-2
-                    text-3xl
-                    font-black
-                    tracking-tight
-                  "
-                >
-
+                <h2 className="mt-1 text-xl font-bold">
                   {title || 'Complete Payment'}
-
                 </h2>
 
-
-
-                  <p
-                    className="
-                      mt-3
-                      text-muted-foreground
-                    "
-                  >
-
-                    {
-                      description ||
-                      'Transfer the amount below and upload your payment proof.'
-                    }
-
-                  </p>
-
-
-                  <p
-                    className="
-                      mt-3
-                      rounded-xl
-                      border
-                      border-primary/20
-                      bg-primary/5
-                      p-3
-                      text-sm
-                      text-muted-foreground
-                    "
-                  >
-
-                    After submitting your payment, please allow the admin about 30 minutes to confirm your payment and activate your subscription.
-
-                  </p>
-
-
-              </div>
-
-
-
-
-
-
-              <div
-                className="
-                  mt-8
-                  rounded-3xl
-                  border
-                  border-primary/15
-                  bg-gradient-to-br
-                  from-primary/10
-                  to-primary/5
-                  p-7
-                  shadow-sm
-                "
-              >
-
-                  <p className="text-sm text-muted-foreground">
-                    Amount to pay ({currency})
-                  </p>
-
-
-
-                <p
-                  className="
-                    mt-2
-                    text-5xl
-                    font-black
-                    tracking-tight
-                  "
-                >
-
-                  {currency === 'USD'
-                    ? `$${amount.toLocaleString()}`
-                    : `₦${amount.toLocaleString()}`
-                  }
-
+                <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
+                  {description ||
+                    'Transfer the amount below and upload your payment proof.'}
                 </p>
 
-
-
-
-                {
-                  type !== 'prediction' && (
-
-                    <p
-                      className="
-                        mt-3
-                        text-sm
-                        text-muted-foreground
-                      "
-                    >
-
-                      Valid for {
-                        config.subscriptionDurationDays
-                      } days
-
-                    </p>
-
-                  )
-                }
-
-
+                <div className="mt-3 rounded-xl border bg-primary/5 p-3 text-xs leading-5 text-muted-foreground">
+                  Payment activation occurs after admin
+                  confirmation.
+                </div>
               </div>
 
+              <div className="mt-4 rounded-xl border bg-primary/5 p-4">
+                <p className="text-xs text-muted-foreground">
+                  Amount to pay ({currency})
+                </p>
 
+                <p className="mt-1 text-3xl font-black">
+                  {currency === 'USD' ? '$' : '₦'}
+                  {amount.toLocaleString()}
+                </p>
 
+                {duration && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Valid for {duration}
+                  </p>
+                )}
+              </div>
 
+              <div className="mt-4 rounded-xl border p-4">
+                <p className="text-sm font-semibold">
+                  Bank Transfer
+                </p>
 
-
-
-              <div
-                className="
-                  mt-8
-                  rounded-3xl
-                  border
-                  border-border/60
-                  bg-card
-                  p-6
-                  shadow-sm
-                "
-              >
-
-                <h3
-                  className="
-                    font-bold
-                  "
-                >
-
-                  Bank Transfer Details
-
-                </h3>
-
-
-
-                <div
-                  className="
-                    mt-5
-                    space-y-3
-                    text-sm
-                  "
-                >
-
+                <div className="mt-3 space-y-2 text-xs leading-5">
                   <p>
-                    Bank:
-                    {' '}
+                    <span className="text-muted-foreground">
+                      Bank:
+                    </span>{' '}
                     {bankDetails.bankName}
                   </p>
 
                   <p>
-                    Account Name:
-                    {' '}
+                    <span className="text-muted-foreground">
+                      Account:
+                    </span>{' '}
                     {bankDetails.accountName}
                   </p>
 
                   <p>
-                    Account Number:
-                    {' '}
+                    <span className="text-muted-foreground">
+                      Number:
+                    </span>{' '}
                     {bankDetails.accountNumber}
                   </p>
 
                   {bankDetails.instructions && (
-                    <p
-                      className="
-                        pt-3
-                        text-muted-foreground
-                      "
-                    >
+                    <p className="pt-1 text-muted-foreground">
                       {bankDetails.instructions}
                     </p>
                   )}
-
-
                 </div>
-
-
               </div>
 
-                            <div
-                className="
-                  mt-8
-                  space-y-5
-                "
-              >
-
-
+              <div className="mt-4 space-y-3">
                 <PaymentProofUpload
-
-                  onUpload={(data)=>{
-
+                  onUpload={(data) => {
                     setProof(data);
-
                     setError('');
-
                   }}
-
                 />
 
-
-
-
-
                 <input
-
                   value={transferReference}
-
-                  onChange={(e)=>{
-
+                  onChange={(e) => {
                     setTransferReference(
                       e.target.value,
                     );
-
                     setError('');
-
                   }}
-
-                  placeholder="
-                    Transfer reference / sender name
-                  "
-
+                  placeholder="Transfer reference / sender name"
                   className="
                     w-full
-                    rounded-2xl
+                    rounded-xl
                     border
-                    border-border/60
                     bg-muted/30
-                    px-4
-                    py-3.5
+                    px-3
+                    py-3
+                    text-sm
                     outline-none
-                    transition-all
+                    transition
                     focus:border-primary
                     focus:bg-background
                     focus:ring-4
                     focus:ring-primary/10
                   "
-
                 />
-
-
-
-
-
-
 
                 <textarea
-
                   value={proofMessage}
-
-                  onChange={(e)=>
-                    setProofMessage(
-                      e.target.value,
-                    )
+                  onChange={(e) =>
+                    setProofMessage(e.target.value)
                   }
-
-                  placeholder="
-                    Additional information (optional)
-                  "
-
+                  placeholder="Additional information (optional)"
                   className="
-                    min-h-28
+                    min-h-24
                     w-full
-                    rounded-2xl
+                    resize-none
+                    rounded-xl
                     border
-                    border-border/60
                     bg-muted/30
-                    px-4
-                    py-3.5
+                    px-3
+                    py-3
+                    text-sm
                     outline-none
-                    transition-all
+                    transition
                     focus:border-primary
                     focus:bg-background
                     focus:ring-4
                     focus:ring-primary/10
                   "
-
                 />
-
-
               </div>
 
-
-
-
-
-
-
-
-              {
-                error && (
-
-                  <div
-                    className="
-                      mt-6
-                      rounded-2xl
-                      border
-                      border-red-500/20
-                      bg-red-500/10
-                      p-4
-                      text-sm
-                      text-red-500
-                    "
-                  >
-
-                    {error}
-
-                  </div>
-
-                )
-              }
-
-
-
-
-
-
-
+              {error && (
+                <div className="mt-3 rounded-xl border border-destructive/20 bg-destructive/10 p-3 text-xs text-destructive">
+                  {error}
+                </div>
+              )}
 
               <button
-
+                type="button"
                 disabled={loading}
-
                 onClick={submitPayment}
-
                 className="
-                  mt-8
+                  mt-4
                   flex
-                  h-14
+                  h-12
                   w-full
                   items-center
                   justify-center
-                  gap-3
-                  rounded-2xl
+                  gap-2
+                  rounded-xl
                   bg-primary
+                  text-sm
                   font-bold
                   text-primary-foreground
-                  shadow-lg
-                  shadow-primary/20
-                  transition-all
-                  hover:-translate-y-0.5
-                  hover:shadow-xl
-                  disabled:translate-y-0
+                  transition
+                  hover:opacity-90
                   disabled:cursor-not-allowed
                   disabled:opacity-50
                 "
-
               >
-
-                {
-                  loading ? (
-
-                    <>
-
-                      <Loader2
-                        size={18}
-                        className="animate-spin"
-                      />
-
-                      Processing...
-
-                    </>
-
-
-                  ) : (
-
-                    <>
-
-                      <UploadCloud
-                        size={18}
-                      />
-
-                      Submit Payment
-
-                    </>
-
-                  )
-                }
-
-
+                {loading ? (
+                  <>
+                    <Loader2
+                      size={17}
+                      className="animate-spin"
+                    />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <UploadCloud size={17} />
+                    Submit Payment
+                  </>
+                )}
               </button>
-
-
             </>
-
-          )
-
-        }
-
-
+          )}
         </div>
-
-
       </div>
-
-
     </div>
-
   );
-
 }

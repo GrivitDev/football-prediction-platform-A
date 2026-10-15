@@ -1,7 +1,16 @@
 import api from '@/lib/axios';
 
+export type SubscriptionPlan =
+  | 'free'
+  | 'regular'
+  | 'vip'
+  | 'premium';
+
 export interface UpgradePriceResponse {
-  currentPlan: 'free' | 'regular' | 'vip';
+  currentPlan:
+    | 'free'
+    | 'regular'
+    | 'vip';
 
   regularPrice: number;
 
@@ -27,16 +36,18 @@ export interface UpgradePriceResponse {
 }
 
 export async function getUpgradePrice(): Promise<UpgradePriceResponse> {
-  const { data } = await api.get<UpgradePriceResponse>(
-    '/subscriptions/upgrade-price',
-  );
+  const { data } =
+    await api.get<UpgradePriceResponse>(
+      '/subscriptions/upgrade-price',
+    );
 
   return data;
 }
 
 export const subscriptionService = {
   async getStatus() {
-    const res = await api.get('/subscriptions/status');
+    const res =
+      await api.get('/subscriptions/status');
 
     return res.data;
   },

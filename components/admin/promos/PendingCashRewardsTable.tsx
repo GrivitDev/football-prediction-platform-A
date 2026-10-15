@@ -79,7 +79,7 @@ return (
 <Card>
 
 
-<CardHeader>
+<CardHeader className="px-4 py-3">
 
 <CardTitle>
 
@@ -90,7 +90,7 @@ Cash Rewards Waiting Payment
 </CardHeader>
 
 
-<CardContent>
+<CardContent className="px-4 pb-4 pt-0">
 
 
 <table className="w-full text-sm">
@@ -136,7 +136,7 @@ className="border-b"
 >
 
 
-<td className="p-3">
+<td className="p-2">
 
 
 {

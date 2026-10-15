@@ -4,323 +4,195 @@ import { useEffect, useState } from 'react';
 
 import { userService } from '@/services/user.service';
 import { subscriptionService } from '@/services/subscription.service';
-import { paymentService } from '@/services/payment.service';
-import { purchaseService } from '@/services/purchase.service';
-import { getPredictions } from '@/services/prediction.service';
+import { getPredictionTableRows } from '@/services/prediction.service';
 import { getReferralPromos } from '@/services/promos.service';
-
-
+import type { PredictionUserResponse } from '@/types/prediction.types';
+import type { PredictionItem } from '@/components/dashboard/dashboard.types';
 
 function getTopPredictions(
-  predictions:any[],
-){
+  predictions: PredictionUserResponse[],
+): PredictionItem[] {
+  const today = new Date();
+  const todayStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  ).getTime();
+  const tomorrowStart = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + 1,
+  ).getTime();
 
-  if(!predictions.length)
-    return [];
+  // The user-facing endpoint deliberately omits prediction data when a user
+  // does not have access. Only use rows that the backend says are accessible.
+  const accessiblePredictions: PredictionItem[] = predictions
+    .filter((prediction) => prediction?.access?.allowed && prediction.data)
+    .map((prediction) => ({
+      ...prediction,
+      confidence: Number(
+        prediction.data?.confidence ?? prediction.confidence ?? 0,
+      ),
+    }));
 
+  const validDatedPredictions = accessiblePredictions.filter((prediction) => {
+    if (!prediction.matchDate) return false;
+    return !Number.isNaN(new Date(prediction.matchDate).getTime());
+  });
 
+  const matchesToday = validDatedPredictions.filter((prediction) => {
+    const matchTime = new Date(prediction.matchDate!).getTime();
+    return matchTime >= todayStart && matchTime < tomorrowStart;
+  });
 
-  const today =
-    new Date();
+  // If there are no accessible predictions for today, show upcoming matches.
+  const candidates = matchesToday.length
+    ? matchesToday
+    : validDatedPredictions.filter(
+        (prediction) => new Date(prediction.matchDate!).getTime() >= todayStart,
+      );
 
-
-  today.setHours(
-    0,
-    0,
-    0,
-    0
-  );
-
-
-
-  let filtered =
-    predictions.filter(
-      (prediction)=>{
-
-        const date =
-          new Date(
-            prediction.matchDate
-          );
-
-
-        date.setHours(
-          0,
-          0,
-          0,
-          0
-        );
-
-
-        return (
-          date.getTime() ===
-          today.getTime()
-        );
-
-      }
-    );
-
-
-
-
-  // If no matches today,
-  // pick nearest upcoming matches
-
-  if(!filtered.length){
-
-    filtered =
-      predictions
-        .filter(
-          (prediction)=>{
-
-            const date =
-              new Date(
-                prediction.matchDate
-              );
-
-
-            return (
-              date >= today
-            );
-
-          }
-        )
-        .sort(
-          (a,b)=>
-            new Date(
-              a.matchDate
-            ).getTime()
-            -
-            new Date(
-              b.matchDate
-            ).getTime()
-        );
-
-  }
-
-
-
-
-  return filtered
+  return candidates
     .sort(
-      (a,b)=>
-        Number(
-          b.confidence || 0
-        )
-        -
-        Number(
-          a.confidence || 0
-        )
+      (a, b) => Number(b.confidence ?? 0) - Number(a.confidence ?? 0),
     )
-    .slice(0,3);
-
+    .slice(0, 3);
 }
 
+function normalizeList(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+  if (!value || typeof value !== 'object') return [];
 
+  const record = value as Record<string, unknown>;
+  const possibleKeys = ['data', 'promos', 'items', 'campaigns'];
 
+  for (const key of possibleKeys) {
+    const nested = record[key];
+    if (Array.isArray(nested)) return nested;
+  }
 
+  // Some APIs wrap the collection in more than one object, e.g. { data: { items } }.
+  for (const key of possibleKeys) {
+    const nested = record[key];
+    if (nested && typeof nested === 'object') {
+      const nestedRecord = nested as Record<string, unknown>;
+      for (const nestedKey of possibleKeys) {
+        const nestedValue = nestedRecord[nestedKey];
+        if (Array.isArray(nestedValue)) return nestedValue;
+      }
+    }
+  }
+
+  return [];
+}
 
 export function useDashboardStats() {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [subscription, setSubscription] = useState<any>(null);
+  const [predictions, setPredictions] = useState<PredictionUserResponse[]>([]);
+  const [topPredictions, setTopPredictions] = useState<PredictionItem[]>([]);
+  const [availablePromos, setAvailablePromos] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState<string | null>(null);
 
+  useEffect(() => {
+    let isActive = true;
 
-  const [loading,setLoading] =
-    useState(true);
+    const loadPredictions = async () => {
+      try {
+        const rows = await getPredictionTableRows();
+        if (!isActive) return;
 
+        const safeRows = Array.isArray(rows) ? rows : [];
+        setPredictions(safeRows);
+        setTopPredictions(getTopPredictions(safeRows));
+        setPredictionError(null);
+      } catch (requestError) {
+        console.error('[Dashboard] Failed to load user predictions:', requestError);
+        if (!isActive) return;
 
+        setPredictions([]);
+        setTopPredictions([]);
+        setPredictionError('Predictions are temporarily unavailable.');
+      }
+    };
 
-  const [user,setUser] =
-    useState<any>(null);
+    const loadPromos = async () => {
+      try {
+        const response = await getReferralPromos();
+        if (!isActive) return;
 
+        setAvailablePromos(normalizeList(response) as any[]);
+        setPromoError(null);
+      } catch (requestError) {
+        console.error('[Dashboard] Failed to load promotions:', requestError);
+        if (!isActive) return;
 
+        setAvailablePromos([]);
+        setPromoError('Promotions are temporarily unavailable.');
+      }
+    };
 
-  const [subscription,setSubscription] =
-    useState<any>(null);
+    const loadCoreDashboardData = async () => {
+      setLoading(true);
+      setError(null);
 
-
-
-  const [payments,setPayments] =
-    useState<any[]>([]);
-
-
-
-  const [purchases,setPurchases] =
-    useState<any[]>([]);
-
-
-
-  const [predictions,setPredictions] =
-    useState<any[]>([]);
-
-
-
-  const [topPredictions,setTopPredictions] =
-    useState<any[]>([]);
-
-
-
-  const [availablePromos,setAvailablePromos] =
-    useState<any[]>([]);
-
-
-
-  const [error,setError] =
-    useState<string | null>(null);
-
-
-
-
-  useEffect(()=>{
-
-
-    const fetchAll = async()=>{
-
-
-      try{
-
-
-        setLoading(true);
-
-
-
-        const [
-          userRes,
-          subRes,
-          payRes,
-          purRes,
-          predictionRes,
-          promoRes,
-        ] = await Promise.all([
-
-
+      try {
+        // Profile and subscription status are required to render the dashboard.
+        // Optional sections load separately so they cannot take down the page.
+        const [userResponse, subscriptionResponse] = await Promise.all([
           userService.getMe(),
-
-
           subscriptionService.getStatus(),
-
-
-          paymentService.getMyPayments(),
-
-
-          purchaseService.getMyPurchases(),
-
-
-          getPredictions(),
-
-
-          getReferralPromos(),
-
-
         ]);
 
+        if (!isActive) return;
 
+        setUser(userResponse);
 
+        const subscriptionData = subscriptionResponse?.subscription ?? null;
+        const currentPlan =
+          subscriptionResponse?.plan ?? subscriptionData?.plan ?? 'free';
 
-        setUser(
-          userRes
-        );
-
-
-
-        setSubscription(
-          subRes.subscription
-        );
-
-
-
-        setPayments(
-          payRes || []
-        );
-
-
-
-        setPurchases(
-          purRes || []
-        );
-
-
-
-        setPredictions(
-          predictionRes || []
-        );
-
-
-
-        setTopPredictions(
-          getTopPredictions(
-            predictionRes || []
-          )
-        );
-
-
-
-        setAvailablePromos(
-          promoRes || []
-        );
-
-
-
-
-      }catch(err:any){
-
-
-        setError(
-          err?.message ||
-          'Failed to load dashboard'
-        );
-
-
-      }finally{
-
+        // /subscriptions/status returns the resolved plan at the top level as
+        // well as the active subscription record. Preserve both pieces of data.
+        setSubscription({
+          ...(subscriptionData ?? {}),
+          plan: currentPlan,
+        });
 
         setLoading(false);
 
+        // Do not block the core dashboard on optional prediction/promo requests.
+        void loadPredictions();
+        void loadPromos();
+      } catch (requestError) {
+        console.error('[Dashboard] Failed to load account data:', requestError);
+        if (!isActive) return;
 
+        setError('Unable to load your account details. Please refresh and try again.');
+      } finally {
+        if (isActive) setLoading(false);
       }
-
-
     };
 
+    void loadCoreDashboardData();
 
-
-    fetchAll();
-
-
-
-  },[]);
-
-
-
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   return {
-
-
     loading,
-
-
     error,
-
-
+    predictionError,
+    promoError,
     user,
-
-
     subscription,
-
-
-    payments,
-
-
-    purchases,
-
-
     predictions,
-
-
     topPredictions,
-
-
     availablePromos,
-
-
   };
-
-
 }

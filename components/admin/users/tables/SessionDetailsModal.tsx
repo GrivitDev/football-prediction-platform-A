@@ -34,8 +34,8 @@ export default function SessionDetailsModal({
       justify-center
       bg-black/60
       backdrop-blur-md
-      p-3
-      sm:p-6
+      p-2
+      sm:p-4
     ">
 
 
@@ -78,16 +78,16 @@ export default function SessionDetailsModal({
           justify-between
           border-b
           border-border/60
-          px-5
-          py-4
-          sm:px-7
+          px-4
+          py-2
+          sm:px-4
         ">
 
 
           <div className="
             flex
             items-center
-            gap-3
+            gap-2
           ">
 
 
@@ -163,9 +163,9 @@ export default function SessionDetailsModal({
 
         <div className="
           overflow-y-auto
-          p-5
-          sm:p-7
-          space-y-5
+          p-3
+          sm:p-5
+          space-y-3
 
           [scrollbar-width:none]
           [&::-webkit-scrollbar]:hidden
@@ -183,14 +183,14 @@ export default function SessionDetailsModal({
             border
             border-border/60
             bg-card/50
-            p-4
+            p-3
           ">
 
 
             <div className="
               flex
               items-center
-              gap-3
+              gap-2
             ">
 
               <Radio
@@ -229,9 +229,9 @@ export default function SessionDetailsModal({
             <span className={`
               inline-flex
               items-center
-              gap-2
+              gap-1.5
               rounded-full
-              px-3
+              px-2
               py-1
               text-xs
               font-medium
@@ -416,12 +416,12 @@ export default function SessionDetailsModal({
           <div className="
             flex
             items-center
-            gap-2
+            gap-1.5
             rounded-2xl
             border
             border-blue-500/20
             bg-blue-500/10
-            p-4
+            p-3
             text-xs
             text-blue-500
           ">
@@ -471,17 +471,17 @@ function InfoSection({
       border
       border-border/60
       bg-card/40
-      p-4
+      p-3
       shadow-sm
       backdrop-blur-xl
     ">
 
 
       <div className="
-        mb-4
+        mb-2
         flex
         items-center
-        gap-2
+        gap-1.5
         text-sm
         font-semibold
       ">
@@ -497,7 +497,7 @@ function InfoSection({
       </div>
 
 
-      <div className="space-y-3">
+      <div className="space-y-2">
 
         {children}
 
@@ -531,7 +531,7 @@ function Row({
       gap-1
       sm:flex-row
       sm:justify-between
-      sm:gap-5
+      sm:gap-3
       text-sm
     ">
 

@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  AlertTriangle,
-  Trash2,
-} from 'lucide-react';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 
 import {
   AlertDialog,
@@ -22,248 +19,112 @@ import { Button } from '@/components/ui/button';
 import { useProfile } from '@/hooks/useProfile';
 
 export default function DeleteAccountDialog() {
-
-  const {
-    deleteAccount,
-    deleting,
-  } = useProfile();
+  const { deleteAccount, deleting } = useProfile();
 
   async function handleDelete() {
     await deleteAccount();
   }
 
   return (
-
     <AlertDialog>
-
       <AlertDialogTrigger asChild>
-
         <Button
           variant="outline"
           className="
-            h-11
-            w-full
-            justify-start
-            rounded-xl
-            border-red-500/30
-            bg-red-500/5
-            text-red-600
-            shadow-sm
-            transition-all
-            duration-300
-            hover:border-red-500/50
-            hover:bg-red-500/10
-            hover:text-red-600
-            dark:text-red-400
+            h-8
+            shrink-0
+            rounded-md
+            border-destructive/25
+            px-2.5
+            text-[11px]
+            font-medium
+            text-destructive
+            hover:bg-destructive/5
+            hover:text-destructive
           "
         >
-
-          <Trash2 className="mr-2 h-4 w-4" />
-
-          Delete Account
-
+          <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+          Delete
         </Button>
-
       </AlertDialogTrigger>
 
-      <AlertDialogContent
-        className="
-          overflow-hidden
-          border-border/60
-          bg-background/95
-          p-0
-          backdrop-blur-2xl
-          sm:max-w-lg
-        "
-      >
-
-        <div
-          className="
-            absolute
-            -left-16
-            -top-16
-            h-44
-            w-44
-            rounded-full
-            bg-red-500/20
-            blur-3xl
-          "
-        />
-
-        <div
-          className="
-            absolute
-            -bottom-16
-            -right-16
-            h-44
-            w-44
-            rounded-full
-            bg-orange-500/15
-            blur-3xl
-          "
-        />
-
-        <div className="relative">
-
-          <AlertDialogHeader
-            className="
-              border-b
-              border-border/50
-              px-6
-              py-6
-            "
-          >
-
+      <AlertDialogContent className="sm:max-w-md">
+        <AlertDialogHeader className="space-y-2">
+          <div className="flex items-center gap-2.5">
             <div
               className="
-                mb-4
                 flex
-                h-16
-                w-16
+                h-8
+                w-8
+                shrink-0
                 items-center
                 justify-center
-                rounded-2xl
-                bg-gradient-to-br
-                from-red-500
-                via-red-600
-                to-orange-500
-                text-white
-                shadow-lg
+                rounded-lg
+                border
+                border-destructive/20
+                bg-destructive/10
+                text-destructive
               "
             >
-
-              <AlertTriangle className="h-8 w-8" />
-
+              <AlertTriangle className="h-4 w-4" />
             </div>
 
-            <AlertDialogTitle
-              className="
-                text-2xl
-                font-bold
-              "
-            >
-
+            <AlertDialogTitle className="text-base">
               Delete Account
-
             </AlertDialogTitle>
+          </div>
 
-            <AlertDialogDescription
-              className="
-                mt-2
-                space-y-3
-                text-sm
-                leading-relaxed
-              "
-            >
+          <AlertDialogDescription className="text-xs leading-5">
+            This action is permanent and cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
 
-              <p>
-                This action is
-                <span className="font-semibold text-foreground">
-                  {' '}permanent
-                </span>
-                {' '}and cannot be undone.
-              </p>
+        <div
+          className="
+            rounded-lg
+            border
+            border-destructive/20
+            bg-destructive/5
+            p-3
+            text-xs
+          "
+        >
+          <p className="font-medium text-destructive">
+            The following will be removed:
+          </p>
 
-              <div
-                className="
-                  rounded-xl
-                  border
-                  border-red-500/20
-                  bg-red-500/5
-                  p-4
-                "
-              >
-
-                <p className="font-medium text-red-600 dark:text-red-400">
-
-                  Deleting your account will permanently remove:
-
-                </p>
-
-                <ul
-                  className="
-                    mt-3
-                    list-disc
-                    space-y-1
-                    pl-5
-                    text-muted-foreground
-                  "
-                >
-
-                  <li>Your profile information</li>
-
-                  <li>Your prediction history</li>
-
-                  <li>Your purchases and subscriptions</li>
-
-                  <li>Your referral and reward records</li>
-
-                </ul>
-
-              </div>
-
-            </AlertDialogDescription>
-
-          </AlertDialogHeader>
-
-          <AlertDialogFooter
-            className="
-              flex-col-reverse
-              gap-3
-              px-6
-              py-5
-              sm:flex-row
-              sm:justify-end
-            "
-          >
-
-            <AlertDialogCancel
-              className="
-                h-11
-                rounded-xl
-              "
-            >
-
-              Cancel
-
-            </AlertDialogCancel>
-
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={deleting}
-              className="
-                h-11
-                rounded-xl
-                bg-gradient-to-r
-                from-red-600
-                via-red-500
-                to-orange-500
-                text-white
-                shadow-lg
-                transition-all
-                duration-300
-                hover:scale-[1.02]
-                hover:shadow-red-500/30
-                disabled:opacity-70
-              "
-            >
-
-              <Trash2 className="mr-2 h-4 w-4" />
-
-              {deleting
-                ? 'Deleting...'
-                : 'Delete Account'}
-
-            </AlertDialogAction>
-
-          </AlertDialogFooter>
-
+          <ul className="mt-2 space-y-1 text-muted-foreground">
+            <li>• Profile information</li>
+            <li>• Prediction history</li>
+            <li>• Purchases and subscriptions</li>
+            <li>• Referral and reward records</li>
+          </ul>
         </div>
 
+        <AlertDialogFooter className="gap-2">
+          <AlertDialogCancel className="h-8 rounded-md px-3 text-xs">
+            Cancel
+          </AlertDialogCancel>
+
+          <AlertDialogAction
+            onClick={handleDelete}
+            disabled={deleting}
+            className="
+              h-8
+              rounded-md
+              bg-destructive
+              px-3
+              text-xs
+              text-destructive-foreground
+              hover:bg-destructive/90
+            "
+          >
+            <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+
+            {deleting ? 'Deleting...' : 'Delete Account'}
+          </AlertDialogAction>
+        </AlertDialogFooter>
       </AlertDialogContent>
-
     </AlertDialog>
-
   );
-
 }
