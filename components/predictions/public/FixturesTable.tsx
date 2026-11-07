@@ -266,7 +266,7 @@ function TeamMark({ team, label }: { team?: EspnTeamRecord; label: string }) {
 function FixtureStatus({ state }: { state: FixtureDisplayState }) {
   if (state.kind === 'live') {
     return (
-      <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full bg-red-500/10 px-1.5 py-0.5 text-[7px] font-bold leading-tight text-red-600 dark:text-red-400 sm:text-[8px]">
+      <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full bg-red-500/10 px-0.5 py-0.5 text-[9px] font-bold leading-tight text-red-600 dark:text-red-400 sm:text-[6px]">
         <span className="h-1 w-1 shrink-0 animate-pulse rounded-full bg-red-500" />
         LIVE{state.clock ? ` ${state.clock}` : ''}
       </span>
@@ -275,7 +275,7 @@ function FixtureStatus({ state }: { state: FixtureDisplayState }) {
 
   if (state.kind === 'finished') {
     return (
-      <span className="inline-flex whitespace-nowrap rounded-full bg-muted px-1.5 py-0.5 text-[7px] font-semibold leading-tight text-muted-foreground sm:text-[8px]">
+      <span className="inline-flex whitespace-nowrap rounded-full bg-muted px-0.5 py-0.5 text-[9px] font-semibold leading-tight text-muted-foreground sm:text-[6px]">
         Finished
       </span>
     );
@@ -284,7 +284,7 @@ function FixtureStatus({ state }: { state: FixtureDisplayState }) {
   if (state.kind === 'other') {
     return (
       <span
-        className="inline-flex max-w-full whitespace-normal break-words rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[7px] font-semibold leading-tight text-amber-700 dark:text-amber-400 sm:text-[8px]"
+        className="inline-flex max-w-full whitespace-normal break-words rounded-full bg-amber-500/10 px-0.5 py-0.5 text-[9px] font-semibold leading-tight text-amber-700 dark:text-amber-400 sm:text-[6px]"
         title={state.label}
       >
         {state.label}
@@ -293,7 +293,7 @@ function FixtureStatus({ state }: { state: FixtureDisplayState }) {
   }
 
   return (
-    <span className="inline-flex whitespace-nowrap rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[7px] font-semibold leading-tight text-emerald-700 dark:text-emerald-400 sm:text-[8px]">
+    <span className="inline-flex whitespace-nowrap rounded-full bg-emerald-500/10 px-0.5 py-0.5 text-[9px] font-semibold leading-tight text-emerald-700 dark:text-emerald-400 sm:text-[6px]">
       Upcoming
     </span>
   );
@@ -534,10 +534,10 @@ export function FixturesTable({
 
           <thead className="bg-muted/60 text-[7px] font-semibold uppercase tracking-tight text-muted-foreground sm:text-[8px]">
             <tr>
-              <th className="px-1 py-1.5 font-semibold sm:px-2">Time</th>
-              <th className="px-1 py-1.5 font-semibold sm:px-2">League</th>
-              <th className="px-1 py-1.5 font-semibold sm:px-2">Match</th>
-              <th className="px-1 py-1.5 font-semibold sm:px-2">Status</th>
+              <th className="py-0.5 font-semibold sm:px-1">Time</th>
+              <th className="py-0.5 font-semibold sm:px-1">League</th>
+              <th className="py-0.5 font-semibold sm:px-1">Match</th>
+              <th className="py-0.5 font-semibold sm:px-1">Status</th>
             </tr>
           </thead>
 
@@ -576,22 +576,22 @@ export function FixturesTable({
 
                 return (
                   <tr key={fixture.eventId} className="transition-colors hover:bg-muted/30">
-                    <td className="min-w-0 whitespace-nowrap px-1 py-2 text-[8px] tabular-nums text-muted-foreground sm:px-2 sm:text-[9px]">
+                    <td className="min-w-0 whitespace-nowrap px-1 text-[8px] tabular-nums text-muted-foreground sm:px-2 sm:text-[9px]">
                       {formatDateTime(fixture.fixtureDate)}
                     </td>
 
-                    <td className="min-w-0 px-1 py-2 sm:px-2">
+                    <td className="min-w-0 px-1 py-0.5 sm:px-1">
                       <LeagueCell
                         name={competition?.name || fixture.leagueId || 'Other'}
                         logo={competitionLogo(competition)}
                       />
                     </td>
 
-                    <td className="min-w-0 px-1 py-2 sm:px-2">
+                    <td className="min-w-0 px-1 py-0.5 sm:px-1">
                       <MatchCell fixture={fixture} home={home} away={away} displayState={displayState} />
                     </td>
 
-                    <td className="min-w-0 px-1 py-2 sm:px-2">
+                    <td className="min-w-0 px-1 py-0.5 sm:px-1">
                       <FixtureStatus state={displayState} />
                     </td>
                   </tr>

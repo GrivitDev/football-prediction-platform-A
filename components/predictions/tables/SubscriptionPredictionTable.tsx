@@ -81,7 +81,7 @@ function MatchStatusCell({ row }: { row: PredictionUserResponse }) {
     <div className="flex min-w-0 flex-col items-start gap-1">
       <span
         title={row.matchStatusDetail ?? labels[status] ?? 'Status unavailable'}
-        className={`inline-flex max-w-full items-center gap-1 truncate rounded-full px-1.5 py-0.5 text-[9px] font-bold leading-tight ${styles[status] ?? styles.UNKNOWN}`}
+        className={`inline-flex max-w-full items-center gap-1 truncate rounded-full px-1 py-0.5 text-[6px] font-bold leading-tight ${styles[status] ?? styles.UNKNOWN}`}
       >
         {status === 'LIVE' && (
           <span
@@ -91,7 +91,7 @@ function MatchStatusCell({ row }: { row: PredictionUserResponse }) {
         )}
         <span className="truncate">{labels[status] ?? '—'}</span>
       </span>
-      <span className="whitespace-nowrap text-[9px] font-medium tabular-nums text-muted-foreground">
+      <span className="whitespace-nowrap text-[8px] font-medium tabular-nums text-muted-foreground">
         {formatTime(row.matchDate)}
       </span>
     </div>
@@ -126,7 +126,7 @@ function TeamScoreLine({
           <span className="h-2 w-2 rounded-full bg-muted" />
         )}
       </span>
-      <span className="min-w-0 truncate text-[9px] font-medium leading-tight text-foreground">
+      <span className="min-w-0 truncate text-[8px] font-medium leading-tight text-foreground">
         {name}
       </span>
     </div>
@@ -165,12 +165,12 @@ function CompactPredictionCell({
   return (
     <div className="min-w-0 space-y-1">
       <p
-        className="truncate text-[9px] font-semibold leading-tight text-foreground"
+        className="truncate text-[8px] font-semibold leading-tight text-foreground"
         title={label}
       >
         {label}
       </p>
-      <div className="flex min-w-0 items-center gap-1 text-[9px] leading-tight text-muted-foreground">
+      <div className="flex min-w-0 items-center gap-1 text-[8px] leading-tight text-muted-foreground">
         <span className="shrink-0 font-semibold tabular-nums text-foreground">
           {Math.round(probability)}%
         </span>
@@ -195,7 +195,7 @@ function CompactTipsCell({ data }: { data: PredictionData }) {
         <span
           key={`${market.market}-${market.selection}-${index}`}
           title={`${market.market}: ${market.selection} · ${market.status ?? 'pending'}`}
-          className="inline-flex max-w-full min-w-0 items-center gap-0.5 rounded-sm border border-border/60 bg-muted/40 px-1 py-0.5 text-[9px] font-medium leading-tight"
+          className="inline-flex max-w-full min-w-0 items-center gap-0.5 rounded-sm border border-border/60 bg-muted/40 px-1 py-0.5 text-[8px] font-medium leading-tight"
         >
           <span className="min-w-0 truncate">{getTipLabel(market)}</span>
           <MarketResultBadge status={market.status} compact />
@@ -216,7 +216,7 @@ function LockedContent({
 
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
-      <span className="inline-flex items-center gap-1 text-[9px] text-muted-foreground">
+      <span className="inline-flex items-center gap-1 text-[7px] text-muted-foreground">
         <LockKeyhole className="h-2.5 w-2.5 shrink-0" /> Locked
       </span>
       {loginRequired ? (
@@ -224,23 +224,23 @@ function LockedContent({
           <Link
             href="/login"
             onClick={(event) => event.stopPropagation()}
-            className="rounded border border-primary/30 bg-primary/5 px-1 py-0.5 text-[9px] font-semibold text-primary hover:bg-primary/10"
+            className="rounded border border-primary/30 bg-primary/5 px-1 py-0.5 text-[8px] font-semibold text-primary hover:bg-primary/10"
           >
             Log in
           </Link>
           <Link
             href="/register"
             onClick={(event) => event.stopPropagation()}
-            className="rounded border border-border px-1 py-0.5 text-[9px] font-semibold hover:bg-muted"
+            className="rounded border border-border px-1 py-0.5 text-[8px] font-semibold hover:bg-muted"
           >
-            register
+            Register
           </Link>
         </div>
       ) : (
         <Link
           href="/pricing"
           onClick={(event) => event.stopPropagation()}
-          className="inline-flex max-w-full items-center gap-0.5 rounded border border-primary/30 bg-primary/5 px-1 py-0.5 text-[9px] font-semibold leading-tight text-primary hover:bg-primary/10"
+          className="inline-flex max-w-full items-center gap-0.5 rounded border border-primary/30 bg-primary/5 px-1 py-0.5 text-[8px] font-semibold leading-tight text-primary hover:bg-primary/10"
         >
           <span className="truncate">
             {plan === 'free' ? 'View access' : `Upgrade ${PLAN_LABELS[plan]}`}
@@ -263,7 +263,7 @@ function DetailCard({
 }) {
   return (
     <div className="min-w-0 rounded border border-border/50 bg-card px-1 py-1">
-      <p className="truncate text-[9px] leading-tight" title={label}>
+      <p className="truncate text-[8px] leading-tight" title={label}>
         <span className="font-medium">{label}</span>
         <span className="text-muted-foreground"> | </span>
         <span className="font-semibold tabular-nums">{formatOdds(odds)} odds</span>
@@ -520,19 +520,19 @@ export function SubscriptionPredictionTable({
           {/* Five fixed columns are retained at every viewport width. */}
           <table className="w-full table-fixed border-collapse text-left">
             <colgroup>
-              <col className="w-[14%]" />
-              <col className="w-[16%]" />
-              <col className="w-[27%]" />
-              <col className="w-[19%]" />
-              <col className="w-[24%]" />
+              <col className="w-[11%]" />
+              <col className="w-[18%]" />
+              <col className="w-[26%]" />
+              <col className="w-[20%]" />
+              <col className="w-[25%]" />
             </colgroup>
-            <thead className="bg-muted/60 text-[9px] font-semibold uppercase tracking-tight text-muted-foreground">
+            <thead className="bg-muted/60 text-[8px] font-semibold uppercase tracking-tight text-muted-foreground">
               <tr>
-                <th className="px-1 py-1.5">Status / Time</th>
-                <th className="px-1 py-1.5">League</th>
-                <th className="px-1 py-1.5">Match</th>
-                <th className="px-1 py-1.5">Prediction</th>
-                <th className="px-1 py-1.5">Tips</th>
+                <th className="py-0.5">Time</th>
+                <th className="py-0.5">League</th>
+                <th className="py-0.5">Match</th>
+                <th className="py-0.5">Prediction</th>
+                <th className="py-0.5">Tips</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
@@ -562,16 +562,16 @@ export function SubscriptionPredictionTable({
                         onKeyDown={(event) => handleRowKeyDown(event, id)}
                         className="cursor-pointer align-middle hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary"
                       >
-                        <td className="min-w-0 px-1 py-1.5 align-middle">
+                        <td className="min-w-0 py-0.5 align-middle">
                           <MatchStatusCell row={row} />
                         </td>
-                        <td className="min-w-0 px-1 py-1.5 align-middle">
+                        <td className="min-w-0 py-0.5 align-middle">
                           <LeagueCell row={row} />
                         </td>
-                        <td className="min-w-0 px-1 py-1.5 align-middle">
+                        <td className="min-w-0 py-0.5 align-middle">
                           <MatchTeamsCell row={row} />
                         </td>
-                        <td className="min-w-0 px-1 py-1.5 align-middle">
+                        <td className="min-w-0 py-0.5 align-middle">
                           {data ? (
                             <CompactPredictionCell data={data} row={row} />
                           ) : (
@@ -581,7 +581,7 @@ export function SubscriptionPredictionTable({
                             />
                           )}
                         </td>
-                        <td className="min-w-0 px-1 py-1.5 align-middle">
+                        <td className="min-w-0 py-0.5 align-middle">
                           {data ? (
                             <CompactTipsCell data={data} />
                           ) : (

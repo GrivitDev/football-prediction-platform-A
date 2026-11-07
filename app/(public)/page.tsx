@@ -60,7 +60,7 @@ export default function HomePage() {
   return (
     <main className="min-h-screen w-full overflow-x-hidden bg-background text-foreground">
       <HeroSection />
-<div className="px-6">
+<div className="px-2">
 
       <FreePredictionsTable />
       <RegularPredictionsTable />

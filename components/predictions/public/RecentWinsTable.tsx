@@ -62,10 +62,10 @@ function predictionLeagueCode(prediction: SettledWinPrediction): string {
 function MatchStatusCell({ prediction }: { prediction: SettledWinPrediction }) {
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
-      <span className="inline-flex max-w-full items-center truncate rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-bold leading-tight text-muted-foreground">
+      <span className="inline-flex max-w-full items-center truncate rounded-full bg-muted px-1 py-0.5 text-[6px] font-bold leading-tight text-muted-foreground">
         FINISHED
       </span>
-      <span className="whitespace-nowrap text-[10px] font-medium tabular-nums text-muted-foreground">
+      <span className="whitespace-nowrap text-[8px] font-medium tabular-nums text-muted-foreground">
         {formatTime(prediction.matchDate)}
       </span>
     </div>
@@ -93,7 +93,7 @@ function LeagueCell({ prediction }: { prediction: SettledWinPrediction }) {
         )}
       </span>
       <span
-        className="line-clamp-2 min-w-0 break-words text-[9px] font-medium leading-tight"
+        className="line-clamp-2 min-w-0 break-words text-[8px] font-medium leading-tight"
         title={leagueName}
       >
         {leagueName}
@@ -130,7 +130,7 @@ function TeamScoreLine({
           <span className="h-2 w-2 rounded-full bg-muted" />
         )}
       </span>
-      <span className="min-w-0 truncate text-[9px] font-medium leading-tight text-foreground" title={name}>
+      <span className="min-w-0 truncate text-[8px] font-medium leading-tight text-foreground" title={name}>
         {name}
       </span>
     </div>
@@ -161,10 +161,10 @@ function TipsCell({ prediction }: { prediction: SettledWinPrediction }) {
 
   return (
     <div className="flex min-w-0 flex-col items-start gap-0.5">
-      <span className="inline-flex max-w-full items-center gap-0.5 whitespace-nowrap rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase leading-tight text-emerald-700 dark:text-emerald-400">
+      <span className="inline-flex max-w-full items-center gap-0.5 whitespace-nowrap rounded-full bg-emerald-500/10 px-0.5 py-0.5 text-[7px] font-bold uppercase leading-tight text-emerald-700 dark:text-emerald-400">
         <CheckCircle2 className="h-2.5 w-2.5 shrink-0" />WON
       </span>
-      <span className="block max-w-full truncate text-[9px] font-semibold leading-tight" title={tip}>
+      <span className="block max-w-full truncate text-[8px] font-semibold leading-tight" title={tip}>
         {tip}
       </span>
     </div>
@@ -259,10 +259,10 @@ export function RecentWinsTable({
         </colgroup>
         <thead className="bg-muted/60 text-[7px] font-semibold uppercase tracking-tight text-muted-foreground">
           <tr>
-            <th className="px-1 py-1.5">Status</th>
-            <th className="px-1 py-1.5">League</th>
-            <th className="px-1 py-1.5">Home</th>
-            <th className="px-1 py-1.5">Tips</th>
+            <th className="py-0.5">Status</th>
+            <th className="py-0.5">League</th>
+            <th className="py-0.5">Home</th>
+            <th className="py-0.5">Tips</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border/50">
@@ -274,16 +274,16 @@ export function RecentWinsTable({
             <tr><td colSpan={4} className="px-2 py-5 text-center text-[9px] text-muted-foreground">No won predictions for this league and date.</td></tr>
           ) : visible.map((prediction) => (
             <tr key={prediction.id ?? prediction._id ?? prediction.matchId} className="align-middle hover:bg-muted/30">
-              <td className="min-w-0 px-1 py-1.5 align-middle">
+              <td className="min-w-0 py-0.5 align-middle">
                 <MatchStatusCell prediction={prediction} />
               </td>
-              <td className="min-w-0 px-1 py-1.5 align-middle">
+              <td className="min-w-0 py-0.5 align-middle">
                 <LeagueCell prediction={prediction} />
               </td>
-              <td className="min-w-0 px-1 py-1.5 align-middle">
+              <td className="min-w-0 py-0.5 align-middle">
                 <HomeCell prediction={prediction} />
               </td>
-              <td className="min-w-0 px-1 py-1.5 align-middle">
+              <td className="min-w-0 py-0.5 align-middle">
                 <TipsCell prediction={prediction} />
               </td>
             </tr>

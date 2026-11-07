@@ -1,4 +1,6 @@
 import { InternalAds } from '@/components/ads/IntAds/InternalAds';
+import { FloatingContact } from '@/components/contact/FloatingContact';
+
 import { AdPage } from '@/constants/ads/ad-page';
 import { AdPosition } from '@/constants/ads/ad-position';
 
@@ -8,24 +10,17 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="
-        min-h-screen
-        w-full
-        overflow-x-clip
-      "
-    >
-      <main
-        className="
-          w-full
-        "
-      >
+    <div className="min-h-screen w-full overflow-x-clip">
+      <main className="w-full">
         {children}
       </main>
+
       <InternalAds
         page={AdPage.HOME}
         position={AdPosition.FOOTER}
       />
+
+      <FloatingContact />
     </div>
   );
 }
