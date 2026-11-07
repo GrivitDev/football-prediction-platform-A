@@ -461,7 +461,7 @@ export function SubscriptionPredictionTable({
 
   return (
     <section
-      className={`min-w-0 overflow-hidden rounded-lg border border-border/70 bg-card/60 ${className}`}
+      className={`min-w-0 mb-3 overflow-hidden rounded-lg border border-border/70 bg-card/60 ${className}`}
     >
       <div className="flex min-w-0 items-center gap-1.5 border-b border-border/60 px-2 py-1.5">
         <span className="shrink-0 rounded bg-primary/10 px-1 py-0.5 text-[8px] font-bold uppercase text-primary">
@@ -528,7 +528,7 @@ export function SubscriptionPredictionTable({
             </colgroup>
             <thead className="bg-muted/60 text-[8px] font-semibold uppercase tracking-tight text-muted-foreground">
               <tr>
-                <th className="py-0.5">Time</th>
+                <th className="px-1 py-0.5">Time</th>
                 <th className="py-0.5">League</th>
                 <th className="py-0.5">Match</th>
                 <th className="py-0.5">Prediction</th>
@@ -562,7 +562,7 @@ export function SubscriptionPredictionTable({
                         onKeyDown={(event) => handleRowKeyDown(event, id)}
                         className="cursor-pointer align-middle hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary"
                       >
-                        <td className="min-w-0 py-0.5 align-middle">
+                        <td className="min-w-0 px-1.5 py-0.5 align-middle">
                           <MatchStatusCell row={row} />
                         </td>
                         <td className="min-w-0 py-0.5 align-middle">

@@ -130,9 +130,9 @@ export function FloatingContact() {
 
         <span className="relative z-10">
           {isOpen ? (
-            <FaXmark size={22} />
+            <FaXmark size={25} />
           ) : (
-            <FaComments size={25} />
+            <FaWhatsapp size={35} />
           )}
         </span>
       </button>

@@ -486,7 +486,7 @@ export function FixturesTable({
     teamMap.get(`${competitionId}:${teamId}`);
 
   return (
-    <section className={`relative isolate min-w-0 rounded-lg border border-border/70 bg-card/60 ${className}`}>
+    <section className={`relative isolate min-w-0 rounded-lg border mb-3 border-border/70 bg-card/60 ${className}`}>
       <div className="relative z-10 flex min-h-10 items-center justify-center border-b border-border/60 px-9 py-2">
         <h2 className="flex items-center gap-1.5 text-center text-xs font-bold sm:text-sm">
           <CalendarDays className="h-3.5 w-3.5 text-primary" />
@@ -534,7 +534,7 @@ export function FixturesTable({
 
           <thead className="bg-muted/60 text-[7px] font-semibold uppercase tracking-tight text-muted-foreground sm:text-[8px]">
             <tr>
-              <th className="py-0.5 font-semibold sm:px-1">Time</th>
+              <th className="px-1 py-0.5 font-semibold sm:px-1">Time</th>
               <th className="py-0.5 font-semibold sm:px-1">League</th>
               <th className="py-0.5 font-semibold sm:px-1">Match</th>
               <th className="py-0.5 font-semibold sm:px-1">Status</th>

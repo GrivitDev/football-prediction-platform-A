@@ -223,7 +223,7 @@ export function RecentWinsTable({
   const visible = maxRows ? filtered.slice(0, maxRows) : filtered;
 
   return (
-    <section className={`min-w-0 overflow-hidden rounded-lg border border-border/70 bg-card/60 ${className}`}>
+    <section className={`min-w-0 overflow-hidden rounded-lg mb-3 border border-border/70 bg-card/60 ${className}`}>
       <div className="flex min-h-10 items-center justify-center gap-1.5 border-b border-border/60 px-2 py-2">
         <Trophy className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
         <h2 className="text-center text-xs font-bold sm:text-sm">{title}</h2>
@@ -259,7 +259,7 @@ export function RecentWinsTable({
         </colgroup>
         <thead className="bg-muted/60 text-[7px] font-semibold uppercase tracking-tight text-muted-foreground">
           <tr>
-            <th className="py-0.5">Status</th>
+            <th className="px-1.5 py-0.5">Status</th>
             <th className="py-0.5">League</th>
             <th className="py-0.5">Home</th>
             <th className="py-0.5">Tips</th>
@@ -274,7 +274,7 @@ export function RecentWinsTable({
             <tr><td colSpan={4} className="px-2 py-5 text-center text-[9px] text-muted-foreground">No won predictions for this league and date.</td></tr>
           ) : visible.map((prediction) => (
             <tr key={prediction.id ?? prediction._id ?? prediction.matchId} className="align-middle hover:bg-muted/30">
-              <td className="min-w-0 py-0.5 align-middle">
+              <td className="min-w-0 px-1.5 py-0.5 align-middle">
                 <MatchStatusCell prediction={prediction} />
               </td>
               <td className="min-w-0 py-0.5 align-middle">

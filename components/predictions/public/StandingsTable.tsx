@@ -98,7 +98,7 @@ export function StandingsTable({ title = 'League Standings', initialCompetitionI
   const visibleStandings = maxRows ? groupFilteredStandings.slice(0, maxRows) : groupFilteredStandings;
 
   return (
-    <section className={`min-w-0 rounded-lg border border-border/70 bg-card/60 ${className}`}>
+    <section className={`min-w-0 rounded-lg border mb-3 border-border/70 bg-card/60 ${className}`}>
       <div className="flex min-h-10 items-center justify-center gap-1.5 border-b border-border/60 px-2 py-2">
         <Trophy className="h-3.5 w-3.5 text-primary" />
         <h2 className="text-center text-xs font-bold sm:text-sm">{title}</h2>
