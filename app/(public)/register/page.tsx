@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, type SyntheticEvent, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter, } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 import { registerUser } from '@/services/auth.service';
@@ -25,110 +25,77 @@ import { InternalAds } from '@/components/ads/IntAds/InternalAds';
 import { AdPage } from '@/constants/ads/ad-page';
 import { AdPosition } from '@/constants/ads/ad-position';
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
-const [referralCode, setReferralCode] = useState('');
-const [promoCode, setPromoCode] = useState('');
+  const searchParams = useSearchParams();
 
-useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
+  const referralCode =
+    searchParams.get('referralCode') ?? searchParams.get('ref') ?? '';
+  const promoCode =
+    searchParams.get('promoCode') ?? searchParams.get('promo') ?? '';
 
-  setReferralCode(
-    params.get('referralCode') ??
-      params.get('ref') ??
-      '',
-  );
+  const disposableEmailDomains = [
+    'tempmail.com',
+    'temp-mail.org',
+    '10minutemail.com',
+    'guerrillamail.com',
+    'mailinator.com',
+    'throwawaymail.com',
+    'yopmail.com',
+    'trashmail.com',
+    'fakeinbox.com',
+  ];
 
-  setPromoCode(
-    params.get('promoCode') ??
-      params.get('promo') ??
-      '',
-  );
-}, []);
+  const validateEmail = (value: string) => {
+    const cleanEmail = value.trim().toLowerCase().replace(/\s+/g, '');
 
-const disposableEmailDomains = [
-  'tempmail.com',
-  'temp-mail.org',
-  '10minutemail.com',
-  'guerrillamail.com',
-  'mailinator.com',
-  'throwawaymail.com',
-  'yopmail.com',
-  'trashmail.com',
-  'fakeinbox.com',
-];
+    const emailRegex =
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
+    if (!emailRegex.test(cleanEmail)) {
+      return {
+        valid: false,
+        message: 'Please enter a valid email address.',
+      };
+    }
 
-const validateEmail = (value: string) => {
-  const cleanEmail = value
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '');
+    const domain = cleanEmail.split('@')[1];
 
-  const emailRegex =
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (disposableEmailDomains.includes(domain)) {
+      return {
+        valid: false,
+        message: 'Disposable email addresses are not allowed.',
+      };
+    }
 
-
-  if (!emailRegex.test(cleanEmail)) {
     return {
-      valid: false,
-      message: 'Please enter a valid email address.',
+      valid: true,
+      email: cleanEmail,
     };
-  }
-
-
-  const domain =
-    cleanEmail.split('@')[1];
-
-
-  if (
-    disposableEmailDomains.includes(domain)
-  ) {
-    return {
-      valid: false,
-      message:
-        'Disposable email addresses are not allowed.',
-    };
-  }
-
-
-  return {
-    valid: true,
-    email: cleanEmail,
   };
-};
 
-
-
-const validatePhone = (value: string) => {
-
-  const cleanPhone =
-    value
+  const validatePhone = (value: string) => {
+    const cleanPhone = value
       .trim()
       .replace(/\s+/g, '')
       .replace(/-/g, '')
       .replace(/\(/g, '')
       .replace(/\)/g, '');
 
+    const phoneRegex = /^(\+?\d{10,15})$/;
 
-  const phoneRegex =
-    /^(\+?\d{10,15})$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      return {
+        valid: false,
+        message: 'Please enter a valid phone number.',
+      };
+    }
 
-
-  if (!phoneRegex.test(cleanPhone)) {
     return {
-      valid: false,
-      message:
-        'Please enter a valid phone number.',
+      valid: true,
+      phone: cleanPhone,
     };
-  }
-
-
-  return {
-    valid: true,
-    phone: cleanPhone,
   };
-};
 
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -143,143 +110,78 @@ const validatePhone = (value: string) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-const handleRegister = async (
-  e: React.FormEvent,
-) => {
+  const handleRegister = async (e: SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  e.preventDefault();
+    const emailValidation = validateEmail(email);
 
+    if (!emailValidation.valid) {
+      toast.error(emailValidation.message || 'Invalid email');
+      return;
+    }
 
-  const emailValidation =
-    validateEmail(email);
+    const phoneValidation = validatePhone(phoneNumber);
 
+    if (!phoneValidation.valid) {
+      toast.error(phoneValidation.message || 'Invalid phone number');
+      return;
+    }
 
-  if (!emailValidation.valid) {
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match.');
+      return;
+    }
 
-    toast.error(
-      emailValidation.message || 'Invalid email'
-    );
-
-    return;
-  }
-
-
-
-  const phoneValidation =
-    validatePhone(phoneNumber);
-
-
-  if (!phoneValidation.valid) {
-
-    toast.error(
-      phoneValidation.message || 'Invalid phone number'
-    );
-
-    return;
-  }
-
-
-
-  if (password !== confirmPassword) {
-
-    toast.error(
-      'Passwords do not match.'
-    );
-
-    return;
-  }
-
-
-
-  if (password.length < 6) {
-
-    toast.error(
-      'Password must be at least 6 characters.'
-    );
-
-    return;
-  }
-    
-
-if (password !== confirmPassword) {
-  toast.error('Passwords do not match.');
-  return;
-}
-
-if (password.length < 6) {
-  toast.error('Password must be at least 6 characters.');
-  return;
-}
-
+    if (password.length < 6) {
+      toast.error('Password must be at least 6 characters.');
+      return;
+    }
 
     try {
-  setLoading(true);
+      setLoading(true);
 
-const response = await registerUser({
+      await registerUser({
+        fullName: fullName.trim(),
+        username: username.trim().toLowerCase(),
+        phoneNumber: phoneValidation.phone!,
+        email: emailValidation.email!,
+        password,
+        referralCode: referralCode.trim() || undefined,
+        promoCode: promoCode.trim() || undefined,
+      });
 
-  fullName:
-    fullName.trim(),
+      setSuccess(true);
 
-  username:
-    username.trim().toLowerCase(),
+      toast.success(
+        'Account created successfully! Check your email for verification.',
+        {
+          duration: 5000,
+        },
+      );
 
-  phoneNumber:
-    phoneValidation.phone!,
+      setTimeout(() => {
+        router.push(
+          `/verify-email?email=${encodeURIComponent(emailValidation.email!)}`,
+        );
+      }, 1500);
+    } catch (error: unknown) {
+      const err = error as {
+        response?: { data?: { message?: string | string[] } };
+        message?: string;
+      };
 
-  email:
-    emailValidation.email!,
+      const message =
+        err?.response?.data?.message || err?.message || 'Registration failed. Please try again.';
 
-  password,
-
-  referralCode:
-    referralCode.trim() || undefined,
-
-  promoCode:
-    promoCode.trim() || undefined,
-
-});
-
-  setSuccess(true);
-
-  toast.success(
-    'Account created successfully! Check your email for verification.',
-    {
-      duration: 5000,
-    },
-  );
-
-  setTimeout(() => {
-    router.push(
-      `/verify-email?email=${encodeURIComponent(emailValidation.email!)}`,
-    );
-  }, 1500);
-
-} catch (error: any) {
-
-  const message =
-    error?.response?.data?.message ||
-    error?.message ||
-    'Registration failed. Please try again.';
-
-  if (Array.isArray(message)) {
-
-    message.forEach((msg) => {
-      toast.error(msg);
-    });
-
-  } else {
-
-    toast.error(message);
-
-  }
-
-} finally {
-
-  setLoading(false);
-
-}
-
-};
+      if (Array.isArray(message)) {
+        message.forEach((msg) => toast.error(msg));
+      } else {
+        toast.error(message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fields = [
     fullName,
@@ -746,10 +648,7 @@ const response = await registerUser({
 
             <p className="mt-4 text-center text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link
-                href="/login"
-                className="font-semibold text-primary"
-              >
+              <Link href="/login" className="font-semibold text-primary">
                 Login
               </Link>
             </p>
@@ -761,5 +660,19 @@ const response = await registerUser({
       </div>
 
     </main>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="flex min-h-screen items-center justify-center bg-background">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        </main>
+      }
+    >
+      <RegisterPageContent />
+    </Suspense>
   );
 }

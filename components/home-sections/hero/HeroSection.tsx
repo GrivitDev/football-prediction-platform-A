@@ -6,15 +6,6 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaXTwitter,
-  FaTelegram,
-  FaWhatsapp,
-} from 'react-icons/fa6';
-
-import type { IconType } from 'react-icons';
 
 import { useAuth } from '@/providers/auth-provider';
 import { subscriptionService } from '@/services/subscription.service';
@@ -25,45 +16,11 @@ type SubscriptionPlan =
   | 'vip'
   | 'premium';
 
-interface SocialLink {
-  name: string;
-  href: string | undefined;
-  icon: IconType;
-}
-
 interface UpgradeOption {
   target: SubscriptionPlan;
   label: string;
   description: string;
 }
-
-const socialLinks: SocialLink[] = [
-  {
-    name: 'Telegram',
-    href: process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL,
-    icon: FaTelegram,
-  },
-  {
-    name: 'WhatsApp Channel',
-    href: process.env.NEXT_PUBLIC_WHATSAPP_CHANNEL,
-    icon: FaWhatsapp,
-  },
-  {
-    name: 'Facebook',
-    href: process.env.NEXT_PUBLIC_FACEBOOK,
-    icon: FaFacebookF,
-  },
-  {
-    name: 'X',
-    href: process.env.NEXT_PUBLIC_TWITTER,
-    icon: FaXTwitter,
-  },
-  {
-    name: 'Instagram',
-    href: process.env.NEXT_PUBLIC_INSTAGRAM,
-    icon: FaInstagram,
-  },
-];
 
 const upgradeOptions: Partial<
   Record<SubscriptionPlan, UpgradeOption>
@@ -193,8 +150,6 @@ export default function HeroSection() {
     }
 
     if (!user) {
-      setPlan(null);
-      setSubscriptionLoading(false);
       return;
     }
 
@@ -246,11 +201,6 @@ export default function HeroSection() {
   const upgrade =
     plan ? upgradeOptions[plan] : undefined;
 
-  const configuredSocialLinks = socialLinks.filter(
-    ({ href }) =>
-      typeof href === 'string' &&
-      href.trim().length > 0,
-  );
 
   return (
     <section
@@ -272,7 +222,7 @@ export default function HeroSection() {
       {/* Stadium background */}
 
       <Image
-        src="/hero/stadium-1.webp"
+        src="/hero/stadium-1.png"
         alt=""
         fill
         priority
@@ -299,67 +249,7 @@ export default function HeroSection() {
         "
       />
 
-      {/* Social media links */}
-
-      {configuredSocialLinks.length > 0 && (
-        <nav
-          aria-label="Honest Predict social media"
-          className="
-            absolute
-            right-3
-            top-3
-            z-20
-            flex
-            max-w-[calc(100%-1.5rem)]
-            flex-wrap
-            justify-end
-            gap-1.5
-            sm:right-5
-            sm:top-4
-            sm:gap-2
-            lg:right-6
-            lg:top-5
-          "
-        >
-          {configuredSocialLinks.map(
-            ({ name, href, icon: Icon }) => (
-              <a
-                key={name}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={name}
-                title={name}
-                className="
-                  flex
-                  size-8
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-white/20
-                  bg-black/30
-                  text-white/90
-                  transition
-                  hover:border-white/50
-                  hover:bg-white/15
-                  hover:text-white
-                  focus-visible:outline-none
-                  focus-visible:ring-2
-                  focus-visible:ring-white
-                  sm:size-9
-                "
-              >
-                <Icon
-                  className="size-4"
-                  aria-hidden="true"
-                />
-              </a>
-            ),
-          )}
-        </nav>
-      )}
+     
 
       {/* Main hero content */}
 
@@ -540,7 +430,7 @@ export default function HeroSection() {
                   {upgrade.description}
                 </p>
 
-                <HeroButton href="/dashboard/subscriptions">
+                <HeroButton href="/pricing">
                   {upgrade.label}
 
                   <ArrowIcon className="size-4" />

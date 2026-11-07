@@ -3,42 +3,33 @@
 import Image from 'next/image';
 
 import type { AdminPrediction } from '@/types/prediction.types';
-
 import { getLeagueName } from '@/constants/leagues';
-import { getMatchStatus } from '@/utils/prediction.utils';
+import {
+  getAdminMatchStatus,
+  getSettlementOverview,
+  MatchStatusBadge,
+  SettlementStatusBadge,
+} from './settlement-utils';
 
 interface Props {
   predictions: AdminPrediction[];
   onSelect: (prediction: AdminPrediction) => void;
 }
 
-const statusOrder: Record<string, number> = {
-  'In Play': 0,
-  Upcoming: 1,
-  'Needs Settlement': 2,
-  Settled: 3,
-};
-
-const statusTone = (status: string) =>
-  status === 'Settled'
-    ? 'bg-emerald-500/10 text-emerald-600'
-    : status === 'In Play'
-      ? 'bg-blue-500/10 text-blue-600'
-      : status === 'Needs Settlement'
-        ? 'bg-amber-500/10 text-amber-600'
-        : 'bg-muted text-muted-foreground';
-
 const accessTone = (access: string) =>
   access === 'premium'
-    ? 'bg-violet-500/10 text-violet-700'
+    ? 'bg-violet-500/10 text-violet-700 dark:text-violet-400'
     : access === 'vip'
-      ? 'bg-yellow-500/10 text-yellow-700'
+      ? 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400'
       : access === 'regular'
-        ? 'bg-blue-500/10 text-blue-700'
-        : 'bg-emerald-500/10 text-emerald-700';
+        ? 'bg-blue-500/10 text-blue-700 dark:text-blue-400'
+        : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400';
 
 const formatDate = (value: string) => {
   const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) {
+    return { date: 'Date unavailable', time: '—' };
+  }
 
   return {
     date: date.toLocaleDateString('en-NG', {
@@ -56,8 +47,11 @@ const formatDate = (value: string) => {
 function predictionLabel(prediction: AdminPrediction) {
   const market = prediction.prediction.market.replace(/_/g, ' ');
   const selection = prediction.prediction.selection.replace(/_/g, ' ');
-
   return `${selection} · ${market}`;
+}
+
+function predictionKey(prediction: AdminPrediction) {
+  return prediction._id ?? prediction.id ?? prediction.matchId;
 }
 
 function PredictionIcon({
@@ -68,7 +62,6 @@ function PredictionIcon({
   size?: number;
 }) {
   const selection = prediction.prediction.selection.toUpperCase();
-
   const src =
     selection === 'HOME'
       ? prediction.homeTeamBadge
@@ -103,16 +96,25 @@ export default function PredictionsTable({
   predictions,
   onSelect,
 }: Props) {
-  const sorted = [...predictions].sort(
-    (a, b) =>
-      (statusOrder[getMatchStatus(a)] ?? 99) -
-      (statusOrder[getMatchStatus(b)] ?? 99),
-  );
+  const sorted = [...predictions].sort((a, b) => {
+    const priority = (prediction: AdminPrediction) => {
+      const matchStatus = getAdminMatchStatus(prediction);
+      const settlement = getSettlementOverview(prediction);
+      if (matchStatus === 'LIVE') return 0;
+      if (settlement.needsSettlement) return 1;
+      if (matchStatus === 'UPCOMING') return 2;
+      if (matchStatus === 'POSTPONED') return 3;
+      if (matchStatus === 'CANCELLED') return 4;
+      if (matchStatus === 'FINISHED') return 5;
+      return 6;
+    };
+    return priority(a) - priority(b);
+  });
 
   if (!sorted.length) {
     return (
       <div className="rounded-lg border border-dashed p-6 text-center text-xs text-muted-foreground">
-        No predictions found.
+        No predictions match the selected filters.
       </div>
     );
   }
@@ -122,16 +124,16 @@ export default function PredictionsTable({
       <div className="divide-y lg:hidden">
         {sorted.map((prediction) => {
           const date = formatDate(prediction.matchDate);
-          const status = getMatchStatus(prediction);
           const league =
             prediction.league?.name ?? getLeagueName(prediction.leagueCode);
+          const settlement = getSettlementOverview(prediction);
 
           return (
             <button
-              key={prediction._id}
+              key={predictionKey(prediction)}
               type="button"
               onClick={() => onSelect(prediction)}
-              className="w-full p-2.5 text-left hover:bg-muted/30"
+              className="w-full p-2.5 text-left transition-colors hover:bg-muted/30"
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex min-w-0 items-center gap-1.5">
@@ -145,29 +147,14 @@ export default function PredictionsTable({
                       unoptimized
                     />
                   )}
-
-                  <span className="truncate text-xs font-semibold">
-                    {league}
-                  </span>
+                  <span className="truncate text-xs font-semibold">{league}</span>
                 </div>
-
-                <span
-                  className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold ${statusTone(
-                    status,
-                  )}`}
-                >
-                  {status}
-                </span>
+                <MatchStatusBadge prediction={prediction} compact />
               </div>
 
               <div className="mt-2 flex items-center justify-center gap-2.5">
-                <Team
-                  name={prediction.homeTeam}
-                  badge={prediction.homeTeamBadge}
-                />
-                <span className="text-[9px] font-bold text-muted-foreground">
-                  VS
-                </span>
+                <Team name={prediction.homeTeam} badge={prediction.homeTeamBadge} />
+                <span className="text-[9px] font-bold text-muted-foreground">VS</span>
                 <Team
                   name={prediction.awayTeam}
                   badge={prediction.awayTeamBadge}
@@ -175,17 +162,23 @@ export default function PredictionsTable({
                 />
               </div>
 
-              <div className="mt-2 flex items-center justify-between gap-2 border-t pt-2">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 border-t pt-2">
                 <div className="flex min-w-0 items-center gap-1.5">
                   <PredictionIcon prediction={prediction} />
                   <span className="truncate text-[11px] font-semibold text-primary">
                     {predictionLabel(prediction)}
                   </span>
                 </div>
+                <span className="text-right text-[9px] text-muted-foreground">
+                  {prediction.confidence}% support · {date.date} · {date.time}
+                </span>
+              </div>
 
-                <div className="text-right text-[9px] text-muted-foreground">
-                  {prediction.confidence}% · {date.date} · {date.time}
-                </div>
+              <div className="mt-2 flex items-center justify-between gap-2">
+                <SettlementStatusBadge prediction={prediction} compact />
+                <span className="text-[9px] text-muted-foreground">
+                  {settlement.settledMarkets}/{settlement.totalMarkets} markets resolved
+                </span>
               </div>
             </button>
           );
@@ -202,11 +195,12 @@ export default function PredictionsTable({
                 'Selection',
                 'Support',
                 'Access',
-                'Status',
+                'Match status',
+                'Settlement',
               ].map((label) => (
                 <th
                   key={label}
-                  className="px-3 py-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"
+                  className="whitespace-nowrap px-3 py-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"
                 >
                   {label}
                 </th>
@@ -216,17 +210,23 @@ export default function PredictionsTable({
 
           <tbody>
             {sorted.map((prediction) => {
-              const status = getMatchStatus(prediction);
               const league =
-                prediction.league?.name ??
-                getLeagueName(prediction.leagueCode);
+                prediction.league?.name ?? getLeagueName(prediction.leagueCode);
               const date = formatDate(prediction.matchDate);
+              const settlement = getSettlementOverview(prediction);
 
               return (
                 <tr
-                  key={prediction._id}
+                  key={predictionKey(prediction)}
                   onClick={() => onSelect(prediction)}
-                  className="cursor-pointer border-b last:border-0 hover:bg-muted/30"
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      onSelect(prediction);
+                    }
+                  }}
+                  tabIndex={0}
+                  className="cursor-pointer border-b last:border-0 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
                 >
                   <td className="px-3 py-2.5">
                     <div className="flex items-center gap-1.5">
@@ -235,9 +235,7 @@ export default function PredictionsTable({
                         badge={prediction.homeTeamBadge}
                         compact
                       />
-                      <span className="text-[8px] font-bold text-muted-foreground">
-                        VS
-                      </span>
+                      <span className="text-[8px] font-bold text-muted-foreground">VS</span>
                       <Team
                         name={prediction.awayTeam}
                         badge={prediction.awayTeamBadge}
@@ -266,10 +264,7 @@ export default function PredictionsTable({
                           L
                         </span>
                       )}
-
-                      <span className="truncate text-[11px] font-medium">
-                        {league}
-                      </span>
+                      <span className="truncate text-[11px] font-medium">{league}</span>
                     </div>
                   </td>
 
@@ -288,22 +283,23 @@ export default function PredictionsTable({
 
                   <td className="px-3 py-2.5">
                     <span
-                      className={`rounded-full px-2 py-0.5 text-[9px] font-semibold capitalize ${accessTone(
-                        prediction.accessType,
-                      )}`}
+                      className={`rounded-full px-2 py-0.5 text-[9px] font-semibold capitalize ${accessTone(prediction.accessType)}`}
                     >
                       {prediction.accessType}
                     </span>
                   </td>
 
                   <td className="px-3 py-2.5">
-                    <span
-                      className={`rounded-full px-2 py-0.5 text-[9px] font-semibold ${statusTone(
-                        status,
-                      )}`}
-                    >
-                      {status}
-                    </span>
+                    <MatchStatusBadge prediction={prediction} compact />
+                  </td>
+
+                  <td className="px-3 py-2.5">
+                    <div className="space-y-1">
+                      <SettlementStatusBadge prediction={prediction} compact />
+                      <p className="text-[9px] text-muted-foreground">
+                        {settlement.settledMarkets}/{settlement.totalMarkets} markets
+                      </p>
+                    </div>
                   </td>
                 </tr>
               );
@@ -344,7 +340,6 @@ function Team({
       ) : (
         <span className="h-4 w-4 shrink-0 rounded-full bg-muted" />
       )}
-
       <span className="truncate text-[11px] font-medium">{name}</span>
     </div>
   );

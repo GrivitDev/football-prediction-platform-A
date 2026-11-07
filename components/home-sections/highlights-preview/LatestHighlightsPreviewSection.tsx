@@ -7,7 +7,7 @@ import { ArrowUpRight, Play, Video } from 'lucide-react';
 import { useAdminYoutubeHighlights } from '@/hooks/use-sports';
 import type { YouTubeHighlightRecord } from '@/types/sports';
 
-const PREVIEW_COUNT = 10;
+const PREVIEW_COUNT = 5;
 const HIGHLIGHT_QUERY_LIMIT = 30;
 
 function getValidDate(value?: string): Date | null {

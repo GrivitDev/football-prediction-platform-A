@@ -551,7 +551,7 @@ export default function UserMenu() {
           "
         >
           <Link
-            href="/dashboard/profile"
+            href="/profile"
             className="flex items-center"
           >
             <User
@@ -575,7 +575,7 @@ export default function UserMenu() {
           "
         >
           <Link
-            href="/dashboard/purchases"
+            href="/purchases"
             className="flex items-center"
           >
             <ShoppingCart
@@ -599,7 +599,7 @@ export default function UserMenu() {
           "
         >
           <Link
-            href="/dashboard/referrals"
+            href="/referrals"
             className="flex items-center"
           >
             <Gift
@@ -623,7 +623,7 @@ export default function UserMenu() {
           "
         >
           <Link
-            href="/dashboard/subscriptions"
+            href="/subscriptions"
             className="flex items-center"
           >
             <CreditCard

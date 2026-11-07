@@ -11,11 +11,14 @@ import {
   formatTime,
   getCombinedActualOdds,
   getPredictionLabel,
+  getPublicSettlementSummary,
   getTipLabel,
   getTopGeneralOutcome,
   LeagueCell,
+  MarketResultBadge,
   ProbabilityBar,
   rowKey,
+  SettlementStatusBadge,
   TeamMatchCell,
 } from '@/components/predictions/public/compact-prediction-utils';
 
@@ -54,13 +57,34 @@ function LockedPreview({ row, isAuthenticated }: { row: PredictionUserResponse; 
 
 function CompactPredictionCell({ data, row }: { data: PredictionData; row: PredictionUserResponse }) {
   const outcome = getTopGeneralOutcome(data);
+  const label = getPredictionLabel(data, row.homeTeam, row.awayTeam);
   return (
     <div className="min-w-0 space-y-1">
-      <p className="truncate text-[9px] font-medium leading-tight sm:text-[10px]" title={getPredictionLabel(data, row.homeTeam, row.awayTeam)}>
-        {getPredictionLabel(data, row.homeTeam, row.awayTeam)}{' '}
+      <p className="truncate text-[9px] font-medium leading-tight sm:text-[10px]" title={label}>
+        {label}{' '}
         <span className="font-semibold tabular-nums">{Math.round(outcome?.probability ?? data.predictionProbability)}%</span>
       </p>
       <ProbabilityBar probability={data.confidence} metric="confidence" />
+      <SettlementStatusBadge row={row} compact />
+    </div>
+  );
+}
+
+function CompactTipResults({ data }: { data: PredictionData }) {
+  if (!data.markets?.length) return <span className="text-[8px] text-muted-foreground">—</span>;
+
+  return (
+    <div className="flex min-w-0 flex-wrap gap-0.5">
+      {data.markets.map((market, index) => (
+        <span
+          key={`${market.market}-${market.selection}-${index}`}
+          title={`${market.market}: ${market.selection} · ${market.status ?? 'pending'}`}
+          className="inline-flex max-w-full min-w-0 items-center gap-1 rounded-sm border border-border/60 bg-muted/40 px-1 py-0.5 text-[8px] font-medium leading-tight sm:text-[9px]"
+        >
+          <span className="truncate">{getTipLabel(market)}</span>
+          <MarketResultBadge status={market.status} compact />
+        </span>
+      ))}
     </div>
   );
 }
@@ -107,7 +131,7 @@ export function TodaysPredictions({
               <th className="px-1 py-1.5 sm:px-2">League</th>
               <th className="px-1 py-1.5 sm:px-2">Match</th>
               <th className="px-1 py-1.5 sm:px-2">Prediction</th>
-              <th className="px-1 py-1.5 sm:px-2">Tips</th>
+              <th className="px-1 py-1.5 sm:px-2">Tips / Results</th>
               <th className="px-1 py-1.5 text-right sm:px-2 sm:text-left">Odds</th>
             </tr>
           </thead>
@@ -116,24 +140,27 @@ export function TodaysPredictions({
               <tr><td colSpan={6} className="px-2 py-5 text-center text-[9px] text-muted-foreground">No predictions available for today.</td></tr>
             ) : todaysRows.map((row) => {
               const data = row.access?.allowed ? row.data : null;
+              const settlement = getPublicSettlementSummary(row);
               return (
                 <tr key={rowKey(row)} className="align-middle">
                   <td className="break-words px-1 py-1.5 text-[8px] tabular-nums text-muted-foreground sm:px-2 sm:text-[10px]">{formatTime(row.matchDate)}</td>
                   <td className="min-w-0 px-1 py-1.5 sm:px-2"><LeagueCell row={row} /></td>
                   <td className="min-w-0 px-1 py-1.5 sm:px-2"><TeamMatchCell row={row} /></td>
                   <td className="min-w-0 px-1 py-1.5 sm:px-2">
-                    {data ? <CompactPredictionCell data={data} row={row} /> : <LockedPreview row={row} isAuthenticated={isAuthenticated} />}
+                    {data ? <CompactPredictionCell data={data} row={row} /> : (
+                      <div className="space-y-1">
+                        <LockedPreview row={row} isAuthenticated={isAuthenticated} />
+                        <SettlementStatusBadge row={row} compact />
+                      </div>
+                    )}
                   </td>
                   <td className="min-w-0 px-1 py-1.5 sm:px-2">
-                    {data ? (
-                      <div className="flex min-w-0 flex-wrap gap-0.5">
-                        {data.markets.map((market, index) => (
-                          <span key={`${market.market}-${market.selection}-${index}`} title={`${market.market}: ${market.selection}`} className="max-w-full truncate rounded-sm border border-border/60 bg-muted/40 px-1 py-0.5 text-[8px] font-medium leading-tight sm:text-[9px]">
-                            {getTipLabel(market)}
-                          </span>
-                        ))}
-                      </div>
-                    ) : <span className="text-[8px] text-muted-foreground">Locked</span>}
+                    {data ? <CompactTipResults data={data} /> : <span className="text-[8px] text-muted-foreground">Locked</span>}
+                    {settlement.state === 'PARTIAL' && data && (
+                      <p className="mt-0.5 text-[7px] text-amber-700 dark:text-amber-400">
+                        {settlement.settledMarkets}/{settlement.totalMarkets} markets resolved
+                      </p>
+                    )}
                   </td>
                   <td className="min-w-0 px-1 py-1.5 text-right sm:px-2 sm:text-left">
                     <span className="whitespace-nowrap text-[8px] font-semibold tabular-nums sm:text-[10px]">{data ? `${formatOdds(getCombinedActualOdds(data))} odds` : '—'}</span>

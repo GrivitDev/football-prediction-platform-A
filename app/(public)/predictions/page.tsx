@@ -11,14 +11,18 @@ export default function PredictionsPage() {
     <main className="mx-auto grid w-full max-w-7xl gap-5 px-3 py-5 sm:gap-6 sm:px-5 sm:py-7 lg:px-6">
       <header className="space-y-1">
         <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Football Predictions</h1>
-        <p className="text-sm text-muted-foreground">Fixtures, tier-based predictions, recent results, league tables and player leaders.</p>
+        <p className="text-sm text-muted-foreground">
+          Tier-based predictions, live match states, settled market results, recent wins, fixtures and league tables.
+        </p>
       </header>
 
       <FixturesTable />
+
       <FreePredictionsTable />
       <RegularPredictionsTable />
       <VipPredictionsTable />
       <PremiumPredictionsTable />
+
       <RecentWinsTable />
       <StandingsTable />
     </main>

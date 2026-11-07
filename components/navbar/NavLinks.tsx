@@ -9,10 +9,6 @@ const links = [
     href: '/',
   },
   {
-    name: 'Predictions',
-    href: '/predictions',
-  },
-  {
     name: 'Articles',
     href: '/articles',
   },

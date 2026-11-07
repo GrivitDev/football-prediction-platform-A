@@ -36,7 +36,7 @@ export function DateTabs({
               role="tab"
               aria-selected={active}
               onClick={() => onChange(date)}
-              className={`shrink-0 rounded-md border px-2 py-1 text-[9px] font-semibold leading-4 transition-colors sm:px-2.5 sm:text-[10px] ${
+              className={`shrink-0 rounded-md border px-1 py-0.5 text-[9px] font-semibold leading-4 transition-colors sm:px-1.5 sm:text-[10px] ${
                 active
                   ? 'border-primary bg-primary text-primary-foreground'
                   : 'border-border bg-background text-muted-foreground hover:bg-muted hover:text-foreground'

@@ -6,50 +6,39 @@ import GatewayModal from './GatewayModal';
 import PricingCard from './PricingCard';
 
 import { getPlanConfig } from '@/lib/plan-config';
-
 import type { PlanConfig } from '@/types/plan-config';
 import type { PaymentCurrency } from '@/services/payment-gateway.service';
-
 import { useAuth } from '@/providers/auth-provider';
 
-type SelectedPlan =
-  | 'regular'
-  | 'vip'
-  | 'premium'
-  | null;
+type SelectedPlan = 'regular' | 'vip' | 'premium' | null;
 
 export default function PricingSection() {
   const { user } = useAuth();
 
-  const [config, setConfig] =
-    useState<PlanConfig | null>(null);
-
-  const [loading, setLoading] =
-    useState(true);
-
-  const [selectedPlan, setSelectedPlan] =
-    useState<SelectedPlan>(null);
-
-  const [currency, setCurrency] =
-    useState<PaymentCurrency>('USD');
+  const [config, setConfig] = useState<PlanConfig | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState<SelectedPlan>(null);
+  const [currency, setCurrency] = useState<PaymentCurrency>('USD');
 
   useEffect(() => {
+    let active = true;
+
     async function loadPlans() {
       try {
         const data = await getPlanConfig();
-
-        setConfig(data);
+        if (active) setConfig(data);
       } catch (error) {
-        console.error(
-          'Failed loading plans',
-          error,
-        );
+        console.error('Failed loading plans', error);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     loadPlans();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -63,65 +52,27 @@ export default function PricingSection() {
 
   const prices = useMemo(() => {
     if (!config) {
-      return {
-        regular: 0,
-        vip: 0,
-        premium: 0,
-      };
+      return { regular: 0, vip: 0, premium: 0 };
     }
 
     return {
       regular:
-        currency === 'USD'
-          ? config.regularPriceUSD
-          : config.regularPrice,
-
-      vip:
-        currency === 'USD'
-          ? config.vipPriceUSD
-          : config.vipPrice,
-
+        currency === 'USD' ? config.regularPriceUSD : config.regularPrice,
+      vip: currency === 'USD' ? config.vipPriceUSD : config.vipPrice,
       premium:
-        currency === 'USD'
-          ? config.premiumPriceUSD
-          : config.premiumPrice,
+        currency === 'USD' ? config.premiumPriceUSD : config.premiumPrice,
     };
   }, [config, currency]);
 
   if (loading) {
     return (
-      <section className="overflow-hidden px-4 py-10 sm:px-6 lg:py-12">
-        <div className="mx-auto max-w-7xl animate-pulse">
-          <div className="h-7 w-48 rounded-lg bg-muted" />
-
-          <div className="mt-2 h-4 w-72 rounded bg-muted" />
-
-          <div
-            className="
-              mt-8
-              flex
-              gap-4
-              overflow-hidden
-
-              sm:grid
-              sm:grid-cols-2
-
-              xl:grid-cols-4
-            "
-          >
-            {[1, 2, 3, 4].map((item) => (
-              <div
-                key={item}
-                className="
-                  h-80
-                  w-[82%]
-                  shrink-0
-                  rounded-2xl
-                  bg-muted
-
-                  sm:w-auto
-                "
-              />
+      <section className="px-4 py-7 sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-6xl animate-pulse">
+          <div className="h-6 w-44 rounded-lg bg-muted" />
+          <div className="mt-2 h-3.5 w-64 max-w-full rounded bg-muted" />
+          <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {[1, 2, 3].map((item) => (
+              <div key={item} className="h-64 rounded-2xl bg-muted" />
             ))}
           </div>
         </div>
@@ -131,8 +82,8 @@ export default function PricingSection() {
 
   if (!config) {
     return (
-      <section className="overflow-hidden px-4 py-10 sm:px-6 lg:py-12">
-        <div className="mx-auto max-w-7xl rounded-xl border p-4 text-sm text-muted-foreground">
+      <section className="px-4 py-7 sm:px-6 sm:py-10">
+        <div className="mx-auto max-w-6xl rounded-xl border p-4 text-sm text-muted-foreground">
           Failed loading plans.
         </div>
       </section>
@@ -140,7 +91,6 @@ export default function PricingSection() {
   }
 
   const plans = [
-
     {
       id: 'regular' as const,
       name: config.planLabels.regular,
@@ -154,7 +104,6 @@ export default function PricingSection() {
         'Priority prediction releases',
       ],
     },
-
     {
       id: 'premium' as const,
       name: config.planLabels.premium,
@@ -171,7 +120,6 @@ export default function PricingSection() {
           : `${config.premiumDurationDays}-day membership`,
       ],
     },
-
     {
       id: 'vip' as const,
       name: config.planLabels.vip,
@@ -186,24 +134,36 @@ export default function PricingSection() {
         'Priority support',
       ],
     },
-
   ];
 
+  function handlePlanSelect(id: 'free' | 'regular' | 'vip' | 'premium') {
+    if (id === 'free') {
+      window.location.href = '/register';
+      return;
+    }
+
+    if (!user) {
+      window.location.href = '/login?redirect=/pricing';
+      return;
+    }
+
+    setSelectedPlan(id);
+  }
+
   return (
-    <section className="overflow-hidden px-4 py-10 sm:px-6 lg:py-12">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-7 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
+    <section className="w-full px-3 py-6 sm:px-6 sm:py-9">
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="mb-4 flex flex-col gap-2 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
               Subscription Plans
             </h1>
-
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
               Choose the level of access you need.
             </p>
           </div>
 
-          <div className="w-fit rounded-full border bg-card px-3 py-1.5 text-xs text-muted-foreground">
+          <div className="w-fit rounded-full border bg-card px-3 py-1.5 text-[11px] text-muted-foreground">
             Prices in{' '}
             <span className="font-semibold text-foreground">
               {currency === 'NGN'
@@ -213,71 +173,17 @@ export default function PricingSection() {
           </div>
         </div>
 
-        <div
-          className="
-            -mx-4
-            flex
-            snap-x
-            snap-mandatory
-            gap-4
-            overflow-x-auto
-            overscroll-x-contain
-            px-4
-            pb-3
-            items-center
-            justify-center
-            [scrollbar-width:none]
-            [&::-webkit-scrollbar]:hidden
-
-            sm:mx-0
-            sm:grid
-            sm:grid-cols-2
-            sm:gap-4
-            sm:overflow-visible
-            sm:px-0
-            sm:pb-0
-
-            xl:grid-cols-3
-          "
-        >
+        {/* A single vertical page scroll on mobile; no nested horizontal carousel. */}
+        <div className="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
           {plans.map((plan) => (
-            <div
+            <PricingCard
               key={plan.id}
-              className="
-                w-[65%]
-                shrink-0
-                snap-start
-
-                sm:w-auto
-                sm:min-w-0
-              "
-            >
-              <PricingCard
-                plan={plan}
-                currency={currency}
-                subscriptionDurationDays={
-                  config.subscriptionDurationDays
-                }
-                premiumDurationDays={
-                  config.premiumDurationDays
-                }
-                onSelect={(id) => {
-                  if (id === 'free') {
-                    window.location.href = '/register';
-                    return;
-                  }
-
-                  if (!user) {
-                    window.location.href =
-                      '/login?redirect=/pricing';
-
-                    return;
-                  }
-
-                  setSelectedPlan(id);
-                }}
-              />
-            </div>
+              plan={plan}
+              currency={currency}
+              subscriptionDurationDays={config.subscriptionDurationDays}
+              premiumDurationDays={config.premiumDurationDays}
+              onSelect={handlePlanSelect}
+            />
           ))}
         </div>
       </div>

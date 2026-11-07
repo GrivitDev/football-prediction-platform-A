@@ -99,19 +99,19 @@ const userLinks = [
   },
   {
     name: 'Profile',
-    href: '/dashboard/profile',
+    href: '/profile',
   },
   {
     name: 'Purchases',
-    href: '/dashboard/purchases',
+    href: '/purchases',
   },
   {
     name: 'Referrals',
-    href: '/dashboard/referrals',
+    href: '/referrals',
   },
   {
     name: 'Subscriptions',
-    href: '/dashboard/subscriptions',
+    href: '/subscriptions',
   },
 ];
 

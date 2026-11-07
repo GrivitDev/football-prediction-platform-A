@@ -13,7 +13,6 @@ import {
   DashboardSection,
   IdentityCard,
   PlanCard,
-  TopPredictionsCard,
   PromosCard,
 } from '@/components/dashboard';
 
@@ -26,11 +25,9 @@ export default function DashboardPage() {
   const {
     loading,
     error,
-    predictionError,
     promoError,
     user,
     subscription,
-    topPredictions,
     availablePromos,
   } = useDashboardStats() as any;
 
@@ -50,7 +47,7 @@ export default function DashboardPage() {
     subscription?.plan ?? 'free';
 
   return (
-    <div className="min-w-0 max-w-full space-y-5 overflow-x-hidden">
+    <div className="min-w-0 max-w-full space-y-5 overflow-x-hidden p-4">
       <div className="rounded-lg border border-border bg-card p-3">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
@@ -118,22 +115,6 @@ export default function DashboardPage() {
           )}
         </DashboardSection>
       </div>
-
-      <DashboardSection
-        title="Top Predictions"
-        subtitle="Highest confidence picks available today"
-      >
-        {predictionError ? (
-          <div
-            role="status"
-            className="rounded-md border border-dashed border-border bg-muted/10 px-3 py-4 text-center text-[11px] text-muted-foreground"
-          >
-            {predictionError}
-          </div>
-        ) : (
-          <TopPredictionsCard items={topPredictions || []} />
-        )}
-      </DashboardSection>
 
       <DashboardAds />
 

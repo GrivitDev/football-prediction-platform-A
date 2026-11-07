@@ -4,6 +4,43 @@ export type PredictionPlan = 'free' | 'regular' | 'vip' | 'premium';
 export type PredictionStatus = 'pending' | 'won' | 'lost' | 'void';
 export type PredictionMarketStatus = 'pending' | 'won' | 'lost' | 'void' | 'push';
 
+export type PredictionMatchStatus =
+  | 'UPCOMING'
+  | 'LIVE'
+  | 'FINISHED'
+  | 'POSTPONED'
+  | 'CANCELLED'
+  | 'UNKNOWN';
+
+export type PredictionSettlementState = 'PENDING' | 'PARTIAL' | 'SETTLED';
+export type PredictionSettlementScoreSource = 'ESPN_SUMMARY' | 'ESPN_FIXTURE';
+
+export interface PredictionMatchScore {
+  home: number | null;
+  away: number | null;
+}
+
+/** Public settlement lifecycle metadata; market selections remain access-gated. */
+export interface PredictionSettlementInfo {
+  state: PredictionSettlementState;
+  settledMarkets: number;
+  totalMarkets: number;
+  settledAt: string | null;
+  score: { home: number; away: number } | null;
+  scoreSource: PredictionSettlementScoreSource | null;
+  summaryCollectedAt: string | null;
+}
+
+/** Persisted snapshot returned on administrative prediction records. */
+export interface PredictionSettlementSnapshot {
+  state: PredictionSettlementState;
+  settledMarkets: number;
+  totalMarkets: number;
+  score: { home: number; away: number } | null;
+  scoreSource: PredictionSettlementScoreSource | null;
+  summaryCollectedAt: string | null;
+}
+
 export type PredictionProbabilitySource =
   | 'ESPN_PROBABILITY' // retained for historical documents
   | 'IMPLIED_ESPN_ODDS'
@@ -16,6 +53,7 @@ export type PredictionMarketScope = 'MATCH' | 'HOME' | 'AWAY';
 export type PredictionMarketPeriod = 'FULL_TIME' | 'FIRST_HALF' | 'SECOND_HALF';
 
 export type PredictionAccessState =
+  | 'public'
   | 'subscription'
   | 'locked'
   | 'upgrade_required'
@@ -177,6 +215,14 @@ export interface AdminPrediction extends CalculatedPrediction {
   settled: boolean;
   deleted: boolean;
   settledAt: string | null;
+  settlementSnapshot?: PredictionSettlementSnapshot | null;
+  /** Canonical ESPN match state attached to admin list/detail responses. */
+  matchStatus?: PredictionMatchStatus;
+  matchStatusDetail?: string | null;
+  matchClock?: string | null;
+  matchCompleted?: boolean;
+  matchScore?: PredictionMatchScore | null;
+  fixtureCollectedAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -200,7 +246,16 @@ export interface PredictionDetailsBase {
   league?: LeagueInfo;
   matchDate: string;
   kickoffTimestamp: number;
+  /** Aggregate prediction outcome retained for backwards compatibility. */
   status: PredictionStatus;
+  settled: boolean;
+  settledAt: string | null;
+  settlement: PredictionSettlementInfo;
+  matchStatus: PredictionMatchStatus;
+  matchStatusDetail: string | null;
+  matchClock: string | null;
+  matchCompleted: boolean;
+  matchScore: PredictionMatchScore | null;
   accessType: PredictionPlan;
   confidence?: number;
 }

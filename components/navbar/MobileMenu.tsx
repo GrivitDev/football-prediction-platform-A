@@ -32,11 +32,6 @@ const publicLinks = [
     icon: Home,
   },
   {
-    name: 'Predictions',
-    href: '/predictions',
-    icon: Target,
-  },
-  {
     name: 'Articles',
     href: '/articles',
     icon: FileText,

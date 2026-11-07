@@ -58,7 +58,7 @@ export default function ProfilePage() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 p-4">
 
 
       <DashboardSection>

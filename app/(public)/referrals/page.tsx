@@ -13,7 +13,7 @@ import { RewardHistory } from '@/components/dashboard/referrals/RewardHistory';
 
 export default function ReferralDashboardPage() {
   return (
-    <div className="min-w-0 max-w-full space-y-5 overflow-x-hidden">
+    <div className="min-w-0 max-w-full space-y-5 overflow-x-hidden p-4">
 
       <DashboardSection>
         <SectionTitle

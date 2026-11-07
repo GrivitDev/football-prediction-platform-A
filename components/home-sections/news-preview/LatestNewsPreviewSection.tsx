@@ -10,7 +10,7 @@ import type { FootballNewsFeedItem } from '@/types/sports';
 
 type UnknownRecord = Record<string, unknown>;
 
-const PREVIEW_COUNT = 10;
+const PREVIEW_COUNT = 5;
 const NEWS_QUERY_LIMIT = 100;
 
 function isRecord(value: unknown): value is UnknownRecord {

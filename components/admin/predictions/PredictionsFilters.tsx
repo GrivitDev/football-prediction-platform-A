@@ -14,8 +14,10 @@ import {
 interface Props {
   search: string;
   setSearch: (value: string) => void;
-  status: string;
-  setStatus: (value: string) => void;
+  matchStatus: string;
+  setMatchStatus: (value: string) => void;
+  settlement: string;
+  setSettlement: (value: string) => void;
   access: string;
   setAccess: (value: string) => void;
   league: string;
@@ -26,8 +28,10 @@ interface Props {
 export default function PredictionsFilters({
   search,
   setSearch,
-  status,
-  setStatus,
+  matchStatus,
+  setMatchStatus,
+  settlement,
+  setSettlement,
   access,
   setAccess,
   league,
@@ -36,27 +40,37 @@ export default function PredictionsFilters({
 }: Props) {
   return (
     <div className="rounded-lg border bg-card p-2.5">
-      <div className="grid gap-2 md:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
-        <div className="relative">
+      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-[1.5fr_repeat(4,minmax(0,1fr))]">
+        <div className="relative sm:col-span-2 xl:col-span-1">
           <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search teams or league"
+            placeholder="Search teams, league or match ID"
             className="h-8 rounded-md pl-8 text-xs shadow-none"
           />
         </div>
 
-        <FilterSelect value={status} onChange={setStatus} placeholder="Status">
-          <SelectItem value="all">All status</SelectItem>
-          <SelectItem value="Upcoming">Upcoming</SelectItem>
-          <SelectItem value="In Play">In Play</SelectItem>
-          <SelectItem value="Needs Settlement">Needs settlement</SelectItem>
-          <SelectItem value="Settled">Settled</SelectItem>
+        <FilterSelect value={matchStatus} onChange={setMatchStatus} placeholder="Match status">
+          <SelectItem value="all">All match statuses</SelectItem>
+          <SelectItem value="UPCOMING">Upcoming</SelectItem>
+          <SelectItem value="LIVE">Live</SelectItem>
+          <SelectItem value="FINISHED">Finished</SelectItem>
+          <SelectItem value="POSTPONED">Postponed</SelectItem>
+          <SelectItem value="CANCELLED">Cancelled</SelectItem>
+          <SelectItem value="UNKNOWN">Unknown</SelectItem>
+        </FilterSelect>
+
+        <FilterSelect value={settlement} onChange={setSettlement} placeholder="Settlement">
+          <SelectItem value="all">All settlement states</SelectItem>
+          <SelectItem value="PENDING">Pending</SelectItem>
+          <SelectItem value="PARTIAL">Partially settled</SelectItem>
+          <SelectItem value="SETTLED">Fully settled</SelectItem>
+          <SelectItem value="NEEDS_SETTLEMENT">Finished · awaiting settlement</SelectItem>
         </FilterSelect>
 
         <FilterSelect value={access} onChange={setAccess} placeholder="Access">
-          <SelectItem value="all">All access</SelectItem>
+          <SelectItem value="all">All access plans</SelectItem>
           <SelectItem value="free">Free</SelectItem>
           <SelectItem value="regular">Regular</SelectItem>
           <SelectItem value="vip">VIP</SelectItem>

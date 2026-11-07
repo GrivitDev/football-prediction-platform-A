@@ -22,6 +22,14 @@ import type {
   AdminPrediction,
   PredictionPlan,
 } from '@/types/prediction.types';
+import {
+  formatMatchStatusDetail,
+  getAdminMatchStatus,
+  getSettlementOverview,
+  MatchStatusBadge,
+  marketStatusTone,
+  SettlementStatusBadge,
+} from './settlement-utils';
 
 type SettlementAction = 'ESPN' | 'VOID';
 type MarketItem = { market: string; selection: string };
@@ -92,29 +100,6 @@ function errorMessage(error: unknown): string {
     : 'Unable to calculate this prediction.';
 }
 
-function settlementState(prediction: AdminPrediction) {
-  if (prediction.settled) {
-    return {
-      label: 'Settled',
-      tone: 'bg-emerald-500/10 text-emerald-600',
-    };
-  }
-
-  const matchTime = new Date(prediction.matchDate).getTime();
-  const ready =
-    Number.isFinite(matchTime) &&
-    Date.now() >= matchTime + 2 * 60 * 60 * 1000;
-
-  return ready
-    ? {
-        label: 'Needs settlement',
-        tone: 'bg-amber-500/10 text-amber-600',
-      }
-    : {
-        label: 'Scheduled',
-        tone: 'bg-muted text-muted-foreground',
-      };
-}
 
 export default function PredictionDetailsModal({
   prediction,
@@ -152,7 +137,10 @@ export default function PredictionDetailsModal({
     JSON.stringify(markets) !== JSON.stringify(storedMarkets);
 
   const editable = !prediction.settled && !prediction.deleted;
-  const settlement = settlementState(prediction);
+  const settlement = getSettlementOverview(prediction);
+  const matchStatus = getAdminMatchStatus(prediction);
+  const marketsEditable = editable && settlement.state === 'PENDING';
+  const canDelete = marketsEditable;
 
   const displayedPrediction = preview?.prediction ?? prediction.prediction;
   const displayedProbability =
@@ -241,21 +229,30 @@ export default function PredictionDetailsModal({
   const handleSave = async () => {
     setError('');
 
-    if (!editable || !validate()) return;
+    if (!editable) return;
 
-    if (marketsChanged && !preview) {
+    if (marketsEditable && !validate()) return;
+
+    if (marketsEditable && marketsChanged && !preview) {
       setError('Recalculate changed markets before saving.');
       return;
     }
 
     await onSave({
       accessType,
-      markets,
+      ...(marketsEditable ? { markets } : {}),
     });
   };
 
+  // ESPN must explicitly report the fixture as completed before manual
+  // settlement is offered. Kickoff time alone is not proof of full time.
   const canSettle =
-    editable && settlement.label === 'Needs settlement';
+    editable && matchStatus === 'FINISHED' && settlement.state !== 'SETTLED';
+  const canVoid =
+    marketsEditable &&
+    (matchStatus === 'FINISHED' ||
+      matchStatus === 'POSTPONED' ||
+      matchStatus === 'CANCELLED');
 
   const targetSelection = displayedPrediction.selection.toUpperCase();
   const targetBadge =
@@ -297,11 +294,10 @@ export default function PredictionDetailsModal({
               </p>
             </div>
 
-            <span
-              className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold ${settlement.tone}`}
-            >
-              {settlement.label}
-            </span>
+            <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
+              <MatchStatusBadge prediction={prediction} compact />
+              <SettlementStatusBadge prediction={prediction} compact />
+            </div>
           </div>
 
           <button
@@ -339,6 +335,31 @@ export default function PredictionDetailsModal({
                     badge={prediction.awayTeamBadge}
                     align="left"
                   />
+                </div>
+
+                <div className="mt-3 rounded-lg border bg-muted/15 p-2.5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <MatchStatusBadge prediction={prediction} />
+                    <SettlementStatusBadge prediction={prediction} />
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
+                    <span>{formatMatchStatusDetail(prediction)}</span>
+                    {prediction.matchScore &&
+                    typeof prediction.matchScore.home === 'number' &&
+                    typeof prediction.matchScore.away === 'number' ? (
+                      <span className="text-sm font-bold tabular-nums text-foreground">
+                        {prediction.matchScore.home} – {prediction.matchScore.away}
+                      </span>
+                    ) : (
+                      <span>Score unavailable</span>
+                    )}
+                  </div>
+                  <div className="mt-2 flex items-center justify-between gap-2 border-t pt-2 text-[9px] text-muted-foreground">
+                    <span>Market resolution</span>
+                    <span className="font-semibold text-foreground">
+                      {settlement.settledMarkets}/{settlement.totalMarkets} markets
+                    </span>
+                  </div>
                 </div>
 
                 <div className="mt-3 rounded-lg border border-primary/15 bg-primary/[0.04] p-2.5">
@@ -428,6 +449,7 @@ export default function PredictionDetailsModal({
                 <span className="text-xs font-semibold">Markets</span>
                 <span className="text-[9px] text-muted-foreground">
                   {markets.length} selected
+                  {!marketsEditable && settlement.state !== 'PENDING' ? ' · locked after settlement activity' : ''}
                 </span>
               </div>
 
@@ -446,7 +468,7 @@ export default function PredictionDetailsModal({
 
                       <select
                         value={item.market}
-                        disabled={!editable}
+                        disabled={!marketsEditable}
                         onChange={(event) =>
                           updateMarket(index, {
                             market: event.target.value,
@@ -465,7 +487,7 @@ export default function PredictionDetailsModal({
 
                       <select
                         value={item.selection}
-                        disabled={!editable || !item.market}
+                        disabled={!marketsEditable || !item.market}
                         onChange={(event) =>
                           updateMarket(index, {
                             selection: event.target.value,
@@ -484,7 +506,7 @@ export default function PredictionDetailsModal({
                       <button
                         type="button"
                         onClick={() => removeMarket(index)}
-                        disabled={!editable || markets.length === 1}
+                        disabled={!marketsEditable || markets.length === 1}
                         className="grid h-8 w-7 place-items-center rounded-md text-destructive hover:bg-destructive/10 disabled:opacity-30"
                         aria-label={`Remove market ${index + 1}`}
                       >
@@ -499,7 +521,7 @@ export default function PredictionDetailsModal({
                 <button
                   type="button"
                   onClick={addMarket}
-                  disabled={!editable}
+                  disabled={!marketsEditable}
                   className="h-7 rounded-md bg-primary/10 px-2 text-[10px] font-semibold text-primary disabled:opacity-40"
                 >
                   + Add
@@ -508,7 +530,7 @@ export default function PredictionDetailsModal({
                 <button
                   type="button"
                   onClick={handleCalculate}
-                  disabled={!editable || calculating}
+                  disabled={!marketsEditable || calculating}
                   className="inline-flex h-8 items-center gap-1.5 rounded-md border border-primary/20 bg-primary/10 px-3 text-[11px] font-semibold text-primary disabled:opacity-40"
                 >
                   {calculating ? (
@@ -551,9 +573,41 @@ export default function PredictionDetailsModal({
                       value={`${market.probability}%`}
                     />
                     <Metric label="Odds" value={money(market.odds)} />
-                    <Metric label="Status" value={market.status ?? 'pending'} />
+                    <Metric
+                      label="Status"
+                      value={
+                        <span
+                          className={`rounded-full px-2 py-0.5 capitalize ${marketStatusTone(market.status ?? 'pending')}`}
+                        >
+                          {market.status ?? 'pending'}
+                        </span>
+                      }
+                    />
                   </div>
                 ))}
+              </div>
+            </section>
+
+            <section className="rounded-xl border p-3">
+              <p className="mb-2 text-xs font-semibold">Settlement audit</p>
+              <div className="grid gap-2 text-[10px] sm:grid-cols-2">
+                <AuditValue label="Settlement state" value={settlement.label} />
+                <AuditValue
+                  label="Final score source"
+                  value={prediction.settlementSnapshot?.scoreSource?.replace(/_/g, ' ') ?? 'Not recorded'}
+                />
+                <AuditValue
+                  label="Settled at"
+                  value={formatAuditDate(prediction.settledAt)}
+                />
+                <AuditValue
+                  label="Post-match Summary collected"
+                  value={formatAuditDate(prediction.settlementSnapshot?.summaryCollectedAt)}
+                />
+                <AuditValue
+                  label="Latest fixture data"
+                  value={formatAuditDate(prediction.fixtureCollectedAt)}
+                />
               </div>
             </section>
 
@@ -578,40 +632,72 @@ export default function PredictionDetailsModal({
               </section>
             )}
 
-            {canSettle && (
-              <div className="flex flex-wrap items-center gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-2.5">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
-                <span className="mr-auto text-xs text-amber-700">
-                  Ready for settlement.
-                </span>
-
-                <button
-                  type="button"
-                  onClick={() => onSettle('ESPN')}
-                  disabled={settling}
-                  className="inline-flex h-8 items-center gap-1.5 rounded-md bg-emerald-600 px-3 text-[11px] font-semibold text-white disabled:opacity-40"
-                >
-                  {settling && (
-                    <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
-                  )}
-                  Settle
-                </button>
-
+            {canVoid && !canSettle && (
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-2.5">
+                <div>
+                  <p className="text-xs font-semibold">This match cannot be settled from a final score.</p>
+                  <p className="text-[10px] text-muted-foreground">Void is available for postponed or cancelled fixtures.</p>
+                </div>
                 <button
                   type="button"
                   onClick={() => onSettle('VOID')}
                   disabled={settling}
                   className="h-8 rounded-md border border-destructive/30 px-3 text-[11px] font-semibold text-destructive disabled:opacity-40"
                 >
-                  Void
+                  Void prediction
                 </button>
+              </div>
+            )}
+
+            {canSettle && (
+              <div className="space-y-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-2.5">
+                <div className="flex items-start gap-2">
+                  <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">
+                      ESPN reports this match as finished.
+                    </p>
+                    <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">
+                      Automatic settlement becomes eligible three hours after kickoff. Manual processing is available now; markets that require a fresh post-match Summary can remain pending until ESPN data is available.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => onSettle('ESPN')}
+                    disabled={settling}
+                    className="inline-flex h-8 items-center gap-1.5 rounded-md bg-emerald-600 px-3 text-[11px] font-semibold text-white disabled:opacity-40"
+                  >
+                    {settling && (
+                      <LoaderCircle className="h-3.5 w-3.5 animate-spin" />
+                    )}
+                    {settling
+                      ? 'Processing…'
+                      : settlement.state === 'PARTIAL'
+                        ? 'Retry settlement'
+                        : 'Settle from ESPN'}
+                  </button>
+
+                  {canVoid && (
+                    <button
+                      type="button"
+                      onClick={() => onSettle('VOID')}
+                      disabled={settling}
+                      className="h-8 rounded-md border border-destructive/30 px-3 text-[11px] font-semibold text-destructive disabled:opacity-40"
+                    >
+                      Void prediction
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
         </main>
 
         <footer className="flex shrink-0 justify-end gap-2 border-t px-3 py-2.5">
-          {editable && (
+          {canDelete && (
             <button
               type="button"
               onClick={onDelete}
@@ -648,6 +734,28 @@ export default function PredictionDetailsModal({
           </button>
         </footer>
       </div>
+    </div>
+  );
+}
+
+function formatAuditDate(value?: string | Date | null): string {
+  if (!value) return '—';
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return '—';
+  return date.toLocaleString('en-NG', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
+function AuditValue({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-md bg-muted/30 p-2">
+      <p className="text-[9px] text-muted-foreground">{label}</p>
+      <p className="mt-0.5 break-words font-semibold">{value}</p>
     </div>
   );
 }
@@ -741,5 +849,6 @@ function Metric({
     </div>
   );
 }
+
 
 

@@ -7,14 +7,14 @@ import {
   BookOpenText,
   Newspaper,
   PlaySquare,
-  Target,
+  HomeIcon,
 } from 'lucide-react';
 
 const publicTabs = [
-  {
-    name: 'Predictions',
-    href: '/predictions',
-    icon: Target,
+    {
+    name: 'Home',
+    href: '/',
+    icon: HomeIcon,
   },
   {
     name: 'Articles',

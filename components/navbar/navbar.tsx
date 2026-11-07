@@ -97,20 +97,20 @@ export default function Navbar() {
                 aria-label="HonestPredict home"
                 className="
                   flex
-                  h-14
-                  w-32
+                  h-24
+                  w-52
                   shrink-0
                   items-center
                   justify-start
                   overflow-hidden
-                  sm:w-36
+                  sm:w-66
                 "
               >
                 <Image
                   src="/logo.png"
                   alt="HonestPredict"
-                  width={180}
-                  height={180}
+                  width={280}
+                  height={280}
                   priority
                   className="
                     h-auto

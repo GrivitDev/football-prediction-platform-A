@@ -70,7 +70,7 @@ export default function PurchasesPage() {
   };
 
   return (
-    <div className="w-full min-w-0 max-w-full overflow-x-hidden">
+    <div className="w-full min-w-0 max-w-full overflow-x-hidden p-4">
       <PageHero
         title="Payment History"
         description="Review payments for your subscription and plan upgrades."

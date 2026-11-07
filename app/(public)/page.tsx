@@ -14,10 +14,12 @@ import PricingSection from '@/components/pricing/PricingSection';
 import RecentWinsTable from '@/components/predictions/public/RecentWinsTable';
 import StandingsTable from '@/components/predictions/public/StandingsTable';
 import FixturesTable from '@/components/predictions/public/FixturesTable';
-import TodaysPredictions from '@/components/predictions/public/TodaysPredictions';
+import { PremiumPredictionsTable } from '@/components/predictions/tables/PremiumPredictionsTable';
+import VipPredictionsTable from '@/components/predictions/tables/VipPredictionsTable';
+import { RegularPredictionsTable } from '@/components/predictions/tables/RegularPredictionsTable';
+import { FreePredictionsTable } from '@/components/predictions/tables/FreePredictionsTable';
 
 export default function HomePage() {
-  const { user } = useAuth();
   const isLoading = false;
 
   if (isLoading) {
@@ -60,14 +62,15 @@ export default function HomePage() {
       <HeroSection />
 <div className="px-6">
 
-<TodaysPredictions
-  isAuthenticated={Boolean(user)}
-  maxRows={10}
-  className="w-full"
-/>
-        <FixturesTable />
+      <FreePredictionsTable />
+      <RegularPredictionsTable />
+      <VipPredictionsTable />
+      <PremiumPredictionsTable />
 
       <RecentWinsTable />
+
+              <FixturesTable />
+
       <StandingsTable />
         <LatestArticlesSection />
 

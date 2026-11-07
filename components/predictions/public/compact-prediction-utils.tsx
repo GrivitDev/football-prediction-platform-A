@@ -2,6 +2,9 @@ import Image from 'next/image';
 
 import type {
   PredictionMarketResult,
+  PredictionMarketStatus,
+  PredictionMatchStatus,
+  PredictionSettlementState,
   PredictionUserResponse,
 } from '@/types/prediction.types';
 
@@ -200,11 +203,77 @@ export function TeamLine({ name, logo }: { name: string; logo: string | null }) 
   );
 }
 
+export function MatchStatusBadge({
+  status,
+  detail,
+  clock,
+  score,
+}: {
+  status: PredictionMatchStatus;
+  detail?: string | null;
+  clock?: string | null;
+  score?: PredictionUserResponse['matchScore'];
+}) {
+  const scoreLabel =
+    typeof score?.home === 'number' && Number.isFinite(score.home) &&
+    typeof score?.away === 'number' && Number.isFinite(score.away)
+      ? `${score.home}–${score.away}`
+      : null;
+
+  const appearance: Record<PredictionMatchStatus, { label: string; className: string }> = {
+    UPCOMING: {
+      label: 'Upcoming',
+      className: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+    },
+    LIVE: {
+      label: `LIVE${clock ? ` · ${clock}` : ''}${scoreLabel ? ` · ${scoreLabel}` : ''}`,
+      className: 'bg-red-500/10 text-red-600 dark:text-red-400',
+    },
+    FINISHED: {
+      label: `${scoreLabel ? `${scoreLabel} · ` : ''}FT`,
+      className: 'bg-muted text-muted-foreground',
+    },
+    POSTPONED: {
+      label: 'Postponed',
+      className: 'bg-amber-500/10 text-amber-700 dark:text-amber-400',
+    },
+    CANCELLED: {
+      label: 'Cancelled',
+      className: 'bg-destructive/10 text-destructive',
+    },
+    UNKNOWN: {
+      label: 'Status unavailable',
+      className: 'bg-muted text-muted-foreground',
+    },
+  };
+
+  const selected = appearance[status] ?? appearance.UNKNOWN;
+
+  return (
+    <span
+      title={detail ? `${selected.label} · ${detail}` : selected.label}
+      aria-label={detail ? `${selected.label}. ${detail}` : selected.label}
+      className={`inline-flex max-w-full items-center gap-1 self-start truncate rounded-full px-1.5 py-0.5 text-[8px] font-bold leading-tight ${selected.className}`}
+    >
+      {status === 'LIVE' && (
+        <span aria-hidden="true" className="h-1 w-1 shrink-0 animate-pulse rounded-full bg-current" />
+      )}
+      <span className="truncate">{selected.label}</span>
+    </span>
+  );
+}
+
 export function TeamMatchCell({ row }: { row: PredictionUserResponse }) {
   return (
     <div className="min-w-0 space-y-1">
       <TeamLine name={row.homeTeam} logo={getTeamLogo(row, 'home')} />
       <TeamLine name={row.awayTeam} logo={getTeamLogo(row, 'away')} />
+      <MatchStatusBadge
+        status={row.matchStatus ?? 'UNKNOWN'}
+        detail={row.matchStatusDetail}
+        clock={row.matchClock}
+        score={row.matchScore}
+      />
     </div>
   );
 }
@@ -224,5 +293,162 @@ export function LeagueCell({ row }: { row: PredictionUserResponse }) {
         {league?.name || row.leagueCode}
       </span>
     </div>
+  );
+}
+
+
+const MARKET_STATUS_PRESENTATION: Record<
+  PredictionMarketStatus,
+  { label: string; className: string }
+> = {
+  pending: {
+    label: 'Pending',
+    className: 'border-border/60 bg-muted/60 text-muted-foreground',
+  },
+  won: {
+    label: 'Won',
+    className: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400',
+  },
+  lost: {
+    label: 'Lost',
+    className: 'border-red-500/25 bg-red-500/10 text-red-700 dark:text-red-400',
+  },
+  void: {
+    label: 'Void',
+    className: 'border-slate-500/25 bg-slate-500/10 text-slate-700 dark:text-slate-300',
+  },
+  push: {
+    label: 'Push',
+    className: 'border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-400',
+  },
+};
+
+export function getMarketStatusLabel(status?: PredictionMarketStatus | string | null): string {
+  const normalized = String(status ?? 'pending').toLowerCase() as PredictionMarketStatus;
+  return MARKET_STATUS_PRESENTATION[normalized]?.label ?? 'Pending';
+}
+
+export function MarketResultBadge({
+  status,
+  compact = false,
+}: {
+  status?: PredictionMarketStatus | string | null;
+  compact?: boolean;
+}) {
+  const normalized = String(status ?? 'pending').toLowerCase() as PredictionMarketStatus;
+  const presentation = MARKET_STATUS_PRESENTATION[normalized] ?? MARKET_STATUS_PRESENTATION.pending;
+
+  return (
+    <span
+      title={`Market result: ${presentation.label}`}
+      aria-label={`Market result: ${presentation.label}`}
+      className={`inline-flex shrink-0 items-center justify-center rounded border font-semibold leading-none ${presentation.className} ${compact ? 'px-1 py-0.5 text-[7px]' : 'px-1.5 py-1 text-[8px]'}`}
+    >
+      {presentation.label}
+    </span>
+  );
+}
+
+export interface PublicSettlementSummary {
+  state: PredictionSettlementState;
+  settledMarkets: number;
+  totalMarkets: number;
+  result: 'won' | 'lost' | 'void' | 'settled' | null;
+  scoreLabel: string | null;
+}
+
+export function getPublicSettlementSummary(
+  row: PredictionUserResponse,
+): PublicSettlementSummary {
+  const settlement = row.settlement;
+  const rawTotal = Number(settlement?.totalMarkets ?? 0);
+  const totalMarkets = Number.isFinite(rawTotal) ? Math.max(0, Math.floor(rawTotal)) : 0;
+  const rawSettled = Number(settlement?.settledMarkets ?? 0);
+  const settledMarkets = Number.isFinite(rawSettled)
+    ? Math.max(0, Math.min(totalMarkets || rawSettled, Math.floor(rawSettled)))
+    : 0;
+
+  let state: PredictionSettlementState;
+  if (row.settled === true || settlement?.state === 'SETTLED') {
+    state = 'SETTLED';
+  } else if (settlement?.state === 'PARTIAL' || settledMarkets > 0) {
+    state = 'PARTIAL';
+  } else {
+    state = 'PENDING';
+  }
+
+  const normalizedStatus = String(row.status ?? 'pending').toLowerCase();
+  const result = state !== 'SETTLED'
+    ? null
+    : normalizedStatus === 'won' || normalizedStatus === 'lost' || normalizedStatus === 'void'
+      ? normalizedStatus
+      : 'settled';
+
+  const score = settlement?.score ?? row.matchScore;
+  const scoreLabel =
+    typeof score?.home === 'number' && Number.isFinite(score.home) &&
+    typeof score?.away === 'number' && Number.isFinite(score.away)
+      ? `${score.home}–${score.away}`
+      : null;
+
+  return { state, settledMarkets, totalMarkets, result, scoreLabel };
+}
+
+export function SettlementStatusBadge({
+  row,
+  compact = false,
+}: {
+  row: PredictionUserResponse;
+  compact?: boolean;
+}) {
+  const summary = getPublicSettlementSummary(row);
+
+  // Do not add a needless "awaiting results" label to every upcoming fixture.
+  if (summary.state === 'PENDING' && row.matchStatus !== 'FINISHED' && row.matchCompleted !== true) {
+    return null;
+  }
+
+  let label = 'Awaiting settlement';
+  let className = 'border-border/60 bg-muted/60 text-muted-foreground';
+
+  if (summary.state === 'PARTIAL') {
+    label = summary.totalMarkets > 0
+      ? `Partial · ${summary.settledMarkets}/${summary.totalMarkets}`
+      : 'Partial results';
+    className = 'border-amber-500/25 bg-amber-500/10 text-amber-700 dark:text-amber-400';
+  } else if (summary.state === 'SETTLED') {
+    if (summary.result === 'won') {
+      label = 'Won';
+      className = 'border-emerald-500/25 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400';
+    } else if (summary.result === 'lost') {
+      label = 'Lost';
+      className = 'border-red-500/25 bg-red-500/10 text-red-700 dark:text-red-400';
+    } else if (summary.result === 'void') {
+      label = 'Void';
+      className = 'border-slate-500/25 bg-slate-500/10 text-slate-700 dark:text-slate-300';
+    } else {
+      label = 'Settled';
+      className = 'border-border/60 bg-muted text-muted-foreground';
+    }
+  }
+
+  const detailParts = [
+    summary.scoreLabel ? `Final score ${summary.scoreLabel}` : null,
+    summary.state === 'SETTLED' && row.settledAt
+      ? `Settled ${new Date(row.settledAt).toLocaleString('en-NG', { timeZone: 'Africa/Lagos' })}`
+      : null,
+  ].filter(Boolean);
+
+  return (
+    <span
+      title={[label, ...detailParts].join(' · ')}
+      aria-label={[label, ...detailParts].join('. ')}
+      className={`inline-flex max-w-full items-center gap-1 self-start truncate rounded-full border font-bold leading-tight ${className} ${compact ? 'px-1.5 py-0.5 text-[7px]' : 'px-1.5 py-0.5 text-[8px]'}`}
+    >
+      <span className="truncate">{label}</span>
+      {summary.scoreLabel && summary.state !== 'PENDING' && (
+        <span className="shrink-0 font-semibold tabular-nums opacity-80">{summary.scoreLabel}</span>
+      )}
+    </span>
   );
 }

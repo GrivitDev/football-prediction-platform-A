@@ -26,22 +26,25 @@ import {
 
 export const predictionQueryKeys = {
   all: ['predictions'] as const,
-
-  list: () =>
-    [...predictionQueryKeys.all, 'list'] as const,
-
-  tables: () =>
-    [...predictionQueryKeys.all, 'tables'] as const,
-
-  settledWins: () =>
-    [...predictionQueryKeys.all, 'settled-wins'] as const,
-
-  detail: (id: string) =>
-    [...predictionQueryKeys.all, 'detail', id] as const,
-
-  access: (id: string) =>
-    [...predictionQueryKeys.all, 'access', id] as const,
+  list: () => [...predictionQueryKeys.all, 'list'] as const,
+  tables: () => [...predictionQueryKeys.all, 'tables'] as const,
+  settledWins: () => [...predictionQueryKeys.all, 'settled-wins'] as const,
+  detail: (id: string) => [...predictionQueryKeys.all, 'detail', id] as const,
+  access: (id: string) => [...predictionQueryKeys.all, 'access', id] as const,
 };
+
+/**
+ * A settlement affects the public tables, recent wins, admin list and any
+ * cached detail/access response. Invalidate the common prediction namespace
+ * so every view observes the same backend settlement state on its next read.
+ */
+async function invalidatePredictionViews(
+  queryClient: ReturnType<typeof useQueryClient>,
+): Promise<void> {
+  await queryClient.invalidateQueries({
+    queryKey: predictionQueryKeys.all,
+  });
+}
 
 export function usePredictionTables() {
   return useQuery({
@@ -50,7 +53,9 @@ export function usePredictionTables() {
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: 'always',
+    refetchOnWindowFocus: true,
     refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
     retry: false,
   });
 }
@@ -60,6 +65,9 @@ export function usePredictions() {
     queryKey: predictionQueryKeys.list(),
     queryFn: getPredictions,
     staleTime: 30_000,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -67,7 +75,10 @@ export function useSettledWins() {
   return useQuery({
     queryKey: predictionQueryKeys.settledWins(),
     queryFn: getSettledWins,
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchOnWindowFocus: true,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
   });
 }
 
@@ -77,6 +88,7 @@ export function usePredictionById(id?: string) {
     queryFn: () => getPrediction(id as string),
     enabled: Boolean(id),
     staleTime: 30_000,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -86,6 +98,7 @@ export function usePredictionAccess(id?: string) {
     queryFn: () => getPredictionAccess(id as string),
     enabled: Boolean(id),
     staleTime: 15_000,
+    refetchOnWindowFocus: true,
   });
 }
 
@@ -95,11 +108,10 @@ export function useCalculatePrediction() {
   return useMutation({
     mutationFn: (payload: CalculatePredictionPayload) =>
       calculatePrediction(payload),
-    onSuccess: (_data, variables) => {
-      void queryClient.invalidateQueries({
+    onSuccess: (_data, variables) =>
+      queryClient.invalidateQueries({
         queryKey: predictionQueryKeys.detail(variables.matchId),
-      });
-    },
+      }),
   });
 }
 
@@ -107,26 +119,8 @@ export function useCreatePrediction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (payload: CreatePredictionPayload) =>
-      createPrediction(payload),
-    onSuccess: (data) => {
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.list(),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.tables(),
-      });
-
-      if (data.id) {
-        void queryClient.invalidateQueries({
-          queryKey: predictionQueryKeys.detail(data.id),
-        });
-      }
-
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.settledWins(),
-      });
-    },
+    mutationFn: (payload: CreatePredictionPayload) => createPrediction(payload),
+    onSuccess: () => invalidatePredictionViews(queryClient),
   });
 }
 
@@ -141,32 +135,7 @@ export function useUpdatePrediction() {
       id: string;
       payload: UpdatePredictionPayload;
     }) => updatePrediction(id, payload),
-    onSuccess: (data, variables) => {
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.list(),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.tables(),
-      });
-
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.detail(variables.id),
-      });
-
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.access(variables.id),
-      });
-
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.settledWins(),
-      });
-
-      if (data?.id) {
-        void queryClient.invalidateQueries({
-          queryKey: predictionQueryKeys.detail(data.id),
-        });
-      }
-    },
+    onSuccess: () => invalidatePredictionViews(queryClient),
   });
 }
 
@@ -175,25 +144,26 @@ export function useDeletePrediction() {
 
   return useMutation({
     mutationFn: (id: string) => deletePrediction(id),
-    onSuccess: (_data, id) => {
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.list(),
-      });
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.tables(),
-      });
+    onSuccess: () => invalidatePredictionViews(queryClient),
+  });
+}
 
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.detail(id),
-      });
+/** Manual ESPN settlement. Successful and partial outcomes both refresh all views. */
+export function useSettlePrediction() {
+  const queryClient = useQueryClient();
 
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.access(id),
-      });
+  return useMutation({
+    mutationFn: (id: string) => settlePrediction(id),
+    onSuccess: () => invalidatePredictionViews(queryClient),
+  });
+}
 
-      void queryClient.invalidateQueries({
-        queryKey: predictionQueryKeys.settledWins(),
-      });
-    },
+/** Manual VOID settlement. The backend remains responsible for integrity checks. */
+export function useVoidPrediction() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => voidPrediction(id),
+    onSuccess: () => invalidatePredictionViews(queryClient),
   });
 }
