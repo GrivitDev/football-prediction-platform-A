@@ -98,6 +98,7 @@ export default function PaymentModal({
       await api.post('/payments', {
         type,
         target,
+        currency,
         transferReference: transferReference.trim(),
         proofMessage: proofMessage.trim(),
         proofImageUrl: proof.url,

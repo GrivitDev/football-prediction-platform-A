@@ -18,7 +18,7 @@ export default function PricingSection() {
   const [config, setConfig] = useState<PlanConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan>(null);
-  const [currency, setCurrency] = useState<PaymentCurrency>('USD');
+  const [currency, setCurrency] = useState<PaymentCurrency>('NGN');
 
   useEffect(() => {
     let active = true;
@@ -43,11 +43,11 @@ export default function PricingSection() {
 
   useEffect(() => {
     if (!user) {
-      setCurrency('USD');
+      setCurrency('NGN');
       return;
     }
 
-    setCurrency(user.currency);
+    setCurrency(user.currency === 'USD' ? 'USD' : 'NGN');
   }, [user]);
 
   const prices = useMemo(() => {

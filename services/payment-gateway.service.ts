@@ -10,12 +10,12 @@ export type PaymentCurrency = 'NGN' | 'USD';
 
 export type PaymentType = 'subscription' | 'vip_upgrade';
 
-// Currency is intentionally not accepted here.
-// The backend determines currency from the authenticated user's account.
+// The backend validates this selection and calculates the corresponding price.
 export interface InitializePaymentPayload {
   gateway: PaymentGateway;
   type: PaymentType;
   target: string;
+  currency: PaymentCurrency;
 }
 
 export interface InitializePaymentResponse {
@@ -47,6 +47,7 @@ const paymentGatewayService = {
         gateway: payload.gateway,
         type: payload.type,
         target: payload.target,
+        currency: payload.currency,
       },
     );
 

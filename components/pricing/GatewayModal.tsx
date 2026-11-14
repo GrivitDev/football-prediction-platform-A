@@ -43,6 +43,29 @@ export default function GatewayModal({
     useState<PaymentGateway | null>(null);
   const [error, setError] = useState('');
   const [manualPayment, setManualPayment] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] =
+    useState<PaymentCurrency>(currency);
+
+  useEffect(() => {
+    setSelectedCurrency(currency);
+  }, [currency]);
+
+  const selectedAmount =
+    type === 'subscription'
+      ? target === 'regular'
+        ? selectedCurrency === 'USD'
+          ? config.regularPriceUSD
+          : config.regularPrice
+        : target === 'vip'
+          ? selectedCurrency === 'USD'
+            ? config.vipPriceUSD
+            : config.vipPrice
+          : target === 'premium'
+            ? selectedCurrency === 'USD'
+              ? config.premiumPriceUSD
+              : config.premiumPrice
+            : amount
+      : amount;
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -80,6 +103,7 @@ export default function GatewayModal({
         gateway,
         type,
         target,
+        currency: selectedCurrency,
       });
 
       window.location.href = data.authorizationUrl;
@@ -99,8 +123,8 @@ export default function GatewayModal({
       <PaymentModal
         type={type}
         target={target}
-        amount={amount}
-        currency={currency}
+        amount={selectedAmount}
+        currency={selectedCurrency}
         config={config}
         title={title}
         description={description}
@@ -150,6 +174,34 @@ export default function GatewayModal({
             {description ?? 'Select a payment method to continue.'}
           </p>
 
+          {type === 'subscription' && (
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-xl border bg-background px-3 py-2.5">
+              <span className="text-xs font-medium text-muted-foreground">
+                Pay in
+              </span>
+              <div className="inline-flex rounded-lg border bg-muted/40 p-1" role="group" aria-label="Choose payment currency">
+                <button
+                  type="button"
+                  onClick={() => setSelectedCurrency('NGN')}
+                  disabled={loadingGateway !== null}
+                  aria-pressed={selectedCurrency === 'NGN'}
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${selectedCurrency === 'NGN' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  ₦ NGN
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedCurrency('USD')}
+                  disabled={loadingGateway !== null}
+                  aria-pressed={selectedCurrency === 'USD'}
+                  className={`rounded-md px-3 py-1.5 text-xs font-semibold transition ${selectedCurrency === 'USD' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                >
+                  $ USD
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border bg-background px-3 py-2.5">
             <div className="min-w-0">
               <p className="text-[11px] text-muted-foreground">Amount</p>
@@ -158,10 +210,16 @@ export default function GatewayModal({
               </p>
             </div>
             <p className="shrink-0 text-xl font-black tracking-tight sm:text-2xl">
-              {currency === 'NGN' ? '₦' : '$'}
-              {amount.toLocaleString()}
+              {selectedCurrency === 'NGN' ? '₦' : '$'}
+              {selectedAmount.toLocaleString()}
             </p>
           </div>
+          {selectedCurrency === 'USD' && (
+            <p className="mt-2 text-[11px] leading-4 text-muted-foreground">
+              Paystack checkout is processed in NGN. Your USD price is converted
+              using the current exchange rate before payment.
+            </p>
+          )}
         </header>
 
         <main className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain px-4 py-3 [scrollbar-width:thin] [-webkit-overflow-scrolling:touch] sm:px-5 sm:py-4">
