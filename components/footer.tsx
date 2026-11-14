@@ -223,7 +223,7 @@ export default function Footer() {
             >
 
               <a
-                href="tel:+2348164580712"
+                href="tel:+2349019469887"
                 className="
                   flex
                   items-center
