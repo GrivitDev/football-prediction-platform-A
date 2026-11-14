@@ -5,7 +5,7 @@ import type { ReactNode } from 'react';
 
 import Image from 'next/image';
 import Link from 'next/link';
-
+import { FaTelegram } from 'react-icons/fa6';
 
 import { useAuth } from '@/providers/auth-provider';
 import { subscriptionService } from '@/services/subscription.service';
@@ -144,6 +144,9 @@ export default function HeroSection() {
   const [subscriptionLoading, setSubscriptionLoading] =
     useState(false);
 
+  const telegramUrl =
+    process.env.NEXT_PUBLIC_TELEGRAM?.trim();
+
   useEffect(() => {
     if (authLoading) {
       return;
@@ -201,7 +204,6 @@ export default function HeroSection() {
   const upgrade =
     plan ? upgradeOptions[plan] : undefined;
 
-
   return (
     <section
       className="
@@ -249,8 +251,6 @@ export default function HeroSection() {
         "
       />
 
-     
-
       {/* Main hero content */}
 
       <div
@@ -263,10 +263,10 @@ export default function HeroSection() {
           items-start
           justify-center
           px-5
-          pb-7
+          pb-20
           pt-20
           sm:px-8
-          sm:pb-8
+          sm:pb-16
           lg:h-full
           lg:min-h-0
           lg:px-10
@@ -372,7 +372,6 @@ export default function HeroSection() {
 
                 <HeroButton href="/register">
                   Register
-
                   <ArrowIcon className="size-4" />
                 </HeroButton>
               </div>
@@ -432,7 +431,6 @@ export default function HeroSection() {
 
                 <HeroButton href="/pricing">
                   {upgrade.label}
-
                   <ArrowIcon className="size-4" />
                 </HeroButton>
               </div>
@@ -460,7 +458,6 @@ export default function HeroSection() {
 
                 <HeroButton href="/predictions">
                   Explore Predictions
-
                   <ArrowIcon className="size-4" />
                 </HeroButton>
               </div>
@@ -488,13 +485,62 @@ export default function HeroSection() {
 
                 <HeroButton href="/dashboard/subscriptions">
                   View Subscription
-
                   <ArrowIcon className="size-4" />
                 </HeroButton>
               </div>
             )}
         </div>
       </div>
+
+      {/* Floating Telegram Button */}
+
+      {telegramUrl && (
+        <a
+          href={telegramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Join our Telegram channel for free 2 odds"
+          className="
+            absolute
+            bottom-4
+            right-4
+            z-20
+            inline-flex
+            min-h-11
+            items-center
+            justify-center
+            gap-2
+            rounded-full
+            border
+            border-sky-300/30
+            bg-[#229ED9]
+            px-4
+            py-2.5
+            text-sm
+            font-bold
+            text-white
+            shadow-xl
+            shadow-sky-500/20
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:bg-[#168AC4]
+            hover:shadow-sky-500/40
+            active:scale-95
+            focus-visible:outline-none
+            focus-visible:ring-2
+            focus-visible:ring-white
+            sm:bottom-5
+            sm:right-5
+          "
+        >
+          <FaTelegram size={22} />
+
+          <span className="whitespace-nowrap">
+            Free 2 ODDS
+          </span>
+        </a>
+      )}
     </section>
   );
 }

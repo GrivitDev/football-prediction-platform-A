@@ -112,15 +112,6 @@ export default function HomePage() {
                 football intelligence platform where information comes before hype.
               </p>
             </div>
-
-            <div className="mt-3 border-t border-border/60 pt-3">
-              <p className="text-sm font-semibold text-foreground">
-                Honest Predict
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Clearer analysis. More informed decisions.
-              </p>
-            </div>
           </div>
         </div>
       </section>

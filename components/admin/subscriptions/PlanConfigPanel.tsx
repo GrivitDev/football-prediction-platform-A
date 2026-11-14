@@ -109,45 +109,62 @@ export default function PlanConfigPanel({
     );
   }, [config]);
 
-  async function save() {
-    if (!config) return;
+async function save() {
+  if (!config) return;
 
-    if (incomplete) {
-      toast.error(
-        'Please complete all configuration fields.',
-      );
-      return;
-    }
-
-    try {
-      setSaving(true);
-
-      const updated =
-        await updatePlanConfig(token, config);
-
-      setConfig(updated);
-      setOriginalConfig(updated);
-
-      toast.success(
-        'Subscription configuration updated.',
-      );
-    } catch {
-      toast.error(
-        'Failed to update configuration.',
-      );
-    } finally {
-      setSaving(false);
-    }
+  if (incomplete) {
+    toast.error('Please complete all configuration fields.');
+    return;
   }
 
-  if (loading) {
-    return (
-      <div className="rounded-2xl border bg-card/70 p-4">
-        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
-        <div className="mt-4 h-40 animate-pulse rounded-xl bg-muted" />
-      </div>
-    );
+  try {
+    setSaving(true);
+
+    // Send only fields accepted by UpdatePlanConfigDto.
+    const payload = {
+      regularPrice: config.regularPrice,
+      vipPrice: config.vipPrice,
+      premiumPrice: config.premiumPrice,
+
+      regularPriceUSD: config.regularPriceUSD,
+      vipPriceUSD: config.vipPriceUSD,
+      premiumPriceUSD: config.premiumPriceUSD,
+
+      subscriptionDurationDays: config.subscriptionDurationDays,
+      premiumDurationDays: config.premiumDurationDays,
+
+      planLabels: {
+        free: config.planLabels.free,
+        regular: config.planLabels.regular,
+        vip: config.planLabels.vip,
+        premium: config.planLabels.premium,
+      },
+    };
+
+    const updated = await updatePlanConfig(token, payload);
+
+    // Never replace valid state with an API error response.
+    if (
+      !updated ||
+      typeof updated !== 'object' ||
+      !updated.planLabels ||
+      typeof updated.planLabels.free !== 'string'
+    ) {
+      throw new Error('Invalid plan configuration response.');
+    }
+
+    setConfig(updated);
+    setOriginalConfig(updated);
+
+    toast.success('Subscription configuration updated.');
+  } catch (error) {
+    console.error('Plan configuration update failed:', error);
+
+    toast.error('Failed to update configuration.');
+  } finally {
+    setSaving(false);
   }
+}
 
   if (!config) {
     return (

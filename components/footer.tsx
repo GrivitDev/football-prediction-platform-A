@@ -7,7 +7,6 @@ import {
   ArrowRight,
   Mail,
   Phone,
-  ShieldCheck,
 } from 'lucide-react';
 
 import {
@@ -140,15 +139,6 @@ const socials = [
 ];
 
 
-const acknowledgements = [
-  'ESPNAPI',
-  'The Odds API',
-  'Youtube API Services',
-  'footballdata.org',
-  'groqAPI',
-];
-
-
 export default function Footer() {
   const { user } = useAuth();
 
@@ -245,12 +235,12 @@ export default function Footer() {
                 "
               >
                 <Phone className="h-4 w-4 shrink-0" />
-                +234 816 458 0712
+                +2349 019 469 887
               </a>
 
 
               <a
-                href="mailto:contact@honestpredict.com"
+                href="mailto:honestpredictinfo@gmail.com"
                 className="
                   flex
                   items-center
@@ -262,7 +252,7 @@ export default function Footer() {
                 "
               >
                 <Mail className="h-4 w-4 shrink-0" />
-                contact@honestpredict.com
+                honestpredictinfo@gmail.com
               </a>
 
             </div>
@@ -564,28 +554,6 @@ export default function Footer() {
               <span className="text-border">
                 •
               </span>
-
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-2
-                  text-muted-foreground
-                "
-              >
-
-                <ShieldCheck className="h-4 w-4" />
-
-                <span>
-                  Data &amp; Service Acknowledgements:
-                </span>
-
-                <span className="font-medium text-foreground">
-                  {acknowledgements.join(' · ')}
-                </span>
-
-              </div>
 
             </div>
 
