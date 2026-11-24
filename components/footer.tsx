@@ -193,7 +193,7 @@ export default function Footer() {
 
             <Link
               href="/"
-              aria-label="HonestPredict home"
+              aria-label="sharppredict home"
               className="
                 inline-flex
                 items-center
@@ -201,7 +201,7 @@ export default function Footer() {
             >
               <Image
                 src="/logo.png"
-                alt="HonestPredict"
+                alt="sharppredict"
                 width={260}
                 height={90}
                 className="
@@ -240,7 +240,7 @@ export default function Footer() {
 
 
               <a
-                href="mailto:honestpredictinfo@gmail.com"
+                href="mailto:sharppredictinfo@gmail.com"
                 className="
                   flex
                   items-center
@@ -252,7 +252,7 @@ export default function Footer() {
                 "
               >
                 <Mail className="h-4 w-4 shrink-0" />
-                honestpredictinfo@gmail.com
+                sharppredictinfo@gmail.com
               </a>
 
             </div>
@@ -443,7 +443,7 @@ export default function Footer() {
 
 
             <form
-              action="mailto:contact@honestpredict.com"
+              action="mailto:contact@sharppredict.com"
               method="post"
               encType="text/plain"
               className="
@@ -582,7 +582,7 @@ export default function Footer() {
                 <strong className="font-semibold">
                   18+ only.
                 </strong>{' '}
-                HonestPredict is for users aged 18 and older. Our Predictions are not 100% guaranteed. Gamble wisely and responsibly.
+                sharppredict is for users aged 18 and older. Our Predictions are not 100% guaranteed. Gamble wisely and responsibly.
               </p>
             </div>
 
@@ -601,7 +601,7 @@ export default function Footer() {
               "
             >
               <p>
-                © 2026 HonestPredict. All rights reserved.
+                © 2026 sharppredict. All rights reserved.
               </p>
 
               <p>

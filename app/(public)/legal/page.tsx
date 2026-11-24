@@ -23,9 +23,9 @@ import {
 import { ownershipContent, ownershipToc } from '@/data/legal/ownership';
 
 export const metadata: Metadata = {
-  title: 'Terms of Use | HonestPredict.com',
+  title: 'Terms of Use | sharppredict.com',
   description:
-    'Terms of use, privacy, subscriptions, refunds, disclaimers, responsible gambling, and other policies for HonestPredict.com.',
+    'Terms of use, privacy, subscriptions, refunds, disclaimers, responsible gambling, and other policies for sharppredict.com.',
 };
 
 const groups = [
@@ -59,11 +59,11 @@ export default function LegalPage() {
       <main className="mx-auto w-full max-w-[1600px] px-3 pb-8 pt-5 sm:px-6 sm:pb-12 sm:pt-8 xl:px-10">
         <header className="mb-5 border-b border-border pb-4 sm:mb-7 sm:pb-5">
           <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            HonestPredict.com
+            sharppredict.com
           </p>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Terms of Use</h1>
           <p className="mt-2 max-w-3xl text-sm leading-5 text-muted-foreground">
-            Terms and policies governing access to and use of HonestPredict.com.
+            Terms and policies governing access to and use of sharppredict.com.
           </p>
           <p className="mt-2 text-[11px] text-muted-foreground">Last updated: 15 October 2026</p>
         </header>
@@ -75,7 +75,7 @@ export default function LegalPage() {
 
             <div className="rounded-md border border-border bg-muted/20 px-3 py-3 text-xs leading-5 text-muted-foreground sm:px-4 sm:py-4">
               <p>
-                By accessing or using HonestPredict.com, creating an account, or purchasing a subscription or prediction, you agree to the applicable terms below.
+                By accessing or using sharppredict.com, creating an account, or purchasing a subscription or prediction, you agree to the applicable terms below.
               </p>
               <p className="mt-2 border-t border-border pt-2 text-foreground/90">
                 <strong className="font-semibold">Age and gambling disclaimer:</strong>{' '}
@@ -100,7 +100,7 @@ export default function LegalPage() {
                 ))}
               </LegalAccordionProvider>
               <footer className="border-t border-border py-4 text-[11px] leading-5 text-muted-foreground">
-                HonestPredict.com is owned and operated by Emco Digital Company. Website development and technical support are provided by GriviTech Company. For questions about these terms or policies, use the contact section of the website.
+                sharppredict.com is owned and operated by Emco Digital Company. Website development and technical support are provided by GriviTech Company. For questions about these terms or policies, use the contact section of the website.
               </footer>
             </article>
           </div>

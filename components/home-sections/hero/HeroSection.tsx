@@ -310,7 +310,7 @@ export default function HeroSection() {
               "
             />
 
-            WELCOME TO HONEST PREDICT
+            WELCOME TO SharpPREDICT
           </div>
 
           {/* Heading */}
@@ -357,7 +357,7 @@ export default function HeroSection() {
                   sm:text-sm
                 "
               >
-                Join Honest Predict and discover
+                Join SharpPredict and discover
                 football predictions backed by
                 match analysis.
               </p>

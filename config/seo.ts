@@ -1,17 +1,17 @@
 export const SEO = {
-  title: 'HonestPredict',
+  title: 'sharppredict',
 
   description:
     'Professional football prediction platform offering Intelligent football predictions, VIP predictions, live scores, fixtures, standings, football statistics, and expert betting analysis.',
 
-  url: 'https://honestpredict.com',
+  url: 'https://sharppredict.com',
 
-  image: 'https://honestpredict.com/og-image.png',
+  image: 'https://sharppredict.com/og-image.png',
 
   keywords: [
     'football prediction',
     'football predictions',
-    'HonestPredict',
+    'sharppredict',
     'VIP predictions',
     'football betting tips',
     'daily football tips',

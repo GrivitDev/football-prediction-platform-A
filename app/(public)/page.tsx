@@ -33,7 +33,7 @@ export default function HomePage() {
             <div className="relative flex h-20 w-20 items-center justify-center rounded-full border border-primary/20 bg-primary/5 shadow-[0_0_40px_-10px_hsl(var(--primary)/0.5)]">
               <Image
                 src="/logo.png"
-                alt="honestpredict"
+                alt="sharppredict"
                 width={64}
                 height={64}
                 priority
@@ -84,12 +84,12 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl">
           <div className="rounded-3xl border border-border/60 bg-card/40 p-3 shadow-sm backdrop-blur-sm sm:p-4">
             <h2 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">
-              About Honest Predict
+              About SharpPredict
             </h2>
 
             <div className="mt-2 space-y-1 text-sm leading-5 text-muted-foreground sm:text-base">
               <p>
-                Honest Predict is a football prediction and analysis platform built
+                SharpPredict is a football prediction and analysis platform built
                 to make match insights clearer, more transparent, and easier to
                 understand.
               </p>
@@ -108,7 +108,7 @@ export default function HomePage() {
 
               <p>
                 From match predictions and market analysis to football articles and
-                educational insights, Honest Predict aims to build a reliable
+                educational insights, SharpPredict aims to build a reliable
                 football intelligence platform where information comes before hype.
               </p>
             </div>

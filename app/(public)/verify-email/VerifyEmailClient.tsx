@@ -261,7 +261,7 @@ export default function VerifyEmailClient() {
               "
             >
               Confirm your email address to
-              activate your HonestPredict account
+              activate your sharppredict account
               and start accessing football
               predictions, statistics, and features.
             </p>

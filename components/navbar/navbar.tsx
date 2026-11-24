@@ -94,7 +94,7 @@ export default function Navbar() {
 
               <Link
                 href="/"
-                aria-label="HonestPredict home"
+                aria-label="sharppredict home"
                 className="
                   flex
                   h-24
@@ -108,7 +108,7 @@ export default function Navbar() {
               >
                 <Image
                   src="/logo.png"
-                  alt="HonestPredict"
+                  alt="sharppredict"
                   width={280}
                   height={280}
                   priority

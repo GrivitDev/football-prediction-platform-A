@@ -56,7 +56,7 @@ export default function ArticlesPage() {
         <div className="mb-6 flex items-end justify-between gap-4 border-b border-border/60 pb-4">
           <div>
             <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
-              Honest Predict Football
+              SharpPredict Football
             </p>
 
             <h1 className="text-2xl font-bold tracking-tight">

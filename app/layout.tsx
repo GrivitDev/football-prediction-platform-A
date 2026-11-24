@@ -36,18 +36,18 @@ export const metadata: Metadata = {
     canonical: SEO.url,
   },
 
-  applicationName: 'HonestPredict',
+  applicationName: 'sharppredict',
 
   authors: [
     {
-      name: 'HonestPredict',
+      name: 'sharppredict',
       url: SEO.url,
     },
   ],
 
-  creator: 'HonestPredict',
+  creator: 'sharppredict',
 
-  publisher: 'HonestPredict',
+  publisher: 'sharppredict',
 
   category: 'Sports',
 
@@ -98,7 +98,7 @@ export const metadata: Metadata = {
         url: SEO.image,
         width: 1200,
         height: 630,
-        alt: 'HonestPredict',
+        alt: 'sharppredict',
       },
     ],
   },
@@ -136,7 +136,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
 
-    title: 'HonestPredict',
+    title: 'sharppredict',
 
     statusBarStyle: 'black-translucent',
   },
